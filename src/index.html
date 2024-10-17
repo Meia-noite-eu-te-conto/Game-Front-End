@@ -1,0 +1,68 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>WebSocket Test</title>
+    <style>
+        canvas {
+            border: 1px solid black;
+        }
+    </style>
+</head>
+<body>
+    <h1>Test<h2>
+    <canvas id="myCanvas" width="500" height="400"></canvas>
+    <script>
+        const socket = new WebSocket('ws://localhost:8081/ws/game/');
+        const canvas = document.getElementById('myCanvas');
+        const context = canvas.getContext('2d');
+        socket.onopen = function(event) {
+            console.log("Conectado ao servidor WebSocket");
+            socket.send("Olá, servidor!");
+        };
+
+        socket.onmessage = function(event) {
+            console.log("Recebido do servidor:", event.data);
+            drawOnCanvas(event.data);  // Chama a função para desenhar no canvas
+        };
+
+        socket.onclose = function(event) {
+            console.log("Desconectado do servidor WebSocket");
+        };
+
+        // Função para desenhar no canvas
+        function drawOnCanvas(data) {
+            // Limpa o canvas
+            context.clearRect(0, 0, canvas.width, canvas.height);
+
+            // Aqui você pode definir como os dados recebidos do servidor devem ser desenhados
+            // Neste exemplo, vamos assumir que o servidor envia coordenadas para desenhar um círculo
+
+            const parsedData = JSON.parse(data); // Supondo que os dados estão em formato JSON
+            const { player_one, ball, player_two } = parsedData; // Desestrutura os dados recebidos
+
+            context.fillStyle = 'blue'; // Cor do player_one
+            context.fillRect(player_one.x, player_one.y, player_one.width, player_one.height);
+
+            // Desenha a bola
+            context.fillStyle = 'red'; // Cor da bola
+            context.beginPath();
+            context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
+            context.fill(); // Preenche a bola
+
+            // Desenha player_two
+            context.fillStyle = 'green'; // Cor do player_two
+            context.fillRect(player_two.x, player_two.y, player_two.width, player_two.height);
+        }
+
+        // Função para enviar comandos do teclado
+        function sendKey(event) {
+            const key = event.key;  // Captura a tecla pressionada
+            console.log(`Tecla pressionada: ${key}`);
+            socket.send(`${key}`);  // Envia a tecla para o servidor
+        }
+
+        // Adiciona um listener para o evento de teclado
+        document.addEventListener('keydown', sendKey);
+    </script>
+</body>
+</html>
