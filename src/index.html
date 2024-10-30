@@ -1,68 +1,109 @@
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>WebSocket Test</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Home Page</title>
+
     <style>
-        canvas {
-            border: 1px solid black;
+
+        .pbg {
+            background: 
+                linear-gradient(45deg, #f1f1f1 25%, transparent 25%),
+                linear-gradient(-45deg, #f1f1f1 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f1f1f1 75%),
+                linear-gradient(-45deg, transparent 75%, #f1f1f1 75%);
+            background-size: 250px 250px;
+            background-position: 0 0, 0 125px, 125px -125px, -125px 0;
+
         }
     </style>
+
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
-<body>
-    <h1>Test<h2>
-    <canvas id="myCanvas" width="500" height="400"></canvas>
-    <script>
-        const socket = new WebSocket('ws://localhost:8081/ws/game/');
-        const canvas = document.getElementById('myCanvas');
-        const context = canvas.getContext('2d');
-        socket.onopen = function(event) {
-            console.log("Conectado ao servidor WebSocket");
-            socket.send("Olá, servidor!");
-        };
+<body class="pbg">
+    <div style="height: 10vh" class="cover-container bg-light d-flex w-100 p-3 mx-auto flex-column">
+        <header  class=" d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <a href="/" class="d-flex align-items-center ms-5 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <svg width="40" height="39" viewBox="0 0 40 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.6548 2H11.8214C10.2743 2 8.7906 2.61458 7.69664 3.70854C6.60268 4.80251 5.9881 6.28624 5.9881 7.83333C5.9881 9.38043 6.60268 10.8642 7.69664 11.9581C8.7906 13.0521 10.2743 13.6667 11.8214 13.6667M17.6548 2V13.6667M17.6548 2H23.4881C38.2635 3 38.5 27.0419 17.6548 19.5M17.6548 13.6667H11.8214M17.6548 13.6667V19.5M11.8214 13.6667C10.2743 13.6667 8.7906 14.2812 7.69664 15.3752M17.6548 25.3333H11.8214C10.2743 25.3333 8.7906 25.9479 7.69664 27.0419C6.60268 28.1358 5.9881 29.6196 5.9881 31.1667C5.9881 32.7138 6.60268 34.1975 7.69664 35.2915C8.7906 36.3854 10.2743 37 11.8214 37C13.3685 37 14.8523 36.3854 15.9462 35.2915C17.0402 34.1975 17.6548 32.7138 17.6548 31.1667V25.3333ZM17.6548 25.3333V19.5" stroke="#1E1E1E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Game</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Community</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Ranking</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Store</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Profile</a></li>
+                <li class="nav-item"><button class="btn btn-secondary mx-2">Login</button></li>
+                <li class="nav-item"><button class="btn btn-dark mx-2">Register</button></li>
+            </ul>
+        </header>
+    </div>
+    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
+        <main  style="height: 85vh;" class="px-3 d-flex align-items-center justify-content-center flex-column">
+            <h1 class="h1 "><b>Trancendence</b></h1>
+            <p class="lead">A Pong Game</p>
+            <div class="d-flex align-items-around">
+                <p class="lead px-3">
+                    <a href="#" class="btn btn-lg btn-secondary">List Rooms</a>
+                </p>
+                <p class="lead px-3">
+                    <button type="button" href="#" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Create Room</button>
+                </p>
+            </div>
+        </main>
+    </div>
 
-        socket.onmessage = function(event) {
-            console.log("Recebido do servidor:", event.data);
-            drawOnCanvas(event.data);  // Chama a função para desenhar no canvas
-        };
-
-        socket.onclose = function(event) {
-            console.log("Desconectado do servidor WebSocket");
-        };
-
-        // Função para desenhar no canvas
-        function drawOnCanvas(data) {
-            // Limpa o canvas
-            context.clearRect(0, 0, canvas.width, canvas.height);
-
-            // Aqui você pode definir como os dados recebidos do servidor devem ser desenhados
-            // Neste exemplo, vamos assumir que o servidor envia coordenadas para desenhar um círculo
-
-            const parsedData = JSON.parse(data); // Supondo que os dados estão em formato JSON
-            const { player_one, ball, player_two } = parsedData; // Desestrutura os dados recebidos
-
-            context.fillStyle = 'blue'; // Cor do player_one
-            context.fillRect(player_one.x, player_one.y, player_one.width, player_one.height);
-
-            // Desenha a bola
-            context.fillStyle = 'red'; // Cor da bola
-            context.beginPath();
-            context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-            context.fill(); // Preenche a bola
-
-            // Desenha player_two
-            context.fillStyle = 'green'; // Cor do player_two
-            context.fillRect(player_two.x, player_two.y, player_two.width, player_two.height);
-        }
-
-        // Função para enviar comandos do teclado
-        function sendKey(event) {
-            const key = event.key;  // Captura a tecla pressionada
-            console.log(`Tecla pressionada: ${key}`);
-            socket.send(`${key}`);  // Envia a tecla para o servidor
-        }
-
-        // Adiciona um listener para o evento de teclado
-        document.addEventListener('keydown', sendKey);
-    </script>
+    <div class="modal fade" id="create-room" tabindex="-1" aria-labelledby="createRoomModal" aria-hidden="true">
+    <div class="modal-dialog modal-dialog-centered">
+        <div class="modal-content">
+        <div class="modal-header align-items-start">
+            <div>
+                <h1 class="modal-title fs-5" id="exampleModalLabel">Create a room</h1>
+                <p>create a room to play with up to 4 people</p>
+            </div>
+            <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+        </div>
+        <div class="modal-body">
+            <form>
+                <div class="mb-3">
+                    <label for="nickname-input" class="col-form-label">Nickname</label>
+                    <input type="text" class="form-control" id="nickname-input">
+                </div>
+                <div class="mb-3">
+                    <label for="game-type-section" class="col-form-label">Game Type</label>
+                    <select id="game-type-section" class="form-select form-select-sm" aria-label="game type selection">
+                        <option selected>Select a option</option>
+                        <option value="0">Match</option>
+                        <option value="1">Tournament</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="number-of-players-section" class="col-form-label">Number of Players</label>
+                    <select id="number-of-players-section" class="form-select form-select-sm" aria-label="game type selection">
+                        <option selected>Select a option</option>
+                        <option value="2">2</option>
+                        <option value="4">4</option>
+                    </select>
+                </div>
+                <div class="mb-3">
+                    <label for="room-name-input" class="col-form-label">Room Name</label>
+                    <input class="form-control" id="room-name-input"></input>
+                </div>
+                <div class="form-check form-switch">
+                    <input class="form-check-input" type="checkbox" role="switch" id="private-room-checkbox">
+                    <label class="form-check-label" for="private-room-checkbox">Private Room<br><p>Private rooms do not appear in global search and can only be accessed by code.</p></label>
+                </div>
+            </form>
+        </div>
+        <div class="modal-footer mb-3">
+            <button type="button" style="width: 100vw;" class="h-100 btn btn-dark">Create The Room</button>
+        </div>
+        </div>
+    </div>
+    </div>
 </body>
 </html>
