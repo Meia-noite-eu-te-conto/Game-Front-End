@@ -1,0 +1,136 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Room List Page</title>
+
+    <style>
+
+        .pbg {
+            background: 
+                linear-gradient(45deg, #f1f1f1 25%, transparent 25%),
+                linear-gradient(-45deg, #f1f1f1 25%, transparent 25%),
+                linear-gradient(45deg, transparent 75%, #f1f1f1 75%),
+                linear-gradient(-45deg, transparent 75%, #f1f1f1 75%);
+            background-size: 250px 250px;
+            background-position: 0 0, 0 125px, 125px -125px, -125px 0;
+        }
+    </style>
+
+<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
+    <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
+    <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+</head>
+<body class="pbg">
+    <div style="height: 10vh" class="cover-container bg-light d-flex w-100 p-3 mx-auto flex-column">
+        <header  class=" d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+            <a href="/" class="d-flex align-items-center ms-5 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <svg width="40" height="39" viewBox="0 0 40 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.6548 2H11.8214C10.2743 2 8.7906 2.61458 7.69664 3.70854C6.60268 4.80251 5.9881 6.28624 5.9881 7.83333C5.9881 9.38043 6.60268 10.8642 7.69664 11.9581C8.7906 13.0521 10.2743 13.6667 11.8214 13.6667M17.6548 2V13.6667M17.6548 2H23.4881C38.2635 3 38.5 27.0419 17.6548 19.5M17.6548 13.6667H11.8214M17.6548 13.6667V19.5M11.8214 13.6667C10.2743 13.6667 8.7906 14.2812 7.69664 15.3752M17.6548 25.3333H11.8214C10.2743 25.3333 8.7906 25.9479 7.69664 27.0419C6.60268 28.1358 5.9881 29.6196 5.9881 31.1667C5.9881 32.7138 6.60268 34.1975 7.69664 35.2915C8.7906 36.3854 10.2743 37 11.8214 37C13.3685 37 14.8523 36.3854 15.9462 35.2915C17.0402 34.1975 17.6548 32.7138 17.6548 31.1667V25.3333ZM17.6548 25.3333V19.5" stroke="#1E1E1E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+        
+            <ul class="nav nav-pills">
+                <li class="nav-item"><a href="#" class="nav-link active" aria-current="page">Game</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Community</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Ranking</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Store</a></li>
+                <li class="nav-item"><a href="#" class="nav-link">Profile</a></li>
+                <li class="nav-item"><button class="btn btn-secondary mx-2">Login</button></li>
+                <li class="nav-item"><button class="btn btn-dark mx-2">Register</button></li>
+            </ul>
+        </header>
+    </div>
+    <main  style="height: 85vh;" class="cover-container d-flex w-100 p-3 mx-auto flex-row justify-content-center align-items-center">
+        
+        <section class="h-75 w-50 mx-3 bg-light px-4 pt-3 pb-5 rounded-4 border border-1">
+            <div>
+                <h1>Match Room</h1>
+                <p>It will be possible to start the match as soon as there is the minimum number of players.</p>
+            </div>
+            
+            <div class="mb-3 list-group list-group-flush border-bottom scrollarea">
+                <a href="#" class="list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <div class="d-flex w-75 align-items-center">
+                            <img class="rounded-circle img-thumbnail bg-primary" src="./assets/img/blue.png" alt="">
+                            <div class="d-flex flex-column ps-2 justify-content-center">
+                                <strong class="mb-1">Carlinhos</strong>
+                                <p class="small mb-0">Blue</p>
+                            </div>
+                        </div>
+                        <small class="text-body-secondary bi bi-person"> Owner</small>
+                    </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <div class="d-flex w-75 align-items-center">
+                            <img class="rounded-circle img-thumbnail bg-danger" src="./assets/img/red.png" alt="">
+                            <div class="d-flex flex-column ps-2 justify-content-center">
+                                <strong class="mb-1">Ranna</strong>
+                                <p class="small mb-0">Red</p>
+                            </div>
+                        </div>
+                        <small class="text-body-secondary bi bi-person"> Owner</small>
+                    </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <div class="d-flex w-75 align-items-center">
+                            <img class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
+                            <div class="d-flex flex-column ps-2 justify-content-center">
+                                <strong class="mb-1">None</strong>
+                                <p class="small mb-0">Blue</p>
+                            </div>
+                        </div>
+                        <small class="text-body-secondary bi bi-person"> Owner</small>
+                    </div>
+                </a>
+                <a href="#" class="list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
+                    <div class="d-flex w-100 align-items-center justify-content-between">
+                        <div class=" d-flex w-75 align-items-center">
+                            <img class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
+                            <div class="d-flex flex-column  ps-2 justify-content-center">
+                                <strong class="mb-1">None</strong>
+                                <p class="small mb-0">Blue</p>
+                            </div>
+                        </div>
+                        <small class="text-body-secondary bi bi-person"> Owner</small>
+                    </div>
+                </a>
+                
+            </div>
+        </section>
+        <section class="h-75 w-50 mx-3 d-flex flex-column align-items-center justify-content-between">
+            <a href="" class="w-75 bi bi-copy btn btn-dark"> Room Code: A7B9X2F4P3</a>
+            <div class="d-flex align-items-around">
+                <p class="lead px-3">
+                    <a href="./index.html" class="btn btn-lg btn-secondary">Close Room</a>
+                </p>
+                <p class="lead px-3">
+                    <button type="button" href="#" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
+                </p>
+            </div>
+        </section>
+    </main>
+
+    <div class="modal fade" id="enter-the-room-modal" tabindex="-1" aria-labelledby="EnterTheRoomModal" aria-hidden="true">
+        <div class="modal-dialog modal-dialog-centered">
+            <div class="modal-content">
+            <div class="modal-header align-items-start">
+                <div>
+                    <h1 class="modal-title fs-5" id="exampleModalLabel">Create a room</h1>
+                    <p>create a room to play with up to 4 people</p>
+                </div>
+                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+            </div>
+            <div class="modal-body">
+                
+            </div>
+
+        </div>
+    </div>
+    </div>
+</body>
+</html>
