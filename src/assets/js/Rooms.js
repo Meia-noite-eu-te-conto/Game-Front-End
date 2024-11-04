@@ -20,7 +20,7 @@ function RoomPaginationComponent(paginatedGroup, data)
     let item = PaginationItemLabelComponent(paginatedInfo["currentPage"], "Previous", paginatedInfo);
     paginatedGroup.appendChild(item);
 
-    const totalPages = 10;
+    const totalPages = paginatedInfo["totalPages"];
     const currentPage = paginatedInfo["currentPage"];
     let startPage, endPage;
 
