@@ -23,8 +23,8 @@
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 </head>
 <body class="pbg">
-    <div style="height: 10vh" class="cover-container bg-light d-flex w-100 p-3 mx-auto flex-column">
-        <header  class=" d-flex flex-wrap justify-content-center py-3 mb-4 border-bottom">
+    <div class="cover-container bg-light d-flex w-100 px-3 pt-3 mx-auto flex-column">
+        <header  class=" d-flex flex-wrap justify-content-center py-3 border-bottom">
             <a href="/" class="d-flex align-items-center ms-5 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
                 <svg width="40" height="39" viewBox="0 0 40 39" fill="none" xmlns="http://www.w3.org/2000/svg">
                     <path d="M17.6548 2H11.8214C10.2743 2 8.7906 2.61458 7.69664 3.70854C6.60268 4.80251 5.9881 6.28624 5.9881 7.83333C5.9881 9.38043 6.60268 10.8642 7.69664 11.9581C8.7906 13.0521 10.2743 13.6667 11.8214 13.6667M17.6548 2V13.6667M17.6548 2H23.4881C38.2635 3 38.5 27.0419 17.6548 19.5M17.6548 13.6667H11.8214M17.6548 13.6667V19.5M11.8214 13.6667C10.2743 13.6667 8.7906 14.2812 7.69664 15.3752M17.6548 25.3333H11.8214C10.2743 25.3333 8.7906 25.9479 7.69664 27.0419C6.60268 28.1358 5.9881 29.6196 5.9881 31.1667C5.9881 32.7138 6.60268 34.1975 7.69664 35.2915C8.7906 36.3854 10.2743 37 11.8214 37C13.3685 37 14.8523 36.3854 15.9462 35.2915C17.0402 34.1975 17.6548 32.7138 17.6548 31.1667V25.3333ZM17.6548 25.3333V19.5" stroke="#1E1E1E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
@@ -68,7 +68,7 @@
             <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
         </div>
         <div class="modal-body">
-            <form>
+            <form onsubmit="createRoom(event)"> 
                 <div class="mb-3">
                     <label for="nickname-input" class="col-form-label">Nickname</label>
                     <input type="text" class="form-control" id="nickname-input">
@@ -97,13 +97,50 @@
                     <input class="form-check-input" type="checkbox" role="switch" id="private-room-checkbox">
                     <label class="form-check-label" for="private-room-checkbox">Private Room<br><p>Private rooms do not appear in global search and can only be accessed by code.</p></label>
                 </div>
+                <div class="modal-footer mb-3">
+                    <button type="submit" style="width: 100vw;" class="h-100 btn btn-dark">Create The Room</button>
+                </div>
             </form>
         </div>
-        <div class="modal-footer mb-3">
-            <button type="button" style="width: 100vw;" class="h-100 btn btn-dark">Create The Room</button>
-        </div>
         </div>
     </div>
     </div>
+
+    <script>
+        function createRoom(event) {
+            event.preventDefault();
+            console.log('Creating Room');
+            const nickname = document.getElementById('nickname-input').value;
+            const gameType = document.getElementById('game-type-section').value;
+            const numberOfPlayers = document.getElementById('number-of-players-section').value;
+            const roomName = document.getElementById('room-name-input').value;
+            const isPrivate = document.getElementById('private-room-checkbox').checked;
+
+            const roomData = {
+                createdBy: nickname,
+                roomName: roomName,
+                roomType: gameType,
+                maxAmountOfPlayers: numberOfPlayers,
+                privateRoom: isPrivate
+            };
+
+            fetch('http://localhost:8082/room/new-room/', {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(roomData)
+            })
+            .then(response => response.json())
+            .then(data => {
+                console.log('Room created successfully:', data);
+                // Handle success (e.g., redirect to the room page)
+            })
+            .catch(error => {
+                console.error('Error creating room:', error);
+                // Handle error (e.g., display an error message)
+            });
+        }
+    </script>
 </body>
 </html>
