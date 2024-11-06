@@ -79,7 +79,7 @@
         </div>
     </main>
     <script>
-        const socket = new WebSocket('ws://localhost:8081/ws/game/');
+        const socket = new WebSocket('/api/v1/user-session/rooms/ws/game/');
         const canvas = document.getElementById('myCanvas');
         const context = canvas.getContext('2d');
         socket.onopen = function(event) {
