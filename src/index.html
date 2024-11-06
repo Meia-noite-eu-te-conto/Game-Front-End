@@ -124,7 +124,7 @@
                 privateRoom: isPrivate
             };
 
-            fetch('http://localhost:8082/rooms/new-room/', {
+            fetch('/api/v1/user-session/rooms/new-room/', {
                 method: 'POST',
                 headers: {
                     'Content-Type': 'application/json'

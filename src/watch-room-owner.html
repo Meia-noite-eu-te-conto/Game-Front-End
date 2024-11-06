@@ -54,7 +54,7 @@
                 <a href="#" class="list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
                     <div class="d-flex w-100 align-items-center justify-content-between">
                         <div class="d-flex w-75 align-items-center">
-                            <img class="rounded-circle img-thumbnail bg-primary" src="./assets/img/blue.png" alt="">
+                            <img class="rounded-circle img-thumbnail bg-primary" src="/assets/img/blue.png" alt="">
                             <div class="d-flex flex-column ps-2 justify-content-center">
                                 <strong class="mb-1">Carlinhos</strong>
                                 <p class="small mb-0">Blue</p>
@@ -66,7 +66,7 @@
                 <a href="#" class="list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
                     <div class="d-flex w-100 align-items-center justify-content-between">
                         <div class="d-flex w-75 align-items-center">
-                            <img class="rounded-circle img-thumbnail bg-danger" src="./assets/img/red.png" alt="">
+                            <img class="rounded-circle img-thumbnail bg-danger" src="/assets/img/red.png" alt="">
                             <div class="d-flex flex-column ps-2 justify-content-center">
                                 <strong class="mb-1">Ranna</strong>
                                 <p class="small mb-0">Red</p>
@@ -78,7 +78,7 @@
                 <a href="#" class="list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
                     <div class="d-flex w-100 align-items-center justify-content-between">
                         <div class="d-flex w-75 align-items-center">
-                            <img class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
+                            <img class="rounded-circle img-thumbnail" src="/assets/img/none.png" alt="">
                             <div class="d-flex flex-column ps-2 justify-content-center">
                                 <strong class="mb-1">None</strong>
                                 <p class="small mb-0">Blue</p>
@@ -129,7 +129,7 @@
         const roomCode = urlParams.get('roomCode');
 
         function ShowRoom() {
-            fetch(`http://localhost:8082/rooms/${roomCode}`)
+            fetch(`/api/v1/user-session/rooms/${roomCode}`)
                 .then(response => response.json())
                 .then(data => {
                     const playerListElement = document.getElementById("list-of-players")
