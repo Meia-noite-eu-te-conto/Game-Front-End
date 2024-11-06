@@ -101,7 +101,7 @@
         }
 
         function listRooms(currentPage = 1, pageSize = 5) {
-            fetch(`http://localhost:8082/rooms/?currentPage=${currentPage}&pageSize=${pageSize}&filterLabel=${filterLabel}`)
+            fetch(`http://localhost:8080/api/v1/user-session/rooms/?currentPage=${currentPage}&pageSize=${pageSize}&filterLabel=${filterLabel}`)
                 .then(response => response.json())
                 .then(data => {
                     let paginatedGroup = document.getElementById("paginated-list-rooms");

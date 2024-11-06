@@ -134,7 +134,8 @@
             .then(response => response.json())
             .then(data => {
                 console.log('Room created successfully:', data);
-                // Handle success (e.g., redirect to the room page)
+                const roomCode = data.roomCode; // Assuming the response contains a roomId
+                window.location.href = `/watch-room-owner.html?roomCode=${roomCode}`;
             })
             .catch(error => {
                 console.error('Error creating room:', error);
