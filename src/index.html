@@ -21,6 +21,7 @@
 
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
+    <script src="/assets/js/Generics.js"></script>
 </head>
 <body class="pbg">
     <div class="cover-container bg-light d-flex w-100 px-3 pt-3 mx-auto flex-column">
@@ -107,9 +108,10 @@
     </div>
 
     <script>
+        let userId = getUserSession(document)
+
         function createRoom(event) {
             event.preventDefault();
-            console.log('Creating Room');
             const nickname = document.getElementById('nickname-input').value;
             const gameType = document.getElementById('game-type-section').value;
             const numberOfPlayers = document.getElementById('number-of-players-section').value;
@@ -131,17 +133,28 @@
                 },
                 body: JSON.stringify(roomData)
             })
-            .then(response => response.json())
+            .then(response => {
+                const userId = response.headers.get("userId");
+
+                if (userId) {
+                    document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/`;
+                }
+                return response.json();
+            })
             .then(data => {
                 console.log('Room created successfully:', data);
-                const roomCode = data.roomCode; // Assuming the response contains a roomId
+                const roomCode = data.roomCode; 
                 window.location.href = `/watch-room-owner.html?roomCode=${roomCode}`;
             })
             .catch(error => {
                 console.error('Error creating room:', error);
-                // Handle error (e.g., display an error message)
             });
         }
+
+        window.onload = function() {
+            redirectIfuserIsActived(userId, window)
+        }
+
     </script>
 </body>
 </html>
