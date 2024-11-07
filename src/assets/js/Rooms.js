@@ -1,3 +1,8 @@
+
+function GetPlayerColor(code) {
+    return PlayerColor[code]
+}
+
 function RoomItemComponent(room)
 {
     const listItem = document.createElement('a');
@@ -72,3 +77,4 @@ function PaginationItemComponent(page, currentPage)
     `;
     return item;
 }
+
