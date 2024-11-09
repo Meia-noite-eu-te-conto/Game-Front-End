@@ -41,7 +41,7 @@ const HeaderInfo = [
     }
 ]
 
-function headerComponent(document) {
+function HeaderComponent(document) {
     let element = document.createElement("header")
     
     element.classList.add(
