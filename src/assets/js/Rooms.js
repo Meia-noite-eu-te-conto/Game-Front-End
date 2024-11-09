@@ -1,3 +1,32 @@
+/*
+    import { RoomRepository } from "./repositories/RoomRepository";
+*/
+
+const CreateRoomFormDataIds = {
+    nickname: 'nickname-input',
+    gameType: 'game-type-section',
+    numberOfPlayers: 'number-of-players-section',
+    roomName: 'room-name-input',
+    isPrivate: 'private-room-checkbox'
+}
+
+function CreateRoom(event, document, window) {
+    event.preventDefault();
+    const formRoomData = {
+        createdBy: document.getElementById(CreateRoomFormDataIds.nickname).value,
+        roomType: document.getElementById(CreateRoomFormDataIds.gameType).value,
+        maxAmountOfPlayers: document.getElementById(CreateRoomFormDataIds.numberOfPlayers).value,
+        roomName: document.getElementById(CreateRoomFormDataIds.roomName).value,
+        privateRoom: document.getElementById(CreateRoomFormDataIds.isPrivate).checked
+    };
+    const response = RoomRepository.PostCreateRoom(formRoomData, "roomCodessdddsa")
+
+    if (response.status === true) {
+        const roomCode = data.roomCode; 
+        window.location.href = `/watch-room-owner.html?roomCode=${roomCode}`;
+    }
+}
+
 
 function GetPlayerColor(code) {
     return PlayerColor[code]
