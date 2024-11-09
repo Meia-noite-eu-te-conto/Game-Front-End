@@ -102,9 +102,9 @@
     <script>
         let userId = getUserSession(document)
 
-        function createRoom(event) {
+        async function createRoom(event) {
             event.preventDefault();
-            CreateRoom(event, document, window)
+            await CreateRoomAsync(event, document, window)
         }
 
         window.onload = function() {
