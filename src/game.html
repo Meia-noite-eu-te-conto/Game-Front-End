@@ -5,17 +5,7 @@
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
     <title>Room List Page</title>
 
-    <style>
-        .pbg {
-            background: 
-                linear-gradient(45deg, #f1f1f1 25%, transparent 25%),
-                linear-gradient(-45deg, #f1f1f1 25%, transparent 25%),
-                linear-gradient(45deg, transparent 75%, #f1f1f1 75%),
-                linear-gradient(-45deg, transparent 75%, #f1f1f1 75%);
-            background-size: 250px 250px;
-            background-position: 0 0, 0 125px, 125px -125px, -125px 0;
-        }
-    </style>
+    <link rel="stylesheet" href="./assets/css/background.css" />
 
     <link rel="icon" type="image/png" href="/assets/icon/favicon-96x96.png" sizes="96x96" />
     <link rel="icon" type="image/svg+xml" href="/assets/icon/favicon.svg" />
@@ -32,7 +22,10 @@
     <script src="./assets/js/Header.js"></script>
 </head>
 <body class="pbg">
-    <section id="header-section" class="cover-container bg-light d-flex w-100 px-3 pt-3 mx-auto flex-column"></section>
+
+    <!-- Header Section -->
+    <section id="header-section" class="cover-container bg-light mb-4 d-flex w-100 px-3 mx-auto flex-column"></section>
+
     <main style="height: 85vh;" class="my-5 container">
         <div class="d-flex flex-column align-items-center">
             <canvas width="550px" height="550px" class="bg-light border border-dark" id="myCanvas"></canvas>
