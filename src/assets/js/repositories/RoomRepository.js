@@ -4,8 +4,8 @@
 */
 
 const route = "rooms"
-function PostCreateRoom(roomData) {
-    const response = fetch(`${RoutesInfo.userSessionAPI}/${route}/new-room/`, {
+async function PostCreateRoomAsync(roomData) {
+    const response = await fetch(`${RoutesInfo.userSessionAPI}/${route}/new-room/`, {
         method: 'POST',
         headers: {
             'Content-Type': 'application/json'
@@ -38,7 +38,6 @@ function PostCreateRoom(roomData) {
             return {"status": false, "title": "Not Expected", "message": error.message}
         }
     });
-    console.log(response)
     return response
 }
 
@@ -51,5 +50,5 @@ function ProcessErrors(response, error) {
 }
 
 const RoomRepository = {
-    PostCreateRoom
+    PostCreateRoomAsync
 }

@@ -10,7 +10,7 @@ const CreateRoomFormDataIds = {
     isPrivate: 'private-room-checkbox'
 }
 
-function CreateRoom(event, document, window) {
+async function CreateRoomAsync(event, document, window) {
     event.preventDefault();
     const formRoomData = {
         createdBy: document.getElementById(CreateRoomFormDataIds.nickname).value,
@@ -19,10 +19,10 @@ function CreateRoom(event, document, window) {
         roomName: document.getElementById(CreateRoomFormDataIds.roomName).value,
         privateRoom: document.getElementById(CreateRoomFormDataIds.isPrivate).checked
     };
-    const response = RoomRepository.PostCreateRoom(formRoomData, "roomCodessdddsa")
+    const response = await RoomRepository.PostCreateRoomAsync(formRoomData, "roomCodessdddsa")
 
     if (response.status === true) {
-        const roomCode = data.roomCode; 
+        const roomCode = response.data.roomCode; 
         window.location.href = `/watch-room-owner.html?roomCode=${roomCode}`;
     }
 }
@@ -46,6 +46,8 @@ function RoomItemComponent(room)
     `;
     return listItem;
 }
+
+
 
 function RoomPaginationComponent(paginatedGroup, data)
 {
