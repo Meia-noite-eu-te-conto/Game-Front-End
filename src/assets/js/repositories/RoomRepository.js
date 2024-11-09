@@ -13,7 +13,7 @@ function PostCreateRoom(roomData) {
         body: JSON.stringify(roomData)
     })
     .then(async response => {
-        if (response.ok) {
+        if (response.status === 201) {
             const data = await response.json();
             const userId = response.headers.get("userId");
 
@@ -38,6 +38,7 @@ function PostCreateRoom(roomData) {
             return {"status": false, "title": "Not Expected", "message": error.message}
         }
     });
+    console.log(response)
     return response
 }
 
