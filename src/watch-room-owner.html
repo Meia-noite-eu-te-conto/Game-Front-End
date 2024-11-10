@@ -133,13 +133,14 @@
                     playerListElement.innerHTML = ""
                     players = data["players"]
                     let i = 0;
+                    console.log(players)
                     players.forEach(player => {
                         console.log(player.profileColor)
-                        const playerElement = document.createElement('a');
+                        const playerElement = document.createElement('div');
                         playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
                         const owner = player.owner ? 
                             "<small class='text-body-secondary bi bi-person'> Owner</small>" : 
-                            "<a class='h3 pe-2 bi bi-x-circle'></a>"
+                            `<a onclick="deletePlayer('${player.id}')" class='h3 pe-2 bi bi-x-circle'></a>`
                         playerElement.innerHTML = `
                             <div class="d-flex w-100 align-items-center justify-content-between">
                                 <div class=" d-flex w-75 align-items-center">
@@ -188,6 +189,24 @@
                 if (respose.status === 200) {
                     document.cookie = `userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;    
                     window.location.href = "/index.html"
+                }
+                return 
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }
+
+        function deletePlayer(playerId) {
+            fetch(`/api/v1/user-session/rooms/remove-player/${roomCode}/${playerId}/`, {
+                method: 'DELETE',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(respose => {
+                if (respose.status === 200) {
+
                 }
                 return 
             })

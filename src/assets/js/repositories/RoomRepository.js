@@ -41,11 +41,12 @@ async function PostCreateRoomAsync(roomData) {
     return response
 }
 
-async function GetRoomsAsync(filters) {
+async function GetRoomsAsync(filters, document) {
     return await fetch(`${RoutesInfo.userSessionAPI}/${route}/?currentPage=${filters.currentPage}&pageSize=${filters.pageSize}&filterLabel=${filters.filterLabel}`, {
         method: 'GET',
         headers: {
-            'Content-Type': 'application/json'
+            'Content-Type': 'application/json',
+            'X-User-Id': getCookie(document, "userId")
         }
     })
     .then(async response => {
@@ -71,6 +72,38 @@ async function GetRoomsAsync(filters) {
     });
 }
 
+async function PutAddToRoomAsync(FormData) {
+    return await fetch(`${RoutesInfo.userSessionAPI}/${route}/${FormData.roomCode}/add-player/`, {
+        method: 'PUT',
+        headers: {
+            'Content-Type': 'application/json'
+        },
+        body: JSON.stringify(FormData)
+    })
+    .then(async response => {
+        
+        if (response.status === 204) {
+            const data = await response.json();
+            return ({
+                status: response.status,
+                data
+            });
+        }
+        return (ProcessErrors(response, {"title": "Error on Add To Room", "message": "Not Found"} ))
+    })
+    .then(({ status, data }) => {
+        console.log('User added to room successfully:', status, data);
+        return { "status": true, "data": data }
+    })
+    .catch(error => {
+        if (error instanceof CustomError) {
+            return {"status": false, "title": error.title, "message": error.message}
+        } else {
+            return {"status": false, "title": "Not Expected", "message": error.message}
+        }
+    });
+}
+
 function ProcessErrors(response, error) {
     if (response.status >= 400 && response.status < 500) {
         throw new CustomError(error.title, error.message);
@@ -81,5 +114,6 @@ function ProcessErrors(response, error) {
 
 const RoomRepository = {
     PostCreateRoomAsync,
-    GetRoomsAsync
+    GetRoomsAsync,
+    PutAddToRoomAsync
 }
