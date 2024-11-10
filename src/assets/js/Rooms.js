@@ -28,7 +28,7 @@ async function CreateRoomAsync(event, document, window) {
 }
 
 async function ShowRooms(filters, document) {
-    const response = await RoomRepository.GetRoomsAsync(filters);
+    const response = await RoomRepository.GetRoomsAsync(filters, document);
     if (response.status === true) {
         const data = response.data;
         let paginatedGroup = document.getElementById("paginated-list-rooms");
@@ -44,7 +44,17 @@ async function ShowRooms(filters, document) {
     }
 }
 
-
+async function AddToRoomAsync(event, window) {
+    event.preventDefault();
+    const formData = {
+        playerName: event.target.elements['nickname-input'].value,
+        roomCode: event.target.elements['room-name-input'].value
+    };
+    const response = await RoomRepository.PutAddToRoomAsync(formData);
+    if (response.status === true) {
+        window.location.href = `/watch-room.html?roomCode=${roomCode}`;
+    }
+}
 
 
 // Ajustar para o novo modelo de retorno
