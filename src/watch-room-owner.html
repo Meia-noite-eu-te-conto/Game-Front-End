@@ -122,8 +122,30 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const roomCode = urlParams.get('roomCode');
+        
+        const socket = new WebSocket(`wss://ws/rooms/${roomCode}/`);
+
+        socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+
+            if (data.type === "player_list_update") {
+                updatePlayerList(data.players);
+            }
+        };
+
+        function updatePlayerList(players) {
+            const playerListContainer = document.getElementById("player-list");
+            playerListContainer.innerHTML = "";  // Limpa a lista
+
+            players.forEach(player => {
+                const playerItem = document.createElement("li");
+                playerItem.textContent = player.nickname;
+                playerListContainer.appendChild(playerItem);
+            });
+        }
 
         function ShowRoom() {
+
             fetch(`/api/v1/user-session/rooms/${roomCode}/detail`)
                 .then(response => response.json())
                 .then(data => {
