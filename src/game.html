@@ -28,7 +28,7 @@
 
 	<main style="height: 85vh;" class="my-5 container">
 		<div class="d-flex flex-column align-items-center">
-			<canvas width="550px" height="550px" class="bg-light border border-dark" id="myCanvas"></canvas>
+			<canvas width="850px" height="550px" class="bg-light border border-dark" id="myCanvas"></canvas>
 		</div>
 		<div class="d-flex ">
 			<div class="w-75 my-2 list-group list-group-flush d-flex flex-row align-items-center">
@@ -64,7 +64,9 @@
 		</div>
 	</main>
 	<script>
-		const socket = new WebSocket('/api/v1/user-session/rooms/ws/game/');
+		const host = window.location.host;
+		const endpoint = "/api/v1/game-core/";
+		const socket = new WebSocket(`wss://${host}${endpoint}`);
 		const canvas = document.getElementById('myCanvas');
 		const context = canvas.getContext('2d');
 		socket.onopen = function(event) {

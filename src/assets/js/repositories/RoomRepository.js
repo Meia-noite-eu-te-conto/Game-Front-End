@@ -73,6 +73,7 @@ async function GetRoomsAsync(filters, document) {
 }
 
 async function PutAddToRoomAsync(FormData) {
+    console.log("AQUUIIII! ")
     return await fetch(`${RoutesInfo.userSessionAPI}/${route}/${FormData.roomCode}/add-player/`, {
         method: 'PUT',
         headers: {
@@ -81,7 +82,8 @@ async function PutAddToRoomAsync(FormData) {
         body: JSON.stringify(FormData)
     })
     .then(async response => {
-        
+        console.log("AQUUIIII! " + response)
+        console.log(response)
         if (response.status === 204) {
             const data = await response.json();
             return ({
