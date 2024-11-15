@@ -125,6 +125,7 @@
         
         const host = window.location.host;
 		const endpoint = "/api/v1/user-session/";
+        // const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
 		const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${roomCode}/`);
 
         socket.onopen = function(event) {
@@ -144,19 +145,6 @@
 		};
 
 
-
-
-
-        // // const socket = new WebSocket(`wss://ws/rooms/${roomCode}/`);
-
-        // // socket.onmessage = function(event) {
-        // //     const data = JSON.parse(event.data);
-
-        // //     if (data.type === "player_list_update") {
-        // //         updatePlayerList(data.players);
-        // //     }
-        // // };
-
         // // function updatePlayerList(players) {
         // //     const playerListContainer = document.getElementById("player-list");
         // //     playerListContainer.innerHTML = "";  // Limpa a lista
@@ -168,63 +156,37 @@
         // //     });
         // // }
 
-        // const wsProtocol = window.location.protocol === "https:" ? "wss" : "ws";
-        // const socket = new WebSocket(`wss://${window.location.host}/api/v1/user-session/ws/rooms/${roomCode}/`);
-        
-        // // const socket = new WebSocket(`wss://${window.location.host}/ws/rooms/${roomCode}/`);
-
-        // // Event handler when the WebSocket connection is established
-        // socket.onopen = function(event) {
-        //     console.log("WebSocket connection established.");
-        // };
-
-        // // Event handler for receiving messages from the WebSocket
-        // socket.onmessage = function(event) {
-        //     const data = JSON.parse(event.data);
-        //     console.log("WS: mensagem recebidaaaa")
-        //     // Check if the message is of type 'player_list_update'
-        //     if (data.type === "player_list_update") {
-        //         updatePlayerList(data.players);
-        //     }
-        // };
-
-        // // Event handler when the WebSocket connection is closed
-        // socket.onclose = function(event) {
-        //     console.log("WebSocket connection closed.");
-        // };
 
         // // Function to update the player list on the page
         // function updatePlayerList(players) {
         //     const playerListElement = document.getElementById("player-list");
-        //     console.log("update playerrrrr")
 
-        //     // // Clear the existing player list
-        //     // playerListElement.innerHTML = ""
-        //     // players = data["players"]
-        //     // let i = 0;
-        //     // console.log(players)
-        //     // players.forEach(player => {
-        //     //     console.log(player.profileColor)
-        //     //     const playerElement = document.createElement('div');
-        //     //     playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
-        //     //     const owner = player.owner ? 
-        //     //         "<small class='text-body-secondary bi bi-person'> Owner</small>" : 
-        //     //         `<a onclick="deletePlayer('${player.id}')" class='h3 pe-2 bi bi-x-circle'></a>`
-        //     //     playerElement.innerHTML = `
-        //     //         <div class="d-flex w-100 align-items-center justify-content-between">
-        //     //             <div class=" d-flex w-75 align-items-center">
-        //     //                 <img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
-        //     //                 <div class="d-flex flex-column  ps-2 justify-content-center">
-        //     //                     <strong class="mb-1">${player.name}</strong>
-        //     //                     <p class="small mb-0">Blue</p>
-        //     //                 </div>
-        //     //             </div>
-        //     //             ${ owner }
-        //     //         </div>
-        //     //         `;
-        //     //     playerListElement.appendChild(playerElement)
-        //     //     i++;
-        //     // });
+        //     // Clear the existing player list
+        //     playerListElement.innerHTML = ""
+        //     let i = 0;
+        //     console.log(players)
+        //     players.forEach(player => {
+        //         console.log(player.profileColor)
+        //         const playerElement = document.createElement('div');
+        //         playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
+        //         const owner = player.owner ? 
+        //             "<small class='text-body-secondary bi bi-person'> Owner</small>" : 
+        //             `<a onclick="deletePlayer('${player.id}')" class='h3 pe-2 bi bi-x-circle'></a>`
+        //         playerElement.innerHTML = `
+        //             <div class="d-flex w-100 align-items-center justify-content-between">
+        //                 <div class=" d-flex w-75 align-items-center">
+        //                     <img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
+        //                     <div class="d-flex flex-column  ps-2 justify-content-center">
+        //                         <strong class="mb-1">${player.name}</strong>
+        //                         <p class="small mb-0">Blue</p>
+        //                     </div>
+        //                 </div>
+        //                 ${ owner }
+        //             </div>
+        //             `;
+        //         playerListElement.appendChild(playerElement)
+        //         i++;
+        //     });
         // }
 
         // Optional: error handler
