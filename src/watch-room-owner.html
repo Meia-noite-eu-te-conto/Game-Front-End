@@ -122,8 +122,33 @@
     <script>
         const urlParams = new URLSearchParams(window.location.search);
         const roomCode = urlParams.get('roomCode');
+        
+        const host = window.location.host;
+		const endpoint = "/api/v1/user-session/";
+		const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${roomCode}/`);
+
+        socket.onopen = function(event) {
+			console.log("Conectado ao servidor WebSocket");
+			socket.send("Olá, servidor!");
+		};
+
+		socket.onmessage = function(event) {
+			console.log("Recebido do servidor:", event.data);
+            const data = JSON.parse(event.data);
+            if (data.type == "player_list_update")
+                ShowRoom();
+		};
+
+		socket.onclose = function(event) {
+			console.log("Desconectado do servidor WebSocket");
+		};
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
 
         function ShowRoom() {
+
             fetch(`/api/v1/user-session/rooms/${roomCode}/detail`)
                 .then(response => response.json())
                 .then(data => {
@@ -198,7 +223,7 @@
         }
 
         function deletePlayer(playerId) {
-            fetch(`/api/v1/user-session/rooms/remove-player/${roomCode}/${playerId}/`, {
+            fetch(`/api/v1/user-session/rooms/${roomCode}/${playerId}/remove-player/`, {
                 method: 'DELETE',
                 headers: {
                     'Content-Type': 'application/json'
