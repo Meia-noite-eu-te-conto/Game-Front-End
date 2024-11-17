@@ -73,6 +73,7 @@ async function GetRoomsAsync(filters, document) {
 }
 
 async function PutAddToRoomAsync(FormData) {
+    console.log("AQUUIIII! ")
     return await fetch(`${RoutesInfo.userSessionAPI}/${route}/${FormData.roomCode}/add-player/`, {
         method: 'PUT',
         headers: {
