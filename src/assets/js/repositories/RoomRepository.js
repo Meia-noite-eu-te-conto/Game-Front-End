@@ -81,19 +81,16 @@ async function PutAddToRoomAsync(FormData) {
         body: JSON.stringify(FormData)
     })
     .then(async response => {
-        
         if (response.status === 204) {
-            const data = await response.json();
             return ({
-                status: response.status,
-                data
+                status: response.status
             });
         }
         return (ProcessErrors(response, {"title": "Error on Add To Room", "message": "Not Found"} ))
     })
-    .then(({ status, data }) => {
-        console.log('User added to room successfully:', status, data);
-        return { "status": true, "data": data }
+    .then(({ status }) => {
+        console.log('User added to room successfully:', status);
+        return { "status": true }
     })
     .catch(error => {
         if (error instanceof CustomError) {
