@@ -22,7 +22,7 @@ async function CreateRoomAsync(event, document, window) {
     const response = await RoomRepository.PostCreateRoomAsync(formRoomData, "roomCodessdddsa")
     if (response.status === true) {
         const roomCode = response.data.roomCode; 
-        window.location.href = `/watch-room-owner.html?roomCode=${roomCode}`;
+        window.location.href = `/watch-room.html?roomCode=${roomCode}`;
     }
 }
 
@@ -51,7 +51,7 @@ async function AddToRoomAsync(event, window) {
     };
     const response = await RoomRepository.PutAddToRoomAsync(formData);
     if (response.status === true) {
-        window.location.href = `/watch-room-owner.html?roomCode=${formData.roomCode}`;
+        window.location.href = `/watch-room.html?roomCode=${formData.roomCode}`;
     }
 }
 

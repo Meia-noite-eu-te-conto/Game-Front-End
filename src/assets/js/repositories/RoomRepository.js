@@ -15,7 +15,7 @@ async function PostCreateRoomAsync(roomData) {
     .then(async response => {
         if (response.status === 201) {
             const data = await response.json();
-            const userId = response.headers.get("userId");
+            const userId = response.headers.get("X-User-Id");
 
             if (userId) {
                 document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/`;
@@ -83,6 +83,11 @@ async function PutAddToRoomAsync(FormData) {
     })
     .then(async response => {
         if (response.status === 204) {
+            const userId = response.headers.get("X-User-Id");
+
+            if (userId) {
+                document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/`;
+            }
             return ({
                 status: response.status
             });

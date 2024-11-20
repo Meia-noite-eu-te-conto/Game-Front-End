@@ -127,6 +127,8 @@
 		const endpoint = "/api/v1/user-session/";
 		const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${roomCode}/`);
 
+        const userId = getCookie(document, "userId")
+
         socket.onopen = function(event) {
 			console.log("Conectado ao servidor WebSocket");
 			socket.send("Olá, servidor!");
@@ -135,10 +137,10 @@
 		socket.onmessage = function(event) {
 			console.log("Recebido do servidor:", event.data);
             const data = JSON.parse(event.data);
-            if (data.type == "player_list_update")
-                ShowRoom();
-            else if (data.type == "delete_room")
+            if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId))
                 window.location.href = "/index.html"
+            else if (data.type == "player_list_update")
+                ShowRoom();
 		};
 
 		socket.onclose = function(event) {
@@ -151,7 +153,13 @@
 
         function ShowRoom() {
 
-            fetch(`/api/v1/user-session/rooms/${roomCode}/detail`)
+            fetch(`/api/v1/user-session/rooms/${roomCode}/detail`, {
+                method: 'GET',
+                headers: {
+                    'Content-Type': 'application/json',
+                    'X-User-Id': getCookie(document, "userId")
+                }
+            })
                 .then(response => response.json())
                 .then(data => {
                     const playerListElement = document.getElementById("list-of-players")
@@ -159,15 +167,21 @@
 
                     playerListElement.innerHTML = ""
                     players = data["players"]
+                    createdBy = data["createdBy"]
+                    console.log("userId:", userId)
                     let i = 0;
                     console.log(players)
                     players.forEach(player => {
                         console.log(player.profileColor)
                         const playerElement = document.createElement('div');
                         playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
-                        const owner = player.owner ? 
-                            "<small class='text-body-secondary bi bi-person'> Owner</small>" : 
-                            `<a onclick="deletePlayer('${player.id}')" class='h3 pe-2 bi bi-x-circle'></a>`
+
+                        const owner = player.id === createdBy ?
+                        "<small class='text-body-secondary bi bi-person'> Owner</small>" :
+                        (data["isOwner"] ?
+                            `<a onclick="deletePlayer('${player.id}')" class='h3 pe-2 bi bi-x-circle'></a>` :
+                            "");
+
                         playerElement.innerHTML = `
                             <div class="d-flex w-100 align-items-center justify-content-between">
                                 <div class=" d-flex w-75 align-items-center">
@@ -202,7 +216,30 @@
                         playerListElement.appendChild(playerElement)
                         i++;              
                     }
-                })
+
+                    let btnSection = `
+                        <p class="lead px-3">
+                            <a onclick="deletePlayer('${userId}')" class="btn btn-lg btn-secondary">Leave Room</a>
+                        </p>
+                    `
+                    if (data["isOwner"]) 
+                    {
+                        btnSection = `
+                            <p class="lead px-3">
+                                <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
+                            </p>
+                            <p class="lead px-3">
+                                <button type="button" href="#" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
+                            </p>`
+                    }
+                        document.getElementById("room-actions").innerHTML = `
+                            <a href="" class="w-75 bi bi-copy btn btn-dark"> Room Code: ${data["roomCode"]}</a>
+                            <div class="d-flex align-items-end justify-content-between">
+                                ${btnSection}
+                            </div>
+                        `;
+                    }
+                )
         }
 
         function DeleteRoom() {

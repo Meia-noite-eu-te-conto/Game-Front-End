@@ -8,7 +8,7 @@ function redirectIfuserIsActived(userId, window) {
         .then(data => {
             if (data !== null && userId && data["roomStatus"] <= 3) {
                 console.log(data)
-                window.location.href = `/watch-room-owner.html?roomCode=${data["roomCode"]}`;
+                window.location.href = `/watch-room.html?roomCode=${data["roomCode"]}`;
             }
         })
     }

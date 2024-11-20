@@ -1,9 +1,7 @@
 function ShowRoomItemComponent(room) {
-    // Cria o item de lista principal
-    const listItem = document.createElement('div'); // Usei <div> para mais flexibilidade
+    const listItem = document.createElement('div');
     listItem.classList.add('list-group-item', 'py-3', 'lh-sm');
 
-    // Adiciona o conteúdo principal
     listItem.innerHTML = `
         <div class="d-flex w-100 align-items-center justify-content-between">
             <button class="bi bi-copy btn btn-sm btn-outline-primary copy-btn" data-room-code="${room["roomCode"]}">
@@ -16,15 +14,18 @@ function ShowRoomItemComponent(room) {
         </div>
     `;
 
-    // Seleciona o botão "Copy Code" dentro do item
     const copyButton = listItem.querySelector('.copy-btn');
     copyButton.addEventListener('click', (event) => {
-        event.preventDefault(); // Previne comportamento padrão, caso seja necessário
+        event.preventDefault();
         const roomCode = copyButton.getAttribute('data-room-code');
 
-        // Copia o código para a área de transferência
         navigator.clipboard.writeText(roomCode).then(() => {
-            alert(`Room code "${roomCode}" copied to clipboard!`);
+            const toastBody = document.querySelector('#roomCodeToast .toast-body');
+            toastBody.textContent = `Room code "${roomCode}" copied to clipboard!`;
+
+            const toastElement = document.getElementById('roomCodeToast');
+            const toast = new bootstrap.Toast(toastElement);
+            toast.show();
         }).catch((error) => {
             console.error('Failed to copy room code:', error);
         });
