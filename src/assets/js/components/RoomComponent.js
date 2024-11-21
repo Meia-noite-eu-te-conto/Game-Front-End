@@ -14,23 +14,6 @@ function ShowRoomItemComponent(room) {
         </div>
     `;
 
-    const copyButton = listItem.querySelector('.copy-btn');
-    copyButton.addEventListener('click', (event) => {
-        event.preventDefault();
-        const roomCode = copyButton.getAttribute('data-room-code');
-
-        navigator.clipboard.writeText(roomCode).then(() => {
-            const toastBody = document.querySelector('#roomCodeToast .toast-body');
-            toastBody.textContent = `Room code "${roomCode}" copied to clipboard!`;
-
-            const toastElement = document.getElementById('roomCodeToast');
-            const toast = new bootstrap.Toast(toastElement);
-            toast.show();
-        }).catch((error) => {
-            console.error('Failed to copy room code:', error);
-        });
-    });
-
     return listItem;
 }
 
