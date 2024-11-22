@@ -1,4 +1,5 @@
-function redirectIfuserIsActived(userId, window) {
+function redirectIfuserIsActived(document, window) {
+    let userId = getCookie(document, "userId")
     if (userId) {
         fetch(`/api/v1/user-session/players/${userId}/`)
         .then(response => {
@@ -6,9 +7,17 @@ function redirectIfuserIsActived(userId, window) {
             return response.json()
         })
         .then(data => {
-            if (data !== null && userId && data["roomStatus"] <= 3) {
-                console.log(data)
-                window.location.href = `/watch-room.html?roomCode=${data["roomCode"]}`;
+            if (data != null)
+            {
+                if (data["roomStatus"] <= 3) {
+                    console.log(data)
+                    window.location.href = `/watch-room.html?roomCode=${data["roomCode"]}`;
+                }
+                if (data["roomStatus"] > 3 && data["roomStatus"] <= 7)
+                {
+                    console.log(data)
+                    window.location.href = `/game.html?gameCode=${data["roomCode"]}`;
+                }
             }
         })
     }
