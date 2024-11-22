@@ -125,6 +125,7 @@
 		document.addEventListener('keydown', sendKey);
 
 		window.onload = function() {
+			redirectIfuserIsActived(document, window)
 			renderHeader(document)
 		}
 	</script>
