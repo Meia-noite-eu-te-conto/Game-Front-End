@@ -65,16 +65,19 @@
 	</main>
 	<script>
 		const host = window.location.host;
-		const endpoint = "/api/v1/game-core/";
+		const endpoint = "/api/v1/game-core/1234/";
 		const socket = new WebSocket(`wss://${host}${endpoint}`);
 		const canvas = document.getElementById('myCanvas');
 		const context = canvas.getContext('2d');
+
 		socket.onopen = function(event) {
 			console.log("Conectado ao servidor WebSocket");
-			socket.send("Olá, servidor!");
+			const userId = '1';  // Substitua pelo ID do usuário real
+			socket.send(JSON.stringify({ message: "Olá, servidor!", headers: { "X-User-Id": userId } }));
 		};
 
 		socket.onmessage = function(event) {
+			console.log("Recebido do servidor:", event);
 			console.log("Recebido do servidor:", event.data);
 			drawOnCanvas(event.data);  // Chama a função para desenhar no canvas
 		};
@@ -92,10 +95,10 @@
 			// Neste exemplo, vamos assumir que o servidor envia coordenadas para desenhar um círculo
 
 			const parsedData = JSON.parse(data); // Supondo que os dados estão em formato JSON
-			const { player_one, ball, player_two } = parsedData; // Desestrutura os dados recebidos
+			const { players, ball } = parsedData; // Desestrutura os dados recebidos
 
 			context.fillStyle = 'blue'; // Cor do player_one
-			context.fillRect(player_one.x, player_one.y, player_one.width, player_one.height);
+			context.fillRect(players["1"].x, players["1"].y, players["1"].width, players["1"].height);
 
 			// Desenha a bola
 			context.fillStyle = 'red'; // Cor da bola
@@ -105,14 +108,17 @@
 
 			// Desenha player_two
 			context.fillStyle = 'green'; // Cor do player_two
-			context.fillRect(player_two.x, player_two.y, player_two.width, player_two.height);
+			context.fillRect(players["2"].x, players["2"].y, players["2"].width, players["2"].height);
 		}
 
 		// Função para enviar comandos do teclado
 		function sendKey(event) {
 			const key = event.key;  // Captura a tecla pressionada
 			console.log(`Tecla pressionada: ${key}`);
-			socket.send(`${key}`);  // Envia a tecla para o servidor
+			socket.send(JSON.stringify({
+				direction: key
+			}));
+  // Envia a tecla para o servidor
 		}
 
 		// Adiciona um listener para o evento de teclado
