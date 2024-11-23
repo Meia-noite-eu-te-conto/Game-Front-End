@@ -16,7 +16,8 @@
 	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-		
+	
+    <script src="./assets/js/Enums.js"></script>
 	<script src="/assets/js/Generics.js"></script>
 	<script src="./assets/js/components/HeaderComponent.js"></script>
 	<script src="./assets/js/Header.js"></script>
@@ -31,7 +32,7 @@
 			<canvas width="850px" height="550px" class="bg-light border border-dark" id="myCanvas"></canvas>
 		</div>
 		<div class="d-flex ">
-			<div class="w-75 my-2 list-group list-group-flush d-flex flex-row align-items-center">
+			<div id="list-of-players" class="w-75 my-2 list-group list-group-flush d-flex flex-row align-items-center">
 				<a href="#" class="me-3 list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
 					<div class="d-flex w-100 align-items-center justify-content-between">
 						<div class="d-flex w-75 align-items-center">
@@ -64,24 +65,78 @@
 		</div>
 	</main>
 	<script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCode = urlParams.get('roomCode');
+
 		const host = window.location.host;
-		const endpoint = "/api/v1/game-core/";
-		const socket = new WebSocket(`wss://${host}${endpoint}`);
+		// const endpoint = "/api/v1/game-core/";
+		// const socket = new WebSocket(`wss://${host}${endpoint}`);
 		const canvas = document.getElementById('myCanvas');
 		const context = canvas.getContext('2d');
-		socket.onopen = function(event) {
-			console.log("Conectado ao servidor WebSocket");
-			socket.send("Olá, servidor!");
+
+		// socket.onopen = function(event) {
+		// 	console.log("Conectado ao servidor WebSocket");
+		// 	socket.send("Olá, servidor!");
+		// };
+
+		// socket.onmessage = function(event) {
+		// 	console.log("Recebido do servidor:", event.data);
+		// 	drawOnCanvas(event.data);  // Chama a função para desenhar no canvas
+		// };
+
+		// socket.onclose = function(event) {
+		// 	console.log("Desconectado do servidor WebSocket");
+		// };
+
+		const socketScore = new WebSocket(`wss://${host}/api/v1/user-session/ws/match/${roomCode}/`);
+
+		socketScore.onopen = function(event) {
+			console.log("Socket Score: Conectado ao servidor WebSocket");
+			socketScore.send("Olá, servidor!");
 		};
 
-		socket.onmessage = function(event) {
-			console.log("Recebido do servidor:", event.data);
-			drawOnCanvas(event.data);  // Chama a função para desenhar no canvas
+		socketScore.onmessage = function(event) {
+			console.log("Socket Score: Recebido do servidor:", event.data);
+            const data = JSON.parse(event.data);
+
+			if (data.type === "update_score") {
+				getPlayer();
+			}
 		};
 
-		socket.onclose = function(event) {
+		socketScore.onclose = function(event) {
 			console.log("Desconectado do servidor WebSocket");
 		};
+
+        socketScore.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
+
+		// Função para enviar atualização de score via WebSocket
+		// function updateScore(playerColor) {
+		// 	const message = {
+		// 		type: "update_score",
+		// 		color: playerColor,
+		// 	};
+		// 	socketScore.send(JSON.stringify(message));
+		// }
+
+		// Adicionar listener para as teclas
+		document.addEventListener("keydown", (event) => {
+			if (event.key.toLowerCase() === "x") {
+				playerColor = 0;
+				fetch(`/api/v1/user-session/players/${roomCode}/1/score/`, {
+        			method: 'POST',
+        			body: JSON.stringify({'playerColor': '0'})
+    			})
+			} else if (event.key.toLowerCase() === "m") {
+				playerColor = 1
+				fetch(`/api/v1/user-session/players/${roomCode}/2/score/`, {
+        			method: 'POST',
+        			body: JSON.stringify({'playerColor': '1'})
+				})
+			}
+		});
 
 		// Função para desenhar no canvas
 		function drawOnCanvas(data) {
@@ -112,7 +167,7 @@
 		function sendKey(event) {
 			const key = event.key;  // Captura a tecla pressionada
 			console.log(`Tecla pressionada: ${key}`);
-			socket.send(`${key}`);  // Envia a tecla para o servidor
+			socketScore.send(`${key}`);  // Envia a tecla para o servidor
 		}
 
 		// Adiciona um listener para o evento de teclado
@@ -120,7 +175,40 @@
 
 		window.onload = function() {
 			renderHeader(document)
+			getPlayer()
 		}
+
+		function getPlayer() {
+			fetch(`/api/v1/user-session/players/game/${roomCode}/`, {
+					method: 'GET',
+				})
+					.then(response => response.json())
+					.then(data => {
+						const playerListElement = document.getElementById("list-of-players")
+
+						playerListElement.innerHTML = ""
+						players = data["players"]
+						players.forEach(player => {
+							const playerElement = document.createElement('div');
+							playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
+
+							playerElement.innerHTML = `
+								<div class="d-flex w-100 align-items-center justify-content-between">
+									<div class=" d-flex w-75 align-items-center">
+										<img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
+										<div class="d-flex flex-column  ps-2 justify-content-center">
+											<strong class="mb-1">${player.name}</strong>
+											<p class="small mb-0">Blue</p>
+										</div>
+									</div>
+									<h3 class="text-body-secondary">${player.score}</h3>
+								</div>
+								`;
+							playerListElement.appendChild(playerElement)
+						});
+					})
+		}
+			
 	</script>
 </body>
 </html>

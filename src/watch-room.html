@@ -95,7 +95,7 @@
                     <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
                 </p>
                 <p class="lead px-3">
-                    <button type="button" href="#" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
+                    <a onclick="startGame()" class="btn btn-lg btn-dark">Start Game</a>
                 </p>
             </div>
         </section>
@@ -248,7 +248,7 @@
                                 <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
                             </p>
                             <p class="lead px-3">
-                                <button type="button" href="#" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
+                                <a onclick="startGame('${data["roomCode"]}')" class="btn btn-lg btn-dark">Start Game</a>
                             </p>`
                     }
                     document.getElementById("room-actions").innerHTML = `
@@ -296,6 +296,10 @@
             .catch(error => {
                 console.log(error)
             })
+        }
+
+        function startGame(roomCode) {
+            window.location.href = `/game.html?roomCode=${roomCode}`;
         }
 
         window.onload = function() {
