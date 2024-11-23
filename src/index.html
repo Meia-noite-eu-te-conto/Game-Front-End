@@ -72,7 +72,7 @@
                         </div>
                         <div class="mb-3">
                             <label for="game-type-section" class="col-form-label">Game Type</label>
-                            <select id="game-type-section" class="form-select form-select-sm" aria-label="game type selection">
+                            <select id="game-type-section" class="form-select form-select-sm" aria-label="game type selection" onchange="updateNumberOfPlayersOptions()">
                                 <option selected>Select a option</option>
                                 <option value="0">Match</option>
                                 <option value="1">Tournament</option>
@@ -80,10 +80,8 @@
                         </div>
                         <div class="mb-3">
                             <label for="number-of-players-section" class="col-form-label">Number of Players</label>
-                            <select id="number-of-players-section" class="form-select form-select-sm" aria-label="game type selection">
+                            <select id="number-of-players-section" class="form-select form-select-sm" aria-label="number of players selection">
                                 <option selected>Select a option</option>
-                                <option value="2">2</option>
-                                <option value="4">4</option>
                             </select>
                         </div>
                         <div class="mb-3">
@@ -115,7 +113,29 @@
             renderHeader(document)
             redirectIfuserIsActived(userId, window)
         }
+        
+        function updateNumberOfPlayersOptions() {
+            const gameTypeSelect = document.getElementById("game-type-section");
+            const playersSelect = document.getElementById("number-of-players-section");
 
+            playersSelect.innerHTML = '<option selected>Select a option</option>';
+
+            const selectedGameType = gameTypeSelect.value;
+
+            let options = [];
+            if (selectedGameType === "0") {
+                options = [2, 4];
+            } else if (selectedGameType === "1") {
+                options = [4, 8, 12, 16];
+            }
+
+            options.forEach(optionValue => {
+                const optionElement = document.createElement("option");
+                optionElement.value = optionValue;
+                optionElement.textContent = optionValue;
+                playersSelect.appendChild(optionElement);
+            });
+        }
     </script>
 </body>
 </html>
