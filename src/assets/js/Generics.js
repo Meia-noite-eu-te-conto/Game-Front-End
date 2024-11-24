@@ -7,12 +7,16 @@ function redirectIfuserIsActived(document, window) {
             return response.json()
         })
         .then(data => {
-            if (data !== null) {
+            if (data != null)
+            {
                 if (data["roomStatus"] <= 3) {
-                    const targetUrl = `/watch-room.html?roomCode=${data["roomCode"]}`;
-                    if (window.location.href != window.location.origin + targetUrl) {
-                        window.location.href = `/watch-room.html?roomCode=${data["roomCode"]}`;
-                    }
+                    console.log(data)
+                    window.location.href = `/watch-room.html?roomCode=${data["roomCode"]}`;
+                }
+                if (data["roomStatus"] > 3 && data["roomStatus"] <= 7)
+                {
+                    console.log(data)
+                    window.location.href = `/game.html?gameCode=${data["roomCode"]}`;
                 }
             }
         })
