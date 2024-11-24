@@ -104,8 +104,6 @@
     </div>
 
     <script>
-        let userId = getCookie(document, "userId")
-
         async function createRoom(event) {
             event.preventDefault();
             await CreateRoomAsync(event, document, window)

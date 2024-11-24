@@ -17,9 +17,19 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 		
-	<script src="/assets/js/Generics.js"></script>
-	<script src="./assets/js/components/HeaderComponent.js"></script>
-	<script src="./assets/js/Header.js"></script>
+    <script src="/assets/js/Enums.js"></script>
+    <script src="./assets/js/utils/CustomError.js"></script>
+    <script src="./assets/js/repositories/RoutesInfo.js"></script>
+    <script src="/assets/js/Generics.js"></script>
+
+    <script src="./assets/js/components/PaginationComponent.js"></script>
+    
+    <script src="./assets/js/components/HeaderComponent.js"></script>
+    <script src="./assets/js/Header.js"></script>
+
+    <script src="./assets/js/repositories/RoomRepository.js"></script>
+    <script src="./assets/js/components/RoomComponent.js"></script>
+    <script src="./assets/js/Rooms.js"></script>
 </head>
 <body class="pbg">
 
@@ -65,21 +75,29 @@
 	</main>
 	<script>
 		const host = window.location.host;
-		const endpoint = "/api/v1/game-core/1234/";
+
+		const urlParams = new URLSearchParams(window.location.search);
+		const gameId = urlParams.get('gameId');
+		const endpoint = `/api/v1/game-core/games/${gameId}/`;
 		const socket = new WebSocket(`wss://${host}${endpoint}`);
 		const canvas = document.getElementById('myCanvas');
 		const context = canvas.getContext('2d');
-
 		socket.onopen = function(event) {
 			console.log("Conectado ao servidor WebSocket");
-			const userId = '1';  // Substitua pelo ID do usuário real
-			socket.send(JSON.stringify({ message: "Olá, servidor!", headers: { "X-User-Id": userId } }));
+			const userId = getCookie(document, "userId");  // Substitua pelo ID do usuário real
+			const headers = { "X-User-Id": userId };
+
+			socket.send(JSON.stringify({
+				type: 'connect',
+				headers: headers
+			}));
 		};
 
 		socket.onmessage = function(event) {
-			console.log("Recebido do servidor:", event);
-			console.log("Recebido do servidor:", event.data);
-			drawOnCanvas(event.data);  // Chama a função para desenhar no canvas
+			const data = JSON.parse(event.data);
+			if (data.type == 'game.update') {
+				drawOnCanvas(data.game_state);
+			}
 		};
 
 		socket.onclose = function(event) {
@@ -98,7 +116,7 @@
 			const { players, ball } = parsedData; // Desestrutura os dados recebidos
 
 			context.fillStyle = 'blue'; // Cor do player_one
-			context.fillRect(players["1"].x, players["1"].y, players["1"].width, players["1"].height);
+			context.fillRect(players["0"].x, players["0"].y, players["0"].width, players["0"].height);
 
 			// Desenha a bola
 			context.fillStyle = 'red'; // Cor da bola
@@ -108,24 +126,26 @@
 
 			// Desenha player_two
 			context.fillStyle = 'green'; // Cor do player_two
-			context.fillRect(players["2"].x, players["2"].y, players["2"].width, players["2"].height);
+			context.fillRect(players["1"].x, players["1"].y, players["1"].width, players["1"].height);
 		}
 
 		// Função para enviar comandos do teclado
 		function sendKey(event) {
 			const key = event.key;  // Captura a tecla pressionada
-			console.log(`Tecla pressionada: ${key}`);
+			let userId = getCookie(document, "userId"); 
+			 // Obtém o ID do usuário do cookie
+			console.log(`Tecla pressionada: ${userId} ${key}`);
 			socket.send(JSON.stringify({
-				direction: key
+				direction: key,
+				headers: { "X-User-Id": userId }
 			}));
-  // Envia a tecla para o servidor
 		}
 
 		// Adiciona um listener para o evento de teclado
 		document.addEventListener('keydown', sendKey);
 
 		window.onload = function() {
-			redirectIfuserIsActived(document, window)
+            //redirectIfuserIsActived(document, window)
 			renderHeader(document)
 		}
 	</script>
