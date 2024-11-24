@@ -100,7 +100,10 @@
             const data = JSON.parse(event.data);
 
 			if (data.type === "update_score") {
-				getPlayer();
+				let playerColor = data.playerColor
+				let element = document.getElementById(`player-${playerColor}`)
+
+				element.innerHTML = data.playerScore
 			}
 		};
 
@@ -125,13 +128,14 @@
 		document.addEventListener("keydown", (event) => {
 			if (event.key.toLowerCase() === "x") {
 				playerColor = 0;
-				fetch(`/api/v1/user-session/players/${roomCode}/1/score/`, {
+				console.log('playerColor: ', playerColor)
+				fetch(`/api/v1/user-session/players/${roomCode}/0/score/`, {
         			method: 'POST',
         			body: JSON.stringify({'playerColor': '0'})
     			})
 			} else if (event.key.toLowerCase() === "m") {
 				playerColor = 1
-				fetch(`/api/v1/user-session/players/${roomCode}/2/score/`, {
+				fetch(`/api/v1/user-session/players/${roomCode}/1/score/`, {
         			method: 'POST',
         			body: JSON.stringify({'playerColor': '1'})
 				})
@@ -179,6 +183,7 @@
 		}
 
 		function getPlayer() {
+			console.log("GET PLAYER")
 			fetch(`/api/v1/user-session/players/game/${roomCode}/`, {
 					method: 'GET',
 				})
@@ -188,6 +193,7 @@
 
 						playerListElement.innerHTML = ""
 						players = data["players"]
+						players.sort((a, b) => a.profileColor - b.profileColor);
 						players.forEach(player => {
 							const playerElement = document.createElement('div');
 							playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
@@ -201,7 +207,7 @@
 											<p class="small mb-0">Blue</p>
 										</div>
 									</div>
-									<h3 class="text-body-secondary">${player.score}</h3>
+									<h3 id="player-${player.profileColor}" class="text-body-secondary">${player.score}</h3>
 								</div>
 								`;
 							playerListElement.appendChild(playerElement)
