@@ -17,10 +17,20 @@
 	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
 	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
 	
-    <script src="./assets/js/Enums.js"></script>
-	<script src="/assets/js/Generics.js"></script>
-	<script src="./assets/js/components/HeaderComponent.js"></script>
-	<script src="./assets/js/Header.js"></script>
+    <script src="/assets/js/Enums.js"></script>
+    <script src="./assets/js/utils/CustomError.js"></script>
+    <script src="./assets/js/repositories/RoutesInfo.js"></script>
+    <script src="/assets/js/Generics.js"></script>
+
+    <script src="./assets/js/components/PaginationComponent.js"></script>
+    
+    <script src="./assets/js/components/HeaderComponent.js"></script>
+    <script src="./assets/js/Header.js"></script>
+
+    <script src="./assets/js/repositories/RoomRepository.js"></script>
+    <script src="./assets/js/components/RoomComponent.js"></script>
+    <script src="./assets/js/Rooms.js"></script>
+
 </head>
 <body class="pbg">
 
@@ -68,38 +78,42 @@
         const urlParams = new URLSearchParams(window.location.search);
         const roomCode = urlParams.get('roomCode');
 
-		const host = window.location.host;
-		// const endpoint = "/api/v1/game-core/";
-		// const socket = new WebSocket(`wss://${host}${endpoint}`);
+		//const host = window.location.host;
+		//const socketScore = new WebSocket(`wss://${host}/api/v1/user-session/ws/match/${roomCode}/`);
+
+		//socketScore.onopen = function(event) {
+			//console.log("Socket Score: Conectado ao servidor WebSocket");
+			//socketScore.send("Olá, servidor!");
+		//};
+
+		//socketScore.onmessage = function(event) {
+			//console.log("Socket Score: Recebido do servidor:", event.data);
+        //    const data = JSON.parse(event.data);
+
+			
+		const urlParams = new URLSearchParams(window.location.search);
+		const gameId = urlParams.get('gameId');
+		const endpoint = `/api/v1/game-core/games/${gameId}/`;
+		const socket = new WebSocket(`wss://${host}${endpoint}`);
 		const canvas = document.getElementById('myCanvas');
 		const context = canvas.getContext('2d');
+		socket.onopen = function(event) {
+			console.log("Conectado ao servidor WebSocket");
+			const userId = getCookie(document, "userId");  // Substitua pelo ID do usuário real
+			const headers = { "X-User-Id": userId };
 
-		// socket.onopen = function(event) {
-		// 	console.log("Conectado ao servidor WebSocket");
-		// 	socket.send("Olá, servidor!");
-		// };
-
-		// socket.onmessage = function(event) {
-		// 	console.log("Recebido do servidor:", event.data);
-		// 	drawOnCanvas(event.data);  // Chama a função para desenhar no canvas
-		// };
-
-		// socket.onclose = function(event) {
-		// 	console.log("Desconectado do servidor WebSocket");
-		// };
-
-		const socketScore = new WebSocket(`wss://${host}/api/v1/user-session/ws/match/${roomCode}/`);
-
-		socketScore.onopen = function(event) {
-			console.log("Socket Score: Conectado ao servidor WebSocket");
-			socketScore.send("Olá, servidor!");
+			socket.send(JSON.stringify({
+				type: 'connect',
+				headers: headers
+			}));
 		};
 
-		socketScore.onmessage = function(event) {
-			console.log("Socket Score: Recebido do servidor:", event.data);
-            const data = JSON.parse(event.data);
-
-			if (data.type === "update_score") {
+		socket.onmessage = function(event) {
+			const data = JSON.parse(event.data);
+			if (data.type == 'game.update') {
+				drawOnCanvas(data.game_state);
+      }
+      if (data.type === "update_score") {
 				let playerColor = data.playerColor
 				let element = document.getElementById(`player-${playerColor}`)
 
@@ -151,10 +165,10 @@
 			// Neste exemplo, vamos assumir que o servidor envia coordenadas para desenhar um círculo
 
 			const parsedData = JSON.parse(data); // Supondo que os dados estão em formato JSON
-			const { player_one, ball, player_two } = parsedData; // Desestrutura os dados recebidos
+			const { players, ball } = parsedData; // Desestrutura os dados recebidos
 
 			context.fillStyle = 'blue'; // Cor do player_one
-			context.fillRect(player_one.x, player_one.y, player_one.width, player_one.height);
+			context.fillRect(players["0"].x, players["0"].y, players["0"].width, players["0"].height);
 
 			// Desenha a bola
 			context.fillStyle = 'red'; // Cor da bola
@@ -164,20 +178,26 @@
 
 			// Desenha player_two
 			context.fillStyle = 'green'; // Cor do player_two
-			context.fillRect(player_two.x, player_two.y, player_two.width, player_two.height);
+			context.fillRect(players["1"].x, players["1"].y, players["1"].width, players["1"].height);
 		}
 
 		// Função para enviar comandos do teclado
 		function sendKey(event) {
 			const key = event.key;  // Captura a tecla pressionada
-			console.log(`Tecla pressionada: ${key}`);
-			socketScore.send(`${key}`);  // Envia a tecla para o servidor
+			let userId = getCookie(document, "userId"); 
+			 // Obtém o ID do usuário do cookie
+			console.log(`Tecla pressionada: ${userId} ${key}`);
+			socket.send(JSON.stringify({
+				direction: key,
+				headers: { "X-User-Id": userId }
+			}));
 		}
 
 		// Adiciona um listener para o evento de teclado
 		document.addEventListener('keydown', sendKey);
 
 		window.onload = function() {
+            //redirectIfuserIsActived(document, window)
 			renderHeader(document)
 			getPlayer()
 		}

@@ -1,4 +1,5 @@
-function redirectIfuserIsActived(userId, window) {
+function redirectIfuserIsActived(document, window) {
+    let userId = getCookie(document, "userId")
     if (userId) {
         fetch(`/api/v1/user-session/players/${userId}/`)
         .then(response => {
@@ -6,9 +7,17 @@ function redirectIfuserIsActived(userId, window) {
             return response.json()
         })
         .then(data => {
-            if (data !== null && userId && data["roomStatus"] <= 3) {
-                console.log(data)
-                window.location.href = `/watch-room.html?roomCode=${data["roomCode"]}`;
+            if (data != null)
+            {
+                if (data["roomStatus"] <= 3) {
+                    console.log(data)
+                    window.location.href = `/watch-room.html?roomCode=${data["roomCode"]}`;
+                }
+                if (data["roomStatus"] > 3 && data["roomStatus"] <= 7)
+                {
+                    console.log(data)
+                    window.location.href = `/game.html?gameCode=${data["roomCode"]}`;
+                }
             }
         })
     }
@@ -19,4 +28,10 @@ function getCookie(document, cookieName) {
         .split("; ")
         .find(row => row.startsWith(`${cookieName}=`))
         ?.split("=")[1];
+}
+
+function addUserIdIntoCookie(document, userId) {
+    if (userId) {
+        document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; SameSite=None; Secure`;
+    }
 }
