@@ -95,7 +95,7 @@
                     <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
                 </p>
                 <p class="lead px-3">
-                    <button type="button" href="#" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
+                    <button type="button" onclick="CreateGame()" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
                 </p>
             </div>
         </section>
@@ -320,7 +320,7 @@
                 console.log(error)
             })
         }
-
+      
         window.onload = function() {
             redirectIfuserIsActived(document, window)
             renderHeader(document)
