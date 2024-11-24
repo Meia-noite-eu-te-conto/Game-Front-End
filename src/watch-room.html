@@ -153,6 +153,9 @@
                 window.location.href = "/index.html"
             else if (data.type == "player_list_update")
                 ShowRoom();
+            else if (data.type == "game.started") {
+                window.location.href = `/game.html?gameId=${data.gameId}`
+            }
 		};
 
 		socket.onclose = function(event) {
@@ -248,7 +251,7 @@
                                 <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
                             </p>
                             <p class="lead px-3">
-                                <button type="button" href="#" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
+                                <button type="button" onclick="CreateGame()" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
                             </p>`
                     }
                     document.getElementById("room-actions").innerHTML = `
@@ -280,6 +283,26 @@
             })
         }
 
+        function CreateGame() {
+            fetch(`/api/v1/user-session/games/${roomCode}/new-game/`, {
+                method: 'POST',
+                headers: {
+                    'X-User-Id': getCookie(document, "userId"),
+                    'Content-Type': 'application/json'
+                },
+            })
+            .then(respose => {
+                if (respose.status === 200) {
+                    //document.cookie = `userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;    
+                    window.location.href = "/game.html"
+                }
+                return 
+            })
+            .catch(error => {
+                console.log(error)
+            })
+        }
+
         function deletePlayer(playerId) {
             fetch(`/api/v1/user-session/rooms/${roomCode}/${playerId}/remove-player/`, {
                 method: 'DELETE',
@@ -299,6 +322,7 @@
         }
 
         window.onload = function() {
+            redirectIfuserIsActived(document, window)
             renderHeader(document)
             ShowRoom()
         }

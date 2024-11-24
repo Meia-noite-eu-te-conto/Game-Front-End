@@ -104,16 +104,14 @@
     </div>
 
     <script>
-        let userId = getCookie(document, "userId")
-
         async function createRoom(event) {
             event.preventDefault();
             await CreateRoomAsync(event, document, window)
         }
 
         window.onload = function() {
+            redirectIfuserIsActived(document, window)
             renderHeader(document)
-            redirectIfuserIsActived(userId, window)
         }
 
     </script>
