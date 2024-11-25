@@ -83,9 +83,7 @@ async function PutAddToRoomAsync(FormData) {
         if (response.status === 204) {
             const userId = response.headers.get("X-User-Id");
 
-            if (userId) {
-                document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/`;
-            }
+            addUserIdIntoCookie(document, userId)
             return ({
                 status: response.status
             });

@@ -42,3 +42,7 @@ function addUserIdIntoCookie(document, userId) {
         document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; SameSite=None; Secure`;
     }
 }
+
+function resetUserIdIntoCookie(document) {
+    document.cookie = `userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+}
