@@ -149,9 +149,10 @@
 		socket.onmessage = function(event) {
 			console.log("Recebido do servidor:", event.data);
             const data = JSON.parse(event.data);
-            if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId))
+            if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
+                resetUserIdIntoCookie(document)  
                 window.location.href = "/index.html"
-            else if (data.type == "player_list_update")
+            } else if (data.type == "player_list_update")
                 ShowRoom();
             else if (data.type == "game.started") {
                 window.location.href = `/game.html?gameId=${data.gameId}&roomCode=${roomCode}`
@@ -207,7 +208,7 @@
                         playerElement.innerHTML = `
                             <div class="d-flex w-100 align-items-center justify-content-between">
                                 <div class=" d-flex w-75 align-items-center">
-                                    <img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
+                                    <img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
                                     <div class="d-flex flex-column  ps-2 justify-content-center">
                                         <strong class="mb-1">${player.name}</strong>
                                         <p class="small mb-0">Blue</p>
@@ -273,7 +274,7 @@
             })
             .then(respose => {
                 if (respose.status === 200) {
-                    document.cookie = `userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;    
+                    resetUserIdIntoCookie(document)    
                     window.location.href = "/index.html"
                 }
                 return 
@@ -293,7 +294,6 @@
             })
             .then(respose => {
                 if (respose.status === 200) {
-                    //document.cookie = `userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;    
                     window.location.href = "/game.html"
                 }
                 return 
@@ -312,7 +312,7 @@
             })
             .then(respose => {
                 if (respose.status === 200) {
-
+                    
                 }
                 return 
             })

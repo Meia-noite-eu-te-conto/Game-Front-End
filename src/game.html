@@ -86,7 +86,7 @@
 					The game has ended. Thank you for playing!
 				</div>
 				<div class="modal-footer">
-					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+					<a href="/index.html" type="button" class="btn btn-secondary">Go to initial menu</a>
 				</div>
 			</div>
 		</div>
@@ -96,18 +96,6 @@
         const roomCode = urlParams.get('roomCode');
 
 		const host = window.location.host;
-		//const socketScore = new WebSocket(`wss://${host}/api/v1/user-session/ws/match/${roomCode}/`);
-
-		//socketScore.onopen = function(event) {
-			//console.log("Socket Score: Conectado ao servidor WebSocket");
-			//socketScore.send("Olá, servidor!");
-		//};
-
-		//socketScore.onmessage = function(event) {
-			//console.log("Socket Score: Recebido do servidor:", event.data);
-        //    const data = JSON.parse(event.data);
-
-			
 
 		const gameId = urlParams.get('gameId');
 		const endpoint = `/api/v1/game-core/games/${gameId}/`;
@@ -115,45 +103,13 @@
 		const canvas = document.getElementById('myCanvas');
 		const context = canvas.getContext('2d');
 
-		
-
-		// Função para enviar atualização de score via WebSocket
-		// function updateScore(playerColor) {
-		// 	const message = {
-		// 		type: "update_score",
-		// 		color: playerColor,
-		// 	};
-		// 	socketScore.send(JSON.stringify(message));
-		// }
-
-		// Adicionar listener para as teclas
-		document.addEventListener("keydown", (event) => {
-			if (event.key.toLowerCase() === "x") {
-				playerColor = 0;
-				console.log('playerColor: ', playerColor)
-				fetch(`/api/v1/user-session/players/${roomCode}/0/score/`, {
-        			method: 'POST',
-        			body: JSON.stringify({'playerColor': '0'})
-    			})
-			} else if (event.key.toLowerCase() === "m") {
-				playerColor = 1
-				fetch(`/api/v1/user-session/players/${roomCode}/1/score/`, {
-        			method: 'POST',
-        			body: JSON.stringify({'playerColor': '1'})
-				})
-			}
-		});
-
-		// Função para desenhar no canvas
 		function drawOnCanvas(data) {
-			// Limpa o canvas
 			context.clearRect(0, 0, canvas.width, canvas.height);
+			context.fillStyle = '#293040';
+			context.fillRect(0, 0, canvas.width, canvas.height);
 
-			// Aqui você pode definir como os dados recebidos do servidor devem ser desenhados
-			// Neste exemplo, vamos assumir que o servidor envia coordenadas para desenhar um círculo
-
-			const parsedData = JSON.parse(data); // Supondo que os dados estão em formato JSON
-			const { players, ball } = parsedData; // Desestrutura os dados recebidos
+			const parsedData = JSON.parse(data);
+			const { players, ball } = parsedData;
 
 			context.fillStyle = PlayerColor[players["0"].color]; // Cor do player_one
 			context.fillRect(players["0"].x, players["0"].y, players["0"].width, players["0"].height);
@@ -247,7 +203,7 @@
 							playerElement.innerHTML = `
 								<div class="d-flex w-100 align-items-center justify-content-between">
 									<div class=" d-flex w-75 align-items-center">
-										<img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
+										<img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
 										<div class="d-flex flex-column  ps-2 justify-content-center">
 											<strong class="mb-1">${player.name}</strong>
 											<p class="small mb-0">Blue</p>
@@ -262,8 +218,6 @@
 			console.log("GET PLAYER END")
 		}
 
-		
-			
 	</script>
 </body>
 </html>
