@@ -10,14 +10,21 @@ function redirectIfuserIsActived(document, window) {
             if (data != null)
             {
                 if (data["roomStatus"] <= 3) {
-                    console.log(data)
-                    window.location.href = `/watch-room.html?roomCode=${data["roomCode"]}`;
+                    let pathName = "/watch-room.html"
+                    let queryParams = `?roomCode=${data["roomCode"]}`;
+                    let targetUrl = pathName + queryParams
+
+                    console.log(window.location.pathname)
+                    if (window.location.pathname !== pathName) {
+                        console.log(data)
+                        window.location.href = targetUrl;
+                    }
                 }
-                if (data["roomStatus"] > 3 && data["roomStatus"] <= 7)
-                {
-                    console.log(data)
-                    window.location.href = `/game.html?gameCode=${data["roomCode"]}`;
-                }
+                // if (data["roomStatus"] > 3 && data["roomStatus"] <= 7)
+                // {
+                //     console.log(data)
+                //     window.location.href = `/game.html?gameCode=${data["roomCode"]}`;
+                // }
             }
         })
     }

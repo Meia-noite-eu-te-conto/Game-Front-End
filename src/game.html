@@ -74,11 +74,28 @@
 			</div>
 		</div>
 	</main>
+
+	<div class="modal fade" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="gameOverModalLabel">Game Over</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					The game has ended. Thank you for playing!
+				</div>
+				<div class="modal-footer">
+					<button type="button" class="btn btn-secondary" data-bs-dismiss="modal">Close</button>
+				</div>
+			</div>
+		</div>
+	</div>
 	<script>
         const urlParams = new URLSearchParams(window.location.search);
         const roomCode = urlParams.get('roomCode');
 
-		//const host = window.location.host;
+		const host = window.location.host;
 		//const socketScore = new WebSocket(`wss://${host}/api/v1/user-session/ws/match/${roomCode}/`);
 
 		//socketScore.onopen = function(event) {
@@ -91,43 +108,14 @@
         //    const data = JSON.parse(event.data);
 
 			
-		const urlParams = new URLSearchParams(window.location.search);
+
 		const gameId = urlParams.get('gameId');
 		const endpoint = `/api/v1/game-core/games/${gameId}/`;
-		const socket = new WebSocket(`wss://${host}${endpoint}`);
+		let socket = null
 		const canvas = document.getElementById('myCanvas');
 		const context = canvas.getContext('2d');
-		socket.onopen = function(event) {
-			console.log("Conectado ao servidor WebSocket");
-			const userId = getCookie(document, "userId");  // Substitua pelo ID do usuário real
-			const headers = { "X-User-Id": userId };
 
-			socket.send(JSON.stringify({
-				type: 'connect',
-				headers: headers
-			}));
-		};
-
-		socket.onmessage = function(event) {
-			const data = JSON.parse(event.data);
-			if (data.type == 'game.update') {
-				drawOnCanvas(data.game_state);
-      }
-      if (data.type === "update_score") {
-				let playerColor = data.playerColor
-				let element = document.getElementById(`player-${playerColor}`)
-
-				element.innerHTML = data.playerScore
-			}
-		};
-
-		socketScore.onclose = function(event) {
-			console.log("Desconectado do servidor WebSocket");
-		};
-
-        socketScore.onerror = function(error) {
-            console.error("WebSocket error:", error);
-        };
+		
 
 		// Função para enviar atualização de score via WebSocket
 		// function updateScore(playerColor) {
@@ -167,17 +155,17 @@
 			const parsedData = JSON.parse(data); // Supondo que os dados estão em formato JSON
 			const { players, ball } = parsedData; // Desestrutura os dados recebidos
 
-			context.fillStyle = 'blue'; // Cor do player_one
+			context.fillStyle = PlayerColor[players["0"].color]; // Cor do player_one
 			context.fillRect(players["0"].x, players["0"].y, players["0"].width, players["0"].height);
 
 			// Desenha a bola
-			context.fillStyle = 'red'; // Cor da bola
+			context.fillStyle = BallColor; // Cor da bola
 			context.beginPath();
 			context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
 			context.fill(); // Preenche a bola
 
 			// Desenha player_two
-			context.fillStyle = 'green'; // Cor do player_two
+			context.fillStyle = PlayerColor[players["1"].color]; // Cor do player_two
 			context.fillRect(players["1"].x, players["1"].y, players["1"].width, players["1"].height);
 		}
 
@@ -200,8 +188,46 @@
             //redirectIfuserIsActived(document, window)
 			renderHeader(document)
 			getPlayer()
-		}
+			socket = new WebSocket(`wss://${host}${endpoint}`);
+			socket.onopen = function(event) {
+				console.log("Conectado ao servidor WebSocket");
+				const userId = getCookie(document, "userId");  // Substitua pelo ID do usuário real
+				const headers = { "X-User-Id": userId };
 
+				socket.send(JSON.stringify({
+					type: 'connect',
+					headers: headers
+				}));
+			};
+
+			socket.onmessage = function(event) {
+				const data = JSON.parse(event.data);
+				console.log(event.data);
+				if (data.type == 'game.update') {
+					drawOnCanvas(data.game_state);
+				}
+
+				if (data.type === "update_score") {
+					let playerColor = data.playerColor
+					let element = document.getElementById(`player-${playerColor}`)
+					element.innerHTML = data.playerScore
+				}
+
+				if (data.type === "game_finished") {
+					const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
+					gameOverModal.show();
+				}
+			};
+
+			socket.onclose = function(event) {
+				console.log("Desconectado do servidor WebSocket");
+			};
+
+			socket.onerror = function(error) {
+				console.error("WebSocket error:", error);
+			};
+		}
+		
 		function getPlayer() {
 			console.log("GET PLAYER")
 			fetch(`/api/v1/user-session/players/game/${roomCode}/`, {
@@ -233,7 +259,10 @@
 							playerListElement.appendChild(playerElement)
 						});
 					})
+			console.log("GET PLAYER END")
 		}
+
+		
 			
 	</script>
 </body>
