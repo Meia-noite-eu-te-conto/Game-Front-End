@@ -14,8 +14,8 @@ const HeaderInfo = [
     {
         "type": "link",
         "name": "Ranking",
-        "url": "/",
-        "activeWhen": "/Ranking"
+        "url": "/ranking.html",
+        "activeWhen": "/ranking.html"
     },
     {
         "type": "link",
@@ -64,7 +64,7 @@ function NavComponent(document) {
     )
 
     HeaderInfo.forEach(btn => {
-        const status = checkActiveSection("/", btn["activeWhen"])
+        const status = checkActiveSection(window.location.pathname, btn["activeWhen"])
         let item = document.createElement("li")
         item.classList.add("nav-item")
         if (btn["type"] == "link")
