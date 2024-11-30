@@ -6,6 +6,6 @@ const gameTypes = {
 const PlayerColor = {
     0: "#D92B3A",
     1: "#3045BF",
-    2: "#58A633",
+    2: "#8A2BE2",
     3: "#D9B54A",
 };

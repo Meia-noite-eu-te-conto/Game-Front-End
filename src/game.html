@@ -158,27 +158,30 @@
 
 		// Função para desenhar no canvas
 		function drawOnCanvas(data) {
-			// Limpa o canvas
+			const parsedData = JSON.parse(data);
+			const { players, ball, numberOfPlayers } = parsedData;
+
+			if (numberOfPlayers === 4)
+				canvas.width = 550;
+			
 			context.clearRect(0, 0, canvas.width, canvas.height);
 
-			// Aqui você pode definir como os dados recebidos do servidor devem ser desenhados
-			// Neste exemplo, vamos assumir que o servidor envia coordenadas para desenhar um círculo
+			// context.fillStyle = PlayerColor[players["0"].color]; // Cor do player_one
+			// context.fillRect(players["0"].x, players["0"].y, players["0"].width, players["0"].height);
 
-			const parsedData = JSON.parse(data); // Supondo que os dados estão em formato JSON
-			const { players, ball } = parsedData; // Desestrutura os dados recebidos
+			Object.values(players).forEach(player => {
+				context.fillStyle = PlayerColor[player.color];
+				context.fillRect(player.x, player.y, player.width, player.height);
+			});
 
-			context.fillStyle = 'blue'; // Cor do player_one
-			context.fillRect(players["0"].x, players["0"].y, players["0"].width, players["0"].height);
-
-			// Desenha a bola
-			context.fillStyle = 'red'; // Cor da bola
+			context.fillStyle = BallColor;
 			context.beginPath();
 			context.arc(ball.x, ball.y, ball.radius, 0, Math.PI * 2);
-			context.fill(); // Preenche a bola
+			context.fill();
 
-			// Desenha player_two
-			context.fillStyle = 'green'; // Cor do player_two
-			context.fillRect(players["1"].x, players["1"].y, players["1"].width, players["1"].height);
+			// // Desenha player_two
+			// context.fillStyle = PlayerColor[players["1"].color]; // Cor do player_two
+			// context.fillRect(players["1"].x, players["1"].y, players["1"].width, players["1"].height);
 		}
 
 		// Função para enviar comandos do teclado
