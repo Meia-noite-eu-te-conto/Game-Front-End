@@ -106,7 +106,7 @@
             <div class="modal-header align-items-start">
                 <div>
                     <h1 class="modal-title fs-5" id="exampleModalLabel">Create a room</h1>
-                    <p>create a room to play with up to 4 people</p>
+                    <p>Create a room to play with up to 4 people.</p>
                 </div>
                 <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
             </div>
@@ -203,11 +203,12 @@
                         (data["isOwner"] ?
                             `<a onclick="deletePlayer('${player.id}')" class='h3 pe-2 bi bi-x-circle'></a>` :
                             "");
-
+                        
+                        let [r, g, b, a] = PlayerColor[player.profileColor]
                         playerElement.innerHTML = `
                             <div class="d-flex w-100 align-items-center justify-content-between">
                                 <div class=" d-flex w-75 align-items-center">
-                                    <img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
+                                    <img style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
                                     <div class="d-flex flex-column  ps-2 justify-content-center">
                                         <strong class="mb-1">${player.name}</strong>
                                         <p class="small mb-0">Blue</p>

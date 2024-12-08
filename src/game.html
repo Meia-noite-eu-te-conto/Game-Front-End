@@ -93,37 +93,20 @@
 		</div>
 	</div>
 	<script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const roomCode = urlParams.get('roomCode');
+        const	urlParams = new URLSearchParams(window.location.search);
+        const	roomCode = urlParams.get('roomCode');
+		const	host = window.location.host;
+		const	gameId = urlParams.get('gameId');
+		const	endpoint = `/api/v1/game-core/games/${gameId}/`;
+		let		socket = null
 
-		const host = window.location.host;
-
-		const gameId = urlParams.get('gameId');
-		const endpoint = `/api/v1/game-core/games/${gameId}/`;
-		let socket = null
-
-		// Atributos game
-		const	NUMBER_OF_PLAYERS = 3;
-
-		// Posição e tamanho das salas e das portas
 		const	BALL_POSITION = vec3(0, 0, -96);
 		const	BALL_SCALE = vec3(2, 2, 2);
 		const	GOALKEEPER_1_POSITION = vec3(-44, 0, -94);
 		const	GOALKEEPER_2_POSITION = vec3(44, 0, -94);
 		const	GOALKEEPER_SCALE = vec3(2, 16, 8);
 		const	FIELD_POSITION = vec3(0, 0, -100);
-		if (NUMBER_OF_PLAYERS == 2)
-			var	FIELD_SCALE = vec3(90, 60, 4);
-		else
-			var	FIELD_SCALE = vec3(90, 90, 4);
 
-		// Número de cubos
-		const	NUMBER_OF_CUBES = 3;
-
-		// Número de bolas
-		const	NUMBER_OF_BALLS = 1;
-
-		// Vértices do cubo centrado na origem de lado 1
 		const	CUBE_VERTICES = [
 			vec4(-0.5, -0.5, 0.5, 1.0),
 			vec4(-0.5, 0.5, 0.5, 1.0),
@@ -135,21 +118,18 @@
 			vec4(0.5, -0.5, -0.5, 1.0)
 		];
 
-		// Vértices da pirâmide de cima, objeto base para implementar a esfera
 		const	SP_POS_VERT = [
 			vec4(1.0, 0.0, 0.0, 1),
 			vec4(0.0, 1.0, 0.0, 1),
 			vec4(0.0, 0.0, 1.0, 1),
 		];
 
-		// Vértices da pirâmide de baixo, objeto base para implementar a esfera
 		const	SP_NEG_VERT = [
 			vec4(-1.0, 0.0, 0.0, 1),
 			vec4(0.0, -1.0, 0.0, 1),
 			vec4(0.0, 0.0, -1.0, 1),
 		];
 
-		// Vértices dos triângulos que são as faces das pirâmides
 		const	SP_TRIANGLES = [
 			[SP_POS_VERT[0], SP_POS_VERT[1], SP_POS_VERT[2]],
 			[SP_POS_VERT[0], SP_NEG_VERT[2], SP_POS_VERT[1]],
@@ -164,37 +144,26 @@
 			[SP_NEG_VERT[0], SP_NEG_VERT[2], SP_NEG_VERT[1]],
 		];
 
-		// Índices dos objetos
 		const	FIELD = 0;
-		const	GOALKEEPER_1 = 1;
-		const	GOALKEEPER_2 = 2;
+		const	GOALKEEPER_0 = 1;
+		const	GOALKEEPER_1 = 2;
 		const	BALL = 3;
+		const	GOALKEEPER_2 = 4;
+		const	GOALKEEPER_3 = 5;
 
-		// Cores
-		const	WHITE = vec4(1, 1, 1, 1);
-		const	RED = vec4(1, 0, 0, 1);
-		const	GREEN = vec4(0, 1, 0, 1);
-		const	BLUE = vec4(0, 0, 1, 1);
-		const	FILED_COLOR = GREEN;
-		const	GOALKEEPER_1_COLOR = RED;
-		const	GOALKEEPER_2_COLOR = BLUE;
-
-		// Propriedades da fonte de luz
 		const	LIGHT = {
-			pos: vec4(0.0, 40.0, 0.0, 1.0), // posição
-			amb: vec4(0.2, 0.2, 0.2, 1.0), // ambiente
-			dif: vec4(1.0, 1.0, 1.0, 1.0), // difusão
-			spec: vec4(1.0, 1.0, 1.0, 1.0), // especular
+			pos: vec4(0.0, 40.0, 0.0, 1.0),
+			amb: vec4(0.2, 0.2, 0.2, 1.0),
+			dif: vec4(1.0, 1.0, 1.0, 1.0),
+			spec: vec4(1.0, 1.0, 1.0, 1.0),
 		};
 
-		// Propriedades do material
 		const	MAT = {
 			amb: vec4(0.4, 0.4, 0.4, 1.0),
 			dif: vec4(1.0, 1.0, 1.0, 1.0),
-			alfa: 50.0, // brilho ou shininess
+			alfa: 50.0,
 		};
 
-		// Camera
 		const	FOVY = 60;
 		const	ASPECT = 1;
 		const	NEAR = 0.1 / 500 * 500;
@@ -207,7 +176,6 @@
 		const	CAMERA_THETA = Math.PI / 2;
 		const	CAMERA_THETA_DEGREES = CAMERA_THETA * 180 / Math.PI;
 
-		// Constantes globais
 		const	BACKGROUND = [0.0, 0.0, 1.0, 0.3];
 		const	AXIS_X_IND = 0;
 		const	AXIS_Y_IND = 1;
@@ -216,13 +184,11 @@
 		const	AXIS_Y = vec3(0, 1, 0);
 		const	AXIS_Z = vec3(0, 0, 1);
 
-		// Textura é um tabuleiro de xadrez 8 x 8
 		const	TEX_ROLS = 8;
 		const	TEX_COLS = 8;
-		const	TEX_SIDE = 128; // lado da imagem textura
-		const	TEX_COLOR_SIZE = 4; // RGBA
+		const	TEX_SIDE = 128;
+		const	TEX_COLOR_SIZE = 4;
 
-		// Textura: coordenadas (s, t) entre 0 e 1
 		const	vTextura = [
 			vec2(0.0, 0.0),
 			vec2(0.0, 1.0),
@@ -231,51 +197,34 @@
 		];
 		const	NO_TEXTURE = vec2(-1, -1);
 
-		// Cria array de textura. Pixels costumam ser do tipo Uint8
 		var		gTexture = new Uint8Array(TEX_COLOR_SIZE * TEX_SIDE * TEX_SIDE);
 		const	URL_BALL = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fbr.freepik.com%2Fvetores-premium%2Fbola-de-fundo-de-futebol-de-textura-panoramica-preto-e-branco-vetor-gratis_26529379.htm&psig=AOvVaw2hSZ8fMihInpGdrvUIbcpH&ust=1733084762766000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKCy_IryhIoDFQAAAAAdAAAAABAE"
 		const	URLS = [URL_BALL];
 
-		// Variáveis globais
 		var		gPong = {
 			time: Date.now(),
-			running: true,
-			step: false,
 			delta: 0,
-			portalObject: "sphere",
-			gravity: -500,
-			lightSpeed: 10e10,
 		};
 		var		gInterface = {};
-		var		gl; // webgl2
-		var		gCanvas; // canvas
+		var		gl;
+		var		gCanvas;
 
-		// Objetos a serem renderizados
 		var		gObjects = [];
 
-		// Câmera
 		var		gCamera = new Camera();
 
-		// Guarda coisas do shader
 		var		gShader = {};
 
-		// Guarda coisas da interface e do contexto do programa
-		var		gCtx =
-		{
-			view: mat4(), // view matrix, inicialmente identidade
-			perspective: mat4(), // projection matrix, inicialmente identidade
+		var		gCtx = {
+			view: mat4(),
+			perspective: mat4(),
 		};
 
-		// Vetores de atributos dos objetos
 		var		gPositions = [];
 		var		gColors = [];
 		var		gNormals = [];
 		var		gTextures = [];
 
-		// Chama a main quando terminar de carregar a janela
-		// window.onload = main;
-
-		// Função que cria um cubo
 		function	Cube()
 		{
 			this.draw = true;
@@ -295,7 +244,6 @@
 			this.scale = vec3(1, 1, 1);
 			this.v = vec3(0, 0, 0);
 			this.model = mat4();
-			// Função que inicializa as posições do cubo e sua matriz de transformação
 			this.init = function(cube)
 			{
 				square(this.positions, this.normals, CUBE_VERTICES, 1, 0, 3, 2);
@@ -311,7 +259,6 @@
 				this.model = mult(rotate(this.theta[AXIS_X_IND], AXIS_X), this.model);
 				this.model = mult(translate(this.pos[0], this.pos[1], this.pos[2]), this.model);
 			};
-			// Função que atualiza a matriz de transformação do cubo
 			this.updateModel = function(cube)
 			{
 				this.model = mat4();
@@ -325,9 +272,6 @@
 			};
 		};
 
-		// Função que, dado um quadrado, divide-o em dois triângulos,
-		// calcula a normal do quadrado e adiciona suas posições e normal
-		// em seus respectivos vetores
 		function	square(positions, normals, vertices, a, b, c, d)
 		{
 			var	t1 = subtract(vertices[b], vertices[a]);
@@ -349,7 +293,6 @@
 			normals.push(normal);
 		};
 
-		// Função que cria uma esfera
 		function	Sphere(numberOfDivisions = 4)
 		{
 			this.draw = true;
@@ -372,7 +315,6 @@
 			this.scale = vec3(1, 1, 1);
 			this.v = vec3(0, 0, 0);
 			this.model = mat4();
-			// Função que inicializa as posições da esfera e sua matriz de transformação
 			this.init = function()
 			{
 				this.pos2 = this.pos;
@@ -389,7 +331,6 @@
 				this.model = mult(rotate(this.theta[AXIS_X_IND], AXIS_X), this.model);
 				this.model = mult(translate(this.pos[0], this.pos[1], this.pos[2]), this.model);
 			};
-			// Função que atualiza a matriz de transformação da esfera
 			this.updateModel = function(sphere)
 			{
 				this.model = mat4();
@@ -398,39 +339,12 @@
 				this.model = mult(rotate(this.rot[AXIS_Z_IND], AXIS_Z), this.model);
 				this.model = mult(rotate(this.rot[AXIS_Y_IND], AXIS_Y), this.model);
 				this.model = mult(rotate(this.rot[AXIS_X_IND], AXIS_X), this.model);
-				// if ((this.pos[0] <= -41 && this.pos[1] <= gObjects[GOALKEEPER_1].pos[1] + 8 && this.pos[1] >= gObjects[GOALKEEPER_1].pos[1] - 8) ||
-				// 		(this.pos[0] >= 41 && this.pos[1] <= gObjects[GOALKEEPER_2].pos[1] + 8 && this.pos[1] >= gObjects[GOALKEEPER_2].pos[1] - 8))
-				// 	this.vTrans[0] *= -1;
-				// else if (this.pos[0] <= -43 || this.pos[0] >= 43)
-				// 	this.pos = vec3(0, 0, -96);
-				// if (this.pos[1] <= -28 || this.pos[1] >= 28)
-				// 	this.vTrans[1] *= -1;
 				this.trans = add(this.pos, mult(gPong.delta, this.vTrans));
 				this.pos = this.trans;
 				this.model = mult(translate(this.trans[0], this.trans[1], this.trans[2]), this.model);
 			};
-			// Função que verifica colisões entre uma esfera e as paredes da sala
-			this.checkCollision = function(sphere)
-			{
-				for (let i = 0; i <= 2; i++)
-				{
-					if (gObjects[sphere].pos2[i] >= -COLLISION_RADIO + gObjects[ROOM_2].pos[i] + 500 / 2)
-					{
-						this.vTrans[i] *= -1 * this.bounciness;
-						this.pos2[i] = -COLLISION_RADIO + gObjects[ROOM_2].pos[i] + 500 / 2;
-					}
-					else if (gObjects[sphere].pos2[i] <= gObjects[ROOM_2].pos[i] - 500 / 2 + COLLISION_RADIO)
-					{
-						this.vTrans[i] *= -1 * this.bounciness;
-						this.pos2[i] = gObjects[ROOM_2].pos[i] - 500 / 2 + COLLISION_RADIO;
-					}
-				}
-			};
 		};
 
-		// Função recursiva que, dado uma face de uma das pirâmides base da esfera,
-		// divide-a em uma potência de quatro triângulos e, depois calcula a normal
-		// do triângulo e adiciona suas posições e normal em seus respectivos vetores
 		function	splitTriangles(a, b, c, numberOfDivisions, positions, normals)
 		{
 			if (numberOfDivisions > 0)
@@ -464,7 +378,6 @@
 			}
 		};
 
-		// Função que cria a câmera
 		function	Camera()
 		{
 			this.pos = EYE;
@@ -475,66 +388,44 @@
 			this.theta = vec3(0, 0, 0);
 			this.vTrans = 0;
 			this.trans = vec3(0, 0, 0);
-			this.recalculateView = false;
-			// Função que atualiza a matriz view da esfera
-			// por meio de uma matriz de transformação
-			this.updateView = function()
-			{
-				if (this.recalculateView == true)
-				{
-					let	transform = mat4();
-
-					transform = mult(rotate(this.theta[AXIS_Z_IND], AXIS_Z), transform);
-					transform = mult(rotate(this.theta[AXIS_Y_IND], AXIS_Y), transform);
-					transform = mult(rotate(this.theta[AXIS_X_IND], AXIS_X), transform);
-					this.theta = vec3(0, 0, 0);
-					this.dir4 = vec4(this.dir[0], this.dir[1], this.dir[2], 0);
-					this.trans = mult(gPong.delta * this.vTrans, this.dir4);
-					this.vTrans = 0;
-					transform = mult(translate(this.trans[0], this.trans[1], this.trans[2]), transform);
-					gCtx.view = mult(transform, gCtx.view);
-					gl.uniformMatrix4fv(gShader.uView, false, flatten(gCtx.view));
-					this.recalculateView = false;
-				}
-			};
 		};
 
 		gCanvas = document.getElementById('myCanvas');
 		gl = gCanvas.getContext('webgl2');
-		var sim = true;
+		var		sim = true;
 
 		function drawOnCanvas(data)
 		{
+			const	parsedData = JSON.parse(data);
+			const	{ players, ball, numberOfPlayers, fieldAttributes } = parsedData;
+
+			gPong.players = players;
+			gPong.ball = ball;
+			gPong.numberOfPlayers = numberOfPlayers;
+			gPong.numberOfObjects = gPong.numberOfPlayers + 2;
+			gPong.fieldAttributes = fieldAttributes;
+			gPong.fieldHeight = fieldAttributes["height"];
+			gPong.fieldWidth = fieldAttributes["height"];
+			if (gPong.numberOfPlayers == 2)
+				gPong.fieldWidth = fieldAttributes["width"];
+			setObjectsColors();
 			if (sim)
 			{
-				
-				// Interface
-				// Textura
-				// createTexture();
-				// Objetos
 				createObjects();
 				initObjects();
 				insertAttributes();
-				// Inicializações feitas apenas 1 vez
 				gl.viewport(0, 0, gCanvas.width, gCanvas.height);
 				gl.clearColor(BACKGROUND[0], BACKGROUND[1], BACKGROUND[2], BACKGROUND[3]);
 				gl.enable(gl.DEPTH_TEST);
-				// Shaders
-				console.log("OI");
 				createShaders();
-				// Finalmente...
 				sim = false;
 			}
-			const	parsedData = JSON.parse(data);
-			const	{ players, ball } = parsedData;
-			//console.log(players);
-			render(players, ball);
+			
+			render();
 		}
 
-		// Função que cria uma imagem quadriculada para ser usada como textura
 		function	createTexture()
 		{
-			// Varre e carrega o array
 			for (let i = 0, ind = 0; i < TEX_SIDE; i++)
 			{
 				let	squareX = Math.floor(i / (TEX_SIDE / TEX_ROLS));
@@ -552,87 +443,92 @@
 			};
 		};
 
-		// Função que cria os objetos
 		function	createObjects()
 		{
 			for (let i = 0; i < 3; i++)
 				gObjects.push(new Cube());
 			gObjects.push(new Sphere());
+			if (gPong.numberOfPlayers == 4)
+			{
+				for (let i = 0; i < 2; i++)
+					gObjects.push(new Cube());
+			}
 		};
 
-		// Função que inicializa os objetos
 		function	initObjects(players)
 		{
 			initField();
-			initKeepers();
+			initGoalkeepers();
 			initBall();
 		};
 
-		// Função que inicializa a Sala dos Troféus
 		function	initField()
 		{
-			let	text = 5;
-			
 			gObjects[FIELD].pos = vec3(0, 0, -100);
-			gObjects[FIELD].scale = vec3(90, 60, 4);
+			gObjects[FIELD].scale = vec3(gPong.fieldWidth, gPong.fieldHeight, 4);
 			gObjects[FIELD].init();
-			// gObjects[FIELD].text = text;
 			for (let j = 0; j < gObjects[FIELD].numberOfPositions; j++)
 			{
 				gObjects[FIELD].colors.push(vec4(0, 1, 0, 1));
 				gObjects[FIELD].textures.push(NO_TEXTURE);
 			}
-			// for (let j = 0; j < 6; j++)
-			// {
-			// 	gObjects[FIELD].color.push(vTextura[0]);
-			// 	gObjects[FIELD].textures.push(vTextura[1]);
-			// 	gObjects[FIELD].textures.push(vTextura[2]);
-			// 	gObjects[FIELD].textures.push(vTextura[0]);
-			// 	gObjects[FIELD].textures.push(vTextura[2]);
-			// 	gObjects[FIELD].textures.push(vTextura[3]);
-			// }
 		};
 
-		// Função que inicializa a Sala do Portal
-		function	initKeepers()
+		function	initGoalkeepers()
 		{
-			gObjects[GOALKEEPER_1].pos = vec3(-44, 0, -94);
-			gObjects[GOALKEEPER_1].scale = vec3(2, 16, 8);
+			gObjects[GOALKEEPER_0].pos = vec3(gPong.players["0"].x, gPong.players["0"].y, -94);
+			gObjects[GOALKEEPER_0].scale = vec3(gPong.players["0"].width, gPong.players["0"].height, 8);
+			gObjects[GOALKEEPER_0].init();
+			for (let j = 0; j < gObjects[GOALKEEPER_0].numberOfPositions; j++)
+			{
+				gObjects[GOALKEEPER_0].colors.push(gPong.goalkeeper1Color);
+				gObjects[GOALKEEPER_0].textures.push(NO_TEXTURE);
+			}
+			gObjects[GOALKEEPER_1].pos = vec3(gPong.players["1"].x, gPong.players["1"].y, -94);
+			gObjects[GOALKEEPER_1].scale = vec3(gPong.players["1"].width, gPong.players["1"].height, 8);
 			gObjects[GOALKEEPER_1].init();
 			for (let j = 0; j < gObjects[GOALKEEPER_1].numberOfPositions; j++)
 			{
-				gObjects[GOALKEEPER_1].colors.push(vec4(1, 0, 0, 1));
+				gObjects[GOALKEEPER_1].colors.push(gPong.goalkeeper2Color);
 				gObjects[GOALKEEPER_1].textures.push(NO_TEXTURE);
 			}
-
-			gObjects[GOALKEEPER_2].pos = vec3(44, 0, -94);
-			gObjects[GOALKEEPER_2].scale = vec3(2, 16, 8);
-			gObjects[GOALKEEPER_2].init();
-			for (let j = 0; j < gObjects[GOALKEEPER_2].numberOfPositions; j++)
+			if (gPong.numberOfPlayers == 4)
 			{
-				gObjects[GOALKEEPER_2].colors.push(vec4(0, 0, 1, 1));
-				gObjects[GOALKEEPER_2].textures.push(NO_TEXTURE);
+				gObjects[GOALKEEPER_2].pos = vec3(gPong.players["2"].x, gPong.players["2"].y, -94);
+				gObjects[GOALKEEPER_2].scale = vec3(gPong.players["2"].width, gPong.players["2"].height, 8);
+				gObjects[GOALKEEPER_2].init();
+				for (let j = 0; j < gObjects[GOALKEEPER_2].numberOfPositions; j++)
+				{
+					gObjects[GOALKEEPER_2].colors.push(gPong.goalkeeper3Color);
+					gObjects[GOALKEEPER_2].textures.push(NO_TEXTURE);
+				}
+				gObjects[GOALKEEPER_3].pos = vec3(gPong.players["3"].x, gPong.players["3"].y, -94);
+				gObjects[GOALKEEPER_3].scale = vec3(gPong.players["3"].width, gPong.players["3"].height, 8);
+				gObjects[GOALKEEPER_3].init();
+				for (let j = 0; j < gObjects[GOALKEEPER_3].numberOfPositions; j++)
+				{
+					gObjects[GOALKEEPER_3].colors.push(gPong.goalkeeper4Color);
+					gObjects[GOALKEEPER_3].textures.push(NO_TEXTURE);
+				}
 			}
 		};
 
-		// Função que inicializa a Sala do Portal
 		function	initBall()
 		{
 			gObjects[BALL].pos = vec3(0, 0, -96);
-			gObjects[BALL].scale = vec3(2, 2, 2);
+			gObjects[BALL].scale = vec3(gPong.ball.radius, gPong.ball.radius, gPong.ball.radius);
 			gObjects[BALL].vTrans = vec3(randomizeInt(10, 20), randomizeInt(10, 20), 0);
 			gObjects[BALL].init();
 			for (let j = 0; j < gObjects[BALL].numberOfPositions; j++)
 			{
-				gObjects[BALL].colors.push(WHITE);
+				gObjects[BALL].colors.push(vec4(1, 1, 1, 1));
 				gObjects[BALL].textures.push(NO_TEXTURE);
 			}
 		};
 
-		// Função de insere os atributos dos objetos nas respectivas variáveis globais
 		function	insertAttributes()
 		{
-			for (let i = 0; i < 4; i++)
+			for (let i = 0; i < gPong.numberOfObjects; i++)
 			{
 				for (let j = 0; j < gObjects[i].numberOfPositions; j++)
 				{
@@ -644,35 +540,27 @@
 			}
 		};
 
-		// Função que cria e configura os shaders
 		function	createShaders()
 		{
-			// Cria o programa
 			gShader.program = makeProgram(gl, gVertexShaderSrc, gFragmentShaderSrc);
 			gl.useProgram(gShader.program);
 
-			// Cria e configura os buffers dos objetos
 			createBuffers();
 
-			// Resolve os uniforms
 			gShader.uModel = gl.getUniformLocation(gShader.program, "uModel");
 			gShader.uView = gl.getUniformLocation(gShader.program, "uView");
 			gShader.uPerspective = gl.getUniformLocation(gShader.program, "uPerspective");
 			gShader.uInverseTranspose = gl.getUniformLocation(gShader.program, "uInverseTranspose");
 
-			// Calcula a matriz de transformação perpectiva (fovy, aspect, near, far)
 			gCtx.perspective = perspective(FOVY, ASPECT, NEAR, FAR);
 			gl.uniformMatrix4fv(gShader.uPerspective, false, flatten(gCtx.perspective));
 
-			// Calcula a matriz view (pos, at, up)
 			gCtx.view = lookAt(gCamera.pos, gCamera.at, gCamera.up);
 			gl.uniformMatrix4fv(gShader.uView, false, flatten(gCtx.view));
 
-			// Parâmetros para iluminação
 			gShader.uLightPos = gl.getUniformLocation(gShader.program, "uLightPos");
 			gl.uniform4fv(gShader.uLightPos, LIGHT.pos);
 
-			// Fragment shader
 			gShader.uAmbColor = gl.getUniformLocation(gShader.program, "uAmbColor");
 			gShader.uDifColor = gl.getUniformLocation(gShader.program, "uDifColor");
 			gShader.uSpecColor = gl.getUniformLocation(gShader.program, "uSpecColor");
@@ -693,42 +581,34 @@
 
 		function	createBuffers(obj)
 		{
-			// Buffer dos vértices
 			let	bufPositions = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, bufPositions);
 			gl.bufferData(gl.ARRAY_BUFFER, flatten(gPositions), gl.STATIC_DRAW);
 
-			// Vincula o buffer de vértices e configura o atributo
 			var	aPosition = gl.getAttribLocation(gShader.program, "aPosition");
 			gl.vertexAttribPointer(aPosition, 4, gl.FLOAT, false, 0, 0);
 			gl.enableVertexAttribArray(aPosition);
 
-			// Buffer das cores
 			let	bufColors = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, bufColors);
 			gl.bufferData(gl.ARRAY_BUFFER, flatten(gColors), gl.STATIC_DRAW);
 
-			// Vincula o buffer de cores e configura o atributo
 			var	aColor = gl.getAttribLocation(gShader.program, "aColor");
 			gl.vertexAttribPointer(aColor, 4, gl.FLOAT, false, 0, 0);
 			gl.enableVertexAttribArray(aColor);
 
-			// Buffer das normais
 			let	bufNormals = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, bufNormals);
 			gl.bufferData(gl.ARRAY_BUFFER, flatten(gNormals), gl.STATIC_DRAW);
 
-			// Vincula o buffer de normais e configura o atributo
 			var	aNormal = gl.getAttribLocation(gShader.program, "aNormal");
 			gl.vertexAttribPointer(aNormal, 3, gl.FLOAT, false, 0, 0);
 			gl.enableVertexAttribArray(aNormal);
 
-			// Buffer de textura
 			let	bufTextures = gl.createBuffer();
 			gl.bindBuffer(gl.ARRAY_BUFFER, bufTextures);
 			gl.bufferData(gl.ARRAY_BUFFER, flatten(gTextures), gl.STATIC_DRAW);
 
-			// Vincula o buffer de textura e configura o atributo
 			var aTextCoord = gl.getAttribLocation(gShader.program, "aTextCoord");
 			gl.vertexAttribPointer(aTextCoord, 2, gl.FLOAT, false, 0, 0);
 			gl.enableVertexAttribArray(aTextCoord);
@@ -769,8 +649,23 @@
 			gl.texParameteri(gl.TEXTURE_2D, gl.TEXTURE_WRAP_T, gl.REPEAT);
 		};
 
-		// Função que renderiza as imagens
-		function	render(players, ball)
+		function	setObjectsColors()
+		{
+			let	colorVec = PlayerColor[gPong.players["0"]["color"]];
+
+			gPong.goalkeeper1Color = vec4(colorVec[0] / 255, colorVec[1] / 255, colorVec[2] / 255, 1);
+			colorVec = PlayerColor[gPong.players["1"]["color"]];
+			gPong.goalkeeper2Color = vec4(colorVec[0] / 255, colorVec[1] / 255, colorVec[2] / 255, 1); 
+			if (gPong.numberOfPlayers == 4)
+			{
+				colorVec = PlayerColor[gPong.players["2"]["color"]];
+				gPong.goalkeeper3Color = vec4(colorVec[0] / 255, colorVec[1] / 255, colorVec[2] / 255, 1);
+				colorVec = PlayerColor[gPong.players["3"]["color"]];
+				gPong.goalkeeper4Color = vec4(colorVec[0] / 255, colorVec[1] / 255, colorVec[2] / 255, 1);
+			}
+		}
+
+		function	render()
 		{
 			let	time = Date.now();
 
@@ -781,39 +676,34 @@
 				gPong.delta = 0;
 			gPong.time = time;
 			gPong.step = false;
-			updateObjects(players, ball);
+			updateObjectsPosition();
 			gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
 
-			// Configura e desenha os objetos
 			let	begin = 0;
 
-			for (let i = 0; i < 4; i++)
+			for (let i = 0; i < gPong.numberOfObjects; i++)
 			{
-				if (gObjects[i].draw)
-				{
-					calculateMatrices(gObjects[i]);
-					gl.drawArrays(gl.TRIANGLES, begin, gObjects[i].numberOfPositions);
-				}
+				calculateMatrices(gObjects[i]);
+				gl.drawArrays(gl.TRIANGLES, begin, gObjects[i].numberOfPositions);
 				begin += gObjects[i].numberOfPositions;
 			}
-			//window.requestAnimationFrame(render);
 		};
 
-		function	updateObjects(players, ball)
+		function	updateObjectsPosition()
 		{
-			gObjects[GOALKEEPER_1].pos[1] = players["0"].y;
-			gObjects[GOALKEEPER_2].pos[1] = players["1"].y;
-			gObjects[BALL].pos[0] = ball.x;
-			gObjects[BALL].pos[1] = ball.y;
-			// vec3(players["0"].x, players["0"].y, players["0"].z);
-			//gObjects[GOALKEEPER_2].pos = gObjects[GOALKEEPER_2].pos + vec3(1, 0 , 0);
-			//  = vec3(players["1"].x, players["1"].y, players["1"].z);
-			gCamera.updateView();
-			for(let i = 0; i < 4; i++)
+			gObjects[GOALKEEPER_0].pos[1] = gPong.players["0"].y;
+			gObjects[GOALKEEPER_1].pos[1] = gPong.players["1"].y;
+			gObjects[BALL].pos[0] = gPong.ball.x;
+			gObjects[BALL].pos[1] = gPong.ball.y;
+			if (gPong.numberOfPlayers == 4)
+			{
+				gObjects[GOALKEEPER_2].pos[0] = gPong.players["2"].x;
+				gObjects[GOALKEEPER_3].pos[0] = gPong.players["3"].x;
+			}
+			for(let i = 0; i < gPong.numberOfObjects; i++)
 				gObjects[i].updateModel();
 		};
 
-		// Função que calcula a matriz transposta e multiplica pelas normais
 		function	calculateMatrices(obj)
 		{
 			let modelView = mult(gCtx.view, obj.model);
@@ -825,8 +715,6 @@
 			gl.uniform1i(gShader.uTextureMap, obj.text);
 		};
 
-		// Código fonte dos shaders em GLSL
-		// A primeira linha deve conter "#version 300 es" para WebGL 2.0
 		var gVertexShaderSrc = `#version 300 es
 
 		in vec4			aPosition;
@@ -900,11 +788,9 @@
 			finalColor.a = 1.0;
 		}`;
 
-		// Função para enviar comandos do teclado
 		function sendKey(event) {
-			const key = event.key;  // Captura a tecla pressionada
+			const key = event.key;
 			let userId = getCookie(document, "userId"); 
-			 // Obtém o ID do usuário do cookie
 			console.log(`Tecla pressionada: ${userId} ${key}`);
 			socket.send(JSON.stringify({
 				direction: key,
@@ -912,11 +798,9 @@
 			}));
 		}
 
-		// Adiciona um listener para o evento de teclado
 		document.addEventListener('keydown', sendKey);
 
 		window.onload = function() {
-            //redirectIfuserIsActived(document, window)
 			renderHeader(document)
 			getPlayer()
 			socket = new WebSocket(`wss://${host}${endpoint}`);
@@ -974,11 +858,11 @@
 						players.forEach(player => {
 							const playerElement = document.createElement('div');
 							playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
-
+							let [r, g, b, a] = PlayerColor[player.profileColor]
 							playerElement.innerHTML = `
 								<div class="d-flex w-100 align-items-center justify-content-between">
 									<div class=" d-flex w-75 align-items-center">
-										<img style='background-color: ${PlayerColor[player.profileColor]}' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
+										<img style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
 										<div class="d-flex flex-column  ps-2 justify-content-center">
 											<strong class="mb-1">${player.name}</strong>
 											<p class="small mb-0">Blue</p>
