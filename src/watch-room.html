@@ -269,7 +269,8 @@
             fetch(`/api/v1/user-session/rooms/${roomCode}/delete`, {
                 method: 'DELETE',
                 headers: {
-                    'Content-Type': 'application/json'
+                    'Content-Type': 'application/json',
+                    'X-User-Id': getCookie(document, "userId")
                 },
             })
             .then(respose => {

@@ -31,7 +31,7 @@ async function ShowRooms(filters, document) {
     if (response.status === true) {
         const data = response.data;
         let paginatedGroup = document.getElementById("paginated-list-rooms");
-        RoomPaginationComponent(paginatedGroup, data)
+        RoomPaginationComponent(paginatedGroup, data, "listRooms");
 
         let rooms = data["paginatedItems"]["Data"];
         const listGroup = document.getElementById('rooms-list');
