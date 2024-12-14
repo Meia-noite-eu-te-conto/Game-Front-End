@@ -198,8 +198,9 @@
 		const	NO_TEXTURE = vec2(-1, -1);
 
 		var		gTexture = new Uint8Array(TEX_COLOR_SIZE * TEX_SIDE * TEX_SIDE);
-		const	URL_BALL = "https://www.google.com/url?sa=i&url=https%3A%2F%2Fbr.freepik.com%2Fvetores-premium%2Fbola-de-fundo-de-futebol-de-textura-panoramica-preto-e-branco-vetor-gratis_26529379.htm&psig=AOvVaw2hSZ8fMihInpGdrvUIbcpH&ust=1733084762766000&source=images&cd=vfe&opi=89978449&ved=0CBQQjRxqFwoTCKCy_IryhIoDFQAAAAAdAAAAABAE"
-		const	URLS = [URL_BALL];
+		const	URL_BALL = "/sunBall.jpg"
+		const	URL_FIELD = "/milkyWayField.jpg"
+		const	URLS = [URL_BALL, URL_FIELD];
 
 		var		gPong = {
 			time: Date.now(),
@@ -333,12 +334,16 @@
 			};
 			this.updateModel = function(sphere)
 			{
+				
 				this.model = mat4();
 				this.model = mult(scale(this.scale[0], this.scale[1], this.scale[2]), this.model);
-				this.rot = add(this.rot, mult(gPong.delta, this.vTheta));
-				this.model = mult(rotate(this.rot[AXIS_Z_IND], AXIS_Z), this.model);
-				this.model = mult(rotate(this.rot[AXIS_Y_IND], AXIS_Y), this.model);
-				this.model = mult(rotate(this.rot[AXIS_X_IND], AXIS_X), this.model);
+				if (gPong.gameStatus == "PLAYING")
+				{
+					this.rot = add(this.rot, this.vTheta);
+					this.model = mult(rotate(this.rot[AXIS_Z_IND], AXIS_Z), this.model);
+					this.model = mult(rotate(this.rot[AXIS_Y_IND], AXIS_Y), this.model);
+					this.model = mult(rotate(this.rot[AXIS_X_IND], AXIS_X), this.model);
+				}
 				this.trans = add(this.pos, mult(gPong.delta, this.vTrans));
 				this.pos = this.trans;
 				this.model = mult(translate(this.trans[0], this.trans[1], this.trans[2]), this.model);
@@ -397,8 +402,9 @@
 		function drawOnCanvas(data)
 		{
 			const	parsedData = JSON.parse(data);
-			const	{ players, ball, numberOfPlayers, fieldAttributes } = parsedData;
+			const	{ players, ball, numberOfPlayers, fieldAttributes, gameStatus } = parsedData;
 
+			gPong.gameStatus = gameStatus;
 			gPong.players = players;
 			gPong.ball = ball;
 			gPong.numberOfPlayers = numberOfPlayers;
@@ -411,6 +417,7 @@
 			setObjectsColors();
 			if (sim)
 			{
+				createTexture();
 				createObjects();
 				initObjects();
 				insertAttributes();
@@ -466,11 +473,18 @@
 		{
 			gObjects[FIELD].pos = vec3(0, 0, -100);
 			gObjects[FIELD].scale = vec3(gPong.fieldWidth, gPong.fieldHeight, 4);
+			gObjects[FIELD].text = 1;
 			gObjects[FIELD].init();
 			for (let j = 0; j < gObjects[FIELD].numberOfPositions; j++)
+				gObjects[FIELD].colors.push(vec4(1, 1, 1, 1));
+			for (let j = 0; j < 6; j++)
 			{
-				gObjects[FIELD].colors.push(vec4(0, 1, 0, 1));
-				gObjects[FIELD].textures.push(NO_TEXTURE);
+				gObjects[FIELD].textures.push(vTextura[0]);
+				gObjects[FIELD].textures.push(vTextura[1]);
+				gObjects[FIELD].textures.push(vTextura[2]);
+				gObjects[FIELD].textures.push(vTextura[0]);
+				gObjects[FIELD].textures.push(vTextura[2]);
+				gObjects[FIELD].textures.push(vTextura[3]);
 			}
 		};
 
@@ -518,11 +532,20 @@
 			gObjects[BALL].pos = vec3(0, 0, -96);
 			gObjects[BALL].scale = vec3(gPong.ball.radius, gPong.ball.radius, gPong.ball.radius);
 			gObjects[BALL].vTrans = vec3(randomizeInt(10, 20), randomizeInt(10, 20), 0);
+			gObjects[BALL].vTheta = vec3(0, 0, 1);
+			gObjects[BALL].text = 0;
 			gObjects[BALL].init();
 			for (let j = 0; j < gObjects[BALL].numberOfPositions; j++)
 			{
-				gObjects[BALL].colors.push(vec4(1, 1, 1, 1));
-				gObjects[BALL].textures.push(NO_TEXTURE);
+				gObjects[BALL].colors.push(vec4(1, 1, 1, 0));
+
+				let	x = Math.atan2(Math.abs(gObjects[BALL].positions[j][0]),
+					gObjects[BALL].positions[j][2]) / (2 * Math.PI);
+
+				if (j >= gObjects[BALL].numberOfPositions / 2)
+					x = 1 - x;
+				gObjects[BALL].textures.push(vec2(x,
+					Math.acos(gObjects[BALL].positions[j][1]) / Math.PI));
 			}
 		};
 
