@@ -3,7 +3,7 @@ async function ShowRanking(filters, document) {
     if (response.status === true) {
         const data = response.data;
         let paginatedGroup = document.getElementById("paginated-ranking");
-        RoomPaginationComponent(paginatedGroup, data)
+        RoomPaginationComponent(paginatedGroup, data, "listRanking");
 
         let ranking = data["paginatedItems"]["Data"];
         const listGroup = document.getElementById('rooms-list');

@@ -1,4 +1,4 @@
-function PaginationItemLabelComponent(currentPage, label, paginatedInfo)
+function PaginationItemLabelComponent(currentPage, label, paginatedInfo, functionName)
 {
     console.log()
     let page = label == "Previous" ? currentPage - 1 : currentPage + 1;
@@ -6,27 +6,27 @@ function PaginationItemLabelComponent(currentPage, label, paginatedInfo)
     item.classList.add('page-item');
     paginatedInfo[`has${label}Page`] ? item.classList.remove('disabled') : item.classList.add('disabled');
     item.innerHTML = `
-        <a class="page-link" onclick="listRooms(${page})">${label}</a>
+        <a class="page-link" onclick="${functionName}(${page})">${label}</a>
     `;
     return item;
 }
 
-function PaginationItemComponent(page, currentPage)
+function PaginationItemComponent(page, currentPage, functionName)
 {
     const item = document.createElement('li');
     item.classList.add('page-item');
     page === currentPage ? item.classList.add('active') : item.classList.remove('active');
     item.innerHTML = `
-        <a class="page-link" onclick="listRooms(${page})">${page}</a>
+        <a class="page-link" onclick="${functionName}(${page})">${page}</a>
     `;
     return item;
 }
 
-function RoomPaginationComponent(paginatedGroup, data)
+function RoomPaginationComponent(paginatedGroup, data, functionName)
 {
     paginatedGroup.innerHTML = "";
     const paginatedInfo = data["paginatedItems"]
-    let item = PaginationItemLabelComponent(paginatedInfo["currentPage"], "Previous", paginatedInfo);
+    let item = PaginationItemLabelComponent(paginatedInfo["currentPage"], "Previous", paginatedInfo, functionName);
     paginatedGroup.appendChild(item);
 
     const totalPages = paginatedInfo["totalPages"];
@@ -35,11 +35,11 @@ function RoomPaginationComponent(paginatedGroup, data)
     const { startPage, endPage } = PaginationConfig(totalPages, currentPage);
 
     for (let page = startPage; page <= endPage; page++) {
-        item = PaginationItemComponent(page, currentPage);
+        item = PaginationItemComponent(page, currentPage, functionName);
         paginatedGroup.appendChild(item);
     }
 
-    item = PaginationItemLabelComponent(paginatedInfo["currentPage"], "Next", paginatedInfo);
+    item = PaginationItemLabelComponent(paginatedInfo["currentPage"], "Next", paginatedInfo, functionName);
     paginatedGroup.appendChild(item);
 }
 
