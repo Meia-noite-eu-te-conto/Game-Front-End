@@ -92,6 +92,11 @@
 			</div>
 		</div>
 	</div>
+
+	<div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
+        <h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>
+    </div>
+
 	<script>
         const	urlParams = new URLSearchParams(window.location.search);
         const	roomCode = urlParams.get('roomCode');
@@ -826,16 +831,18 @@
 		window.onload = function() {
 			renderHeader(document)
 			getPlayer()
+			
 			socket = new WebSocket(`wss://${host}${endpoint}`);
-			socket.onopen = function(event) {
-				console.log("Conectado ao servidor WebSocket");
-				const userId = getCookie(document, "userId");  // Substitua pelo ID do usuário real
-				const headers = { "X-User-Id": userId };
 
+			socket.onopen = function(event) {
+				const headers = { "X-User-Id": getCookie(document, "userId")};
+				
 				socket.send(JSON.stringify({
 					type: 'connect',
 					headers: headers
 				}));
+
+				WSConnection(document, true)
 			};
 
 			socket.onmessage = function(event) {
@@ -858,7 +865,7 @@
 			};
 
 			socket.onclose = function(event) {
-				console.log("Desconectado do servidor WebSocket");
+				WSConnection(document, false)
 			};
 
 			socket.onerror = function(error) {
