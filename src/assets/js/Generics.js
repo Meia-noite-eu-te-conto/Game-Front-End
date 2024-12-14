@@ -10,15 +10,7 @@ function redirectIfuserIsActived(document, window) {
             if (data != null)
             {
                 if (data["roomStatus"] <= 3) {
-                    let pathName = "/watch-room.html"
-                    let queryParams = `?roomCode=${data["roomCode"]}`;
-                    let targetUrl = pathName + queryParams
-
-                    console.log(window.location.pathname)
-                    if (window.location.pathname !== pathName) {
-                        console.log(data)
-                        window.location.href = targetUrl;
-                    }
+                    redirectHrefRoom(window, data["roomCode"], data["roomType"])
                 }
                 // if (data["roomStatus"] > 3 && data["roomStatus"] <= 7)
                 // {
@@ -45,4 +37,30 @@ function addUserIdIntoCookie(document, userId) {
 
 function resetUserIdIntoCookie(document) {
     document.cookie = `userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+}
+
+function ApiRequestHandler(endpoint, method = 'GET', body = null, additionalHeaders = {}) {
+    const headers = {
+        'Content-Type': 'application/json',
+        'X-User-Id': getCookie(document, "userId"),
+        ...additionalHeaders,
+    };
+
+    return fetch(endpoint, {
+        method,
+        headers,
+        body: body ? JSON.stringify(body) : null,
+    });
+}
+
+function handleApiError(error) {
+    console.error("API error:", error);
+}
+
+function handleApiSuccess(response, successCallback) {
+    if (response.ok) {
+        successCallback && successCallback(response);
+    } else {
+        console.error(`API request failed with status ${response.status}`);
+    }
 }

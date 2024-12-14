@@ -30,6 +30,7 @@
     <script src="./assets/js/repositories/RoomRepository.js"></script>
     <script src="./assets/js/components/RoomComponent.js"></script>
     <script src="./assets/js/Rooms.js"></script>
+    <script src="./assets//js/EventHandlers.js"></script>
 
 </head>
 <body class="pbg">
@@ -65,31 +66,31 @@
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
                 <div class="modal-body">
-                    <form onsubmit="createRoom(event)"> 
+                    <form onsubmit="CreateRoom(event)"> 
                         <div class="mb-3">
                             <label for="nickname-input" class="col-form-label">Nickname</label>
-                            <input type="text" class="form-control" id="nickname-input">
+                            <input name="nickname" type="text" class="form-control" id="nickname-input">
                         </div>
                         <div class="mb-3">
                             <label for="game-type-section" class="col-form-label">Game Type</label>
-                            <select id="game-type-section" class="form-select form-select-sm" aria-label="game type selection" onchange="updateNumberOfPlayersOptions()">
+                            <select name="gameType" id="game-type-section" class="form-select form-select-sm" aria-label="game type selection" onchange="updateNumberOfPlayersOptions()">
                                 <option selected value="0">Match</option>
-                                <option disabled value="1">Tournament</option>
+                                <option value="1">Tournament</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="number-of-players-section" class="col-form-label">Number of Players</label>
-                            <select id="number-of-players-section" class="form-select form-select-sm" aria-label="number of players selection">
+                            <select name="numberOfPlayers" id="number-of-players-section" class="form-select form-select-sm" aria-label="number of players selection">
                                 <option selected value="2">2</option>
                                 <option value="4">4</option>
                             </select>
                         </div>
                         <div class="mb-3">
                             <label for="room-name-input" class="col-form-label">Room Name</label>
-                            <input class="form-control" id="room-name-input"></input>
+                            <input name="roomName" class="form-control" id="room-name-input"></input>
                         </div>
                         <div class="form-check form-switch">
-                            <input class="form-check-input" type="checkbox" role="switch" id="private-room-checkbox">
+                            <input name="isPrivate" class="form-check-input" type="checkbox" role="switch" id="private-room-checkbox">
                             <label class="form-check-label" for="private-room-checkbox">Private Room<br><p>Private rooms do not appear in global search and can only be accessed by code.</p></label>
                         </div>
                         <div class="modal-footer mb-3">
@@ -102,37 +103,9 @@
     </div>
 
     <script>
-        async function createRoom(event) {
-            event.preventDefault();
-            await CreateRoomAsync(event, document, window)
-        }
-
         window.onload = function() {
             redirectIfuserIsActived(document, window)
             renderHeader(document)
-        }
-        
-        function updateNumberOfPlayersOptions() {
-            const gameTypeSelect = document.getElementById("game-type-section");
-            const playersSelect = document.getElementById("number-of-players-section");
-
-            playersSelect.innerHTML = '<option selected>Select a option</option>';
-
-            const selectedGameType = gameTypeSelect.value;
-
-            let options = [];
-            if (selectedGameType === "0") {
-                options = [2, 4];
-            } else if (selectedGameType === "1") {
-                options = [4, 8, 12, 16];
-            }
-
-            options.forEach(optionValue => {
-                const optionElement = document.createElement("option");
-                optionElement.value = optionValue;
-                optionElement.textContent = optionValue;
-                playersSelect.appendChild(optionElement);
-            });
         }
     </script>
 </body>

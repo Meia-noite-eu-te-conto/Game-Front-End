@@ -24,8 +24,10 @@
     <script src="./assets/js/components/HeaderComponent.js"></script>
     <script src="./assets/js/Header.js"></script>
 
+    <script src="./assets/js/components/RoomComponent.js"></script>
     <script src="./assets/js/repositories/RoomRepository.js"></script>
     <script src="./assets/js/Rooms.js"></script>
+    <script src="./assets/js/EventHandlers.js"></script>
 </head>
 <body class="pbg">
 
@@ -35,88 +37,15 @@
     <main class="cover-container d-flex w-100 p-3 mx-auto flex-row justify-content-center align-items-stretch">
         
         <section class="h-75 w-50 mx-3 bg-light px-4 pt-3 pb-5 rounded-4 border border-1">
-            <div id="room-name">
-                <h1>Match Room</h1>
-                <p>It will be possible to start the match as soon as there is the minimum number of players.</p>
-            </div>
-            
-            <div id="list-of-players" class="mb-3 list-group list-group-flush border-bottom scrollarea">
-                <div class="list-group-item py-3 lh-sm rounded-4 mb-2 skeleton-loader">
-                    <div class="d-flex w-100 align-items-center justify-content-between">
-                        <div class="d-flex w-75 align-items-center">
-                            <div class="skeleton-img rounded-circle"></div>
-                            <div class="skeleton-text ps-2">
-                                <div class="skeleton-line mb-1"></div>
-                                <div class="skeleton-line small"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="list-group-item py-3 lh-sm rounded-4 mb-2 skeleton-loader">
-                    <div class="d-flex w-100 align-items-center justify-content-between">
-                        <div class="d-flex w-75 align-items-center">
-                            <div class="skeleton-img rounded-circle"></div>
-                            <div class="skeleton-text ps-2">
-                                <div class="skeleton-line mb-1"></div>
-                                <div class="skeleton-line small"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="list-group-item py-3 lh-sm rounded-4 mb-2 skeleton-loader">
-                    <div class="d-flex w-100 align-items-center justify-content-between">
-                        <div class="d-flex w-75 align-items-center">
-                            <div class="skeleton-img rounded-circle"></div>
-                            <div class="skeleton-text ps-2">
-                                <div class="skeleton-line mb-1"></div>
-                                <div class="skeleton-line small"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-                <div class="list-group-item py-3 lh-sm rounded-4 mb-2 skeleton-loader">
-                    <div class="d-flex w-100 align-items-center justify-content-between">
-                        <div class="d-flex w-75 align-items-center">
-                            <div class="skeleton-img rounded-circle"></div>
-                            <div class="skeleton-text ps-2">
-                                <div class="skeleton-line mb-1"></div>
-                                <div class="skeleton-line small"></div>
-                            </div>
-                        </div>
-                    </div>
-                </div>
-            </div>
+            <div id="room-name"></div>
+            <div id="list-of-players" class="mb-3 list-group list-group-flush border-bottom scrollarea"></div>
+
         </section>
+
         <section id="room-actions" class="w-50 mx-3 d-flex flex-column align-items-center justify-content-between">
-            <a href="" class="w-75 bi bi-copy btn btn-dark"> Room Code: A7B9X2F4P3</a>
-            <div class="d-flex align-items-around justify-content-between">
-                <p class="lead px-3">
-                    <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
-                </p>
-                <p class="lead px-3">
-                    <button type="button" onclick="CreateGame()" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Start Game</button>
-                </p>
-            </div>
+
         </section>
     </main>
-
-    <div class="modal fade" id="enter-the-room-modal" tabindex="-1" aria-labelledby="EnterTheRoomModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-            <div class="modal-header align-items-start">
-                <div>
-                    <h1 class="modal-title fs-5" id="exampleModalLabel">Create a room</h1>
-                    <p>Create a room to play with up to 4 people.</p>
-                </div>
-                <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-            </div>
-            <div class="modal-body">
-                
-            </div>
-
-        </div>
-    </div>
-    </div>
 
     <div class="toast-container position-fixed bottom-0 end-0 p-3">
         <div id="roomCodeToast" class="toast" role="alert" aria-live="assertive" aria-atomic="true">
@@ -130,202 +59,52 @@
         </div>
     </div>
 
+    <div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
+        <h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>
+    </div>
+
     <script>
-        const urlParams = new URLSearchParams(window.location.search);
-        const roomCode = urlParams.get('roomCode');
-        
+        let urlParams = new URLSearchParams(window.location.search);
+        let roomCode = urlParams.get('roomCode');
+
         const host = window.location.host;
-		const endpoint = "/api/v1/user-session/";
-		const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${roomCode}/`);
+        const endpoint = "/api/v1/user-session/";
+        const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${roomCode}/`);
 
         const userId = getCookie(document, "userId")
 
+        document.addEventListener("click", event => {
+            HandleEvents(event, roomCode)
+        });
+
         socket.onopen = function(event) {
-			console.log("Conectado ao servidor WebSocket");
-			socket.send("Olá, servidor!");
+			WSConnection(document, true)
 		};
 
 		socket.onmessage = function(event) {
-			console.log("Recebido do servidor:", event.data);
             const data = JSON.parse(event.data);
             if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
                 resetUserIdIntoCookie(document)  
                 window.location.href = "/index.html"
             } else if (data.type == "player_list_update")
-                ShowRoom();
+                ShowMatchRoom(roomCode);
             else if (data.type == "game.started") {
                 window.location.href = `/game.html?gameId=${data.gameId}&roomCode=${roomCode}`
             }
 		};
 
 		socket.onclose = function(event) {
-			console.log("Desconectado do servidor WebSocket");
+			WSConnection(document, false)
 		};
 
         socket.onerror = function(error) {
             console.error("WebSocket error:", error);
         };
 
-        function ShowRoom() {
-
-            fetch(`/api/v1/user-session/rooms/${roomCode}/detail`, {
-                method: 'GET',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-User-Id': getCookie(document, "userId")
-                }
-            })
-                .then(response => response.json())
-                .then(data => {
-                    const roomNameElement = document.getElementById("room-name")
-                    const playerListElement = document.getElementById("list-of-players")
-                    const roomActionsElement = document.getElementById("room-actions")
-                    
-                    roomNameElement.innerHTML = `
-                        <div>
-                            <h1>${data["roomName"]}</h1>
-                            <p>It will be possible to start the match as soon as there is the minimum number of players.</p>
-                        </div>
-                    `
-                    playerListElement.innerHTML = ""
-                    players = data["players"]
-                    createdBy = data["createdBy"]
-                    console.log("userId:", userId)
-                    let i = 0;
-                    console.log(players)
-                    players.forEach(player => {
-                        console.log(player.profileColor)
-                        const playerElement = document.createElement('div');
-                        playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
-
-                        const owner = player.id === createdBy ?
-                        "<small class='text-body-secondary bi bi-person'> Owner</small>" :
-                        (data["isOwner"] ?
-                            `<a onclick="deletePlayer('${player.id}')" class='h3 pe-2 bi bi-x-circle'></a>` :
-                            "");
-                        
-                        let [r, g, b, a] = PlayerColor[player.profileColor]
-                        playerElement.innerHTML = `
-                            <div class="d-flex w-100 align-items-center justify-content-between">
-                                <div class=" d-flex w-75 align-items-center">
-                                    <img style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
-                                    <div class="d-flex flex-column  ps-2 justify-content-center">
-                                        <strong class="mb-1">${player.name}</strong>
-                                        <p class="small mb-0">Blue</p>
-                                    </div>
-                                </div>
-                                ${ owner }
-                            </div>
-                            `;
-                        playerListElement.appendChild(playerElement)
-                        i++;
-                    });
-
-                    while (i < data.maxAmountOfPlayers)
-                    {
-                        const playerElement = document.createElement('a');
-                        playerElement.classList.add("disabled", "list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2", "bg-secondary")
-                        playerElement.innerHTML = `
-                            <div class="d-flex w-100 align-items-center justify-content-between">
-                                <div class="d-flex w-75 align-items-center">
-                                    <img class="rounded-circle img-thumbnail" src="./assets/img/none.png" alt="">
-                                    <div class="d-flex flex-column  ps-2 justify-content-center">
-                                        <strong class="mb-1"></strong>
-                                        <p class="small mb-0"></p>
-                                    </div>
-                                </div>
-                            </div>
-                            `;
-                        playerListElement.appendChild(playerElement)
-                        i++;              
-                    }
-
-                    let btnSection = `
-                        <p class="lead px-3">
-                            <a onclick="deletePlayer('${userId}')" class="btn btn-lg btn-secondary">Leave Room</a>
-                        </p>
-                    `
-                    if (data["isOwner"]) 
-                    {
-                        btnSection = `
-                            <p class="lead px-3">
-                                <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
-                            </p>
-                            <p class="lead px-3">
-                                <button type="button" onclick="CreateGame()" class="btn btn-lg btn-dark">Start Game</button>
-                            </p>`
-                    }
-                    document.getElementById("room-actions").innerHTML = `
-                        <a class="w-75 bi bi-copy btn btn-dark copy-btn" data-room-code="${data["roomCode"]}"> Room Code: ${data["roomCode"]}</a>
-                        <div class="d-flex align-items-end justify-content-between">
-                            ${btnSection}
-                        </div>
-                    `;
-                    addCopyButtonEvent(document);
-                })
-        }
-
-        function DeleteRoom() {
-            fetch(`/api/v1/user-session/rooms/${roomCode}/delete`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json',
-                    'X-User-Id': getCookie(document, "userId")
-                },
-            })
-            .then(respose => {
-                if (respose.status === 200) {
-                    resetUserIdIntoCookie(document)    
-                    window.location.href = "/index.html"
-                }
-                return 
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        }
-
-        function CreateGame() {
-            fetch(`/api/v1/user-session/games/${roomCode}/new-game/`, {
-                method: 'POST',
-                headers: {
-                    'X-User-Id': getCookie(document, "userId"),
-                    'Content-Type': 'application/json'
-                },
-            })
-            .then(respose => {
-                if (respose.status === 200) {
-                    window.location.href = "/game.html"
-                }
-                return 
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        }
-
-        function deletePlayer(playerId) {
-            fetch(`/api/v1/user-session/rooms/${roomCode}/${playerId}/remove-player/`, {
-                method: 'DELETE',
-                headers: {
-                    'Content-Type': 'application/json'
-                },
-            })
-            .then(respose => {
-                if (respose.status === 200) {
-                    
-                }
-                return 
-            })
-            .catch(error => {
-                console.log(error)
-            })
-        }
-      
         window.onload = function() {
             redirectIfuserIsActived(document, window)
             renderHeader(document)
-            ShowRoom()
+            ShowMatchRoom(roomCode)
         }
     </script>
 </body>

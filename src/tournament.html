@@ -40,10 +40,21 @@
         <section id="tournament-brackets" class="w-75 my-2 list-group list-group-flush d-flex flex-colunm align-items-center">
         </section>
         <section id="tournament-action">
+            <p class="lead px-3">
+                <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
+            </p>
+            <button id="closeRoomButton" class="btn btn-dark">Close Tournament</button>
         </section>
     </main>
 
+    <div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
+        <h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>
+    </div>
+
     <script>
+        const urlParams = new URLSearchParams(window.location.search);
+        const roomCode = urlParams.get('roomCode');
+
         function showPlayers() {
             fetch('/assets/tournament.json')
             .then(response => response.json())
@@ -98,10 +109,17 @@
             })
             .catch(error => console.error('Error:', error));
         }
+
         window.onload = function() {
             renderHeader(document)
             showPlayers()
+            
+            document.getElementById("closeRoomButton").onclick = () => {
+                console.log("Olá")
+                DeleteRoom(document, window, roomCode);
+            };
         };
+
     </script>
 </body>
 </html>
