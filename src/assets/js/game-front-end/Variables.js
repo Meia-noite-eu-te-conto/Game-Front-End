@@ -77,7 +77,7 @@ const	CAMERA_VTRANS = 150 / 500 * 500;
 const	CAMERA_THETA = Math.PI / 2;
 const	CAMERA_THETA_DEGREES = CAMERA_THETA * 180 / Math.PI;
 
-const	BACKGROUND = [0.0, 0.0, 1.0, 0.3];
+const	BACKGROUND = [0.0, 0.0, 1.0, 0.2];
 const	AXIS_X_IND = 0;
 const	AXIS_Y_IND = 1;
 const	AXIS_Z_IND = 2;
