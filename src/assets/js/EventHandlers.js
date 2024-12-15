@@ -8,7 +8,13 @@ const btnActions = {
 function HandleEvents(event, roomCode) {
     if (event.target.matches(".modal-handler")) {
         event.preventDefault()
-        var modal = new bootstrap.Modal(document.getElementById(event.target.dataset.targert));
+        const targetModalId = event.target.dataset.target;
+        const modalElement = document.getElementById(targetModalId);
+        const playerId = event.target.dataset.playerId;
+
+        modalElement.dataset.playerId = playerId;
+
+        var modal = new bootstrap.Modal(modalElement);
         modal.show();
         return
     }

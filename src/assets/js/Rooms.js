@@ -94,11 +94,15 @@ function updateNumberOfPlayersOptions() {
 
     const selectedGameType = gameTypeSelect.value;
     playersSelect.innerHTML = ""
+    playersSelect.disabled = false
     let options = [];
     if (selectedGameType === "0") {
         options = [2, 4];
     } else if (selectedGameType === "1") {
         options = [4, 8, 16];
+    } else if (selectedGameType === "2") {
+        options = [1];
+        playersSelect.disabled = true;
     }
 
     let i = 0
