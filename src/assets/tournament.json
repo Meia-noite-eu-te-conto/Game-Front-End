@@ -1,5 +1,8 @@
 {
 	"round": 1,
+	"roomType": 1,
+	"roomName": "Irmão do Jorel",
+	"numberOfPlayers": 5,
 	"maxNumberOfPlayers": 16,
 	"owner": true,
 	"tournamentOwner": true,

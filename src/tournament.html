@@ -36,15 +36,16 @@
 
     <!-- Header Section -->
     <section id="header-section" class="cover-container bg-light mb-4 d-flex w-100 px-3 mx-auto flex-column"></section>
-    <main class="container bg-light d-flex flex-row rounded-4">
-        <section id="tournament-brackets" class="w-75 my-2 list-group list-group-flush d-flex flex-colunm align-items-center">
-        </section>
-        <section id="tournament-action">
-            <p class="lead px-3">
-                <a onclick="DeleteRoom()" class="btn btn-lg btn-secondary">Close Room</a>
-            </p>
-            <button id="closeRoomButton" class="btn btn-dark">Close Tournament</button>
-        </section>
+    <main class="container bg-light rounded-4 p-5">
+        <div id="tournament-info" >
+        </div>
+        <div class="d-flex flex-row w-100 justify-content-around">
+            <section id="tournament-brackets" class="w-50 my-2 list-group list-group-flush d-flex flex-colunm align-items-center">
+            </section>
+            <section id="tournament-action" class="w-25 h-100 d-flex flex-column justify-content-between align-items-start">
+                
+            </section>
+        </div>
     </main>
 
     <div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
@@ -59,53 +60,7 @@
             fetch('/assets/tournament.json')
             .then(response => response.json())
             .then(data => {
-                let elementButton = document.getElementById("tournament-action")
-                elementButton.classList.add("h-100", "d-flex", "flex-column", "align-items-end", "justify-content-end")
-                if (data["owner"]) {
-                    let btn = document.createElement("button") 
-                    btn.classList.add("btn", "btn-dark")
-                    btn.innerHTML = "start Game"
-                    elementButton.appendChild(btn)
-                }
-                let elements = document.getElementById("tournament-brackets");
-                elements.innerHTML = ""
-                let brackets = document.createElement("div")
-
-                let elementSection = document.createElement("div")
-                let step = 4
-                for (i = 1; i <= data["maxNumberOfPlayers"]; i++) {
-                    let player = data["players"][`${i}`]
-                    let item = document.createElement("a");
-                    item.classList.add("list-group-item", "list-group-item-action", "py-2", "lh-sm", "rounded-4", "mb-1")
-                    if (player === null)
-                        item.classList.add("bg-dark", "text-white")
-                    item.innerHTML = `
-                    <div class="d-flex w-100 align-items-center justify-content-between ">
-                        <div class="d-flex w-100 align-items-center">
-                            <img class="rounded-circle img-thumbnail" style="background-color: ${player === null ? "#000" : player["color"]}" src="${ player === null ? "/assets/img/none.png" : player["urlProfileImage"]}" alt="">
-                            <div class="d-flex flex-column ps-2 justify-content-center">
-                                <strong class="mb-1">${ player === null ? "None" : player["name"]}</strong>
-                                ${player === null ? "<p class='small mb-0'>waiting</p>" : ""}
-                            </div>
-                        </div>
-                        <h3 class="ps-3 text-body-secondary">${i}</h3>
-                    </div>
-                    `
-                    brackets.appendChild(item)
-                    if (i % 2 === 0) {
-                        brackets.classList.add("my-2")
-                        elementSection.appendChild(brackets)
-                        brackets = document.createElement("div")
-                    }
-
-                    if (i === step) {
-                        elementSection.classList.add("w-100", "d-flex", "flex-row", "justify-content-around")
-                        elements.appendChild(elementSection)
-                        elementSection = document.createElement("div")
-                        step += 4
-                    }
-                }
-
+                TournamentRoomComponent(data)
             })
             .catch(error => console.error('Error:', error));
         }
@@ -113,11 +68,6 @@
         window.onload = function() {
             renderHeader(document)
             showPlayers()
-            
-            document.getElementById("closeRoomButton").onclick = () => {
-                console.log("Olá")
-                DeleteRoom(document, window, roomCode);
-            };
         };
 
     </script>

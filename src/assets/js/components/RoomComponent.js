@@ -69,7 +69,6 @@ function NonePlayerLabelComponent() {
     return element
 }
 
-
 function MatchPlayerListComponent(data) {
     players = data["players"]
     createdBy = data["createdBy"]
@@ -184,7 +183,146 @@ function MatchRoomComponent(data) {
     ))
 }
 
+function PlayerLabelTournamentComponent(player, index)
+{
+    let element = document.createElement("div")
+    element.classList.add("list-group-item", "list-group-item-action", "py-2", "lh-sm", "rounded-4", "mb-1")
+    if (player === null)
+        element.classList.add("bg-dark", "text-white")
+    element.innerHTML = `
+        <div class="d-flex w-100 align-items-center justify-content-between">
+            <div class="d-flex w-100 align-items-center">
+                <img class="rounded-circle img-thumbnail" style="background-color: ${player === null ? "#000" : player["color"]}" src="${ player === null ? "/assets/img/none.png" : player["urlProfileImage"]}" alt="">
+                <div class="d-flex flex-column ps-2 justify-content-center">
+                    <strong class="mb-1">${ player === null ? "None" : player["name"]}</strong>
+                    ${player === null ? "<p class='small mb-0'>waiting</p>" : ""}
+                </div>
+            </div>
+            <h3 class="ps-3 text-body-secondary">${index}</h3>
+        </div>
+    `
+    return element
+}
 
+function BracketsRowsComponent(data) {
+    let tournamentList = document.getElementById("tournament-brackets");
+    let brackets = document.createElement("div")
+    let bracketsRow = document.createElement("div")
+    
+    tournamentList.innerHTML = ""
+    
+    let step = TournamentConfig["amountPlayersByBracketsRow"]
+    let players = data["players"]
+    for (i = 1; i <= data["maxNumberOfPlayers"]; i++) {
+
+        let playerElement = PlayerLabelTournamentComponent(players[`${i}`], i)
+        brackets.appendChild(playerElement)
+        if (i % TournamentConfig["amountPlayersByBrackets"] === 0) {
+            brackets.classList.add("my-2")
+            bracketsRow.appendChild(brackets)
+            brackets = document.createElement("div")
+        }
+
+        if (i === step) {
+            bracketsRow.classList.add("w-100", "d-flex", "flex-row", "justify-content-around")
+            tournamentList.appendChild(bracketsRow)
+            bracketsRow = document.createElement("div")
+            step += TournamentConfig["amountPlayersByBracketsRow"]
+        }
+    }
+}
+
+function TournamentInformationComponent(data) {
+    let tournamentInfo = document.getElementById("tournament-info")
+    tournamentInfo.classList.add("w-100", "d-flex", "pb-5", "flex-row", "justify-content-start")
+
+    tournamentInfo.innerHTML = `
+        <div class="pe-4 border-end border-dark border-3">
+            <h1 class="mb-0" style="font-size: 65px">${data["numberOfPlayers"]}/${data["maxNumberOfPlayers"]}</h1>
+            <p class="mb-0">players in tournament</p>
+        </div>
+        <div class="ps-4">
+            <h1>${GamesType[data["roomType"]]}: ${data["roomName"]}</h1>
+            <p>It will be possible to start the match as soon as there is the minimum number of players.</p>
+        </div>
+    `
+
+}
+
+function TournamentActionsComponent(data) {
+    let elementActions = document.getElementById("tournament-action")
+    elementActions.classList.add("h-100", "d-flex", "flex-column", "align-items-end", "justify-content-end")
+
+    let historyList = TournamentHistoryComponent()
+    elementActions.appendChild(historyList)
+
+    if (data["owner"]) {
+
+        let btnSection = document.createElement("div") 
+        btnSection.classList.add("d-flex", "justify-content-end", "w-100")
+        btnSection.innerHTML = `
+            <button class="btn btn-dark">
+                Start Game
+            </button>
+        `
+        elementActions.appendChild(btnSection)
+    }
+}
+
+function TournamentRoomComponent(data) {
+    TournamentActionsComponent(data)
+    TournamentInformationComponent(data)
+    BracketsRowsComponent(data)
+}
+
+function TournamentHistoryItemComponent(game) {
+    let element = document.createElement("li")
+    element.classList.add("list-group-item", "list-group-item-action", "py-2", "lh-sm", "rounded-2", "mb-1", "d-flex", "justify-content-between", "align-items-center")
+    element.innerHTML = `
+        <div class="d-flex align-items-center">
+            <img class="border border-primary border-5 me-2 rounded-circle" src="${game["blue"]["profileImage"]}" alt="" style="width: 35px; height: 35px">
+            <p class="me-2 mb-0">${game["blue"]["name"].slice(0, 6)}</p>
+            <p class="mb-0">${game["blue"]["score"]}</p>
+        </div>
+        <div>X</div>
+        <div class="d-flex align-items-center">
+            <img class="border border-danger border-5 me-2 rounded-circle" src="${game["red"]["profileImage"]}" alt="" style="width: 35px; height: 35px">
+            <p class="pe-2 mb-0">${game["red"]["name"].slice(0, 6)}</p>
+            <p class="mb-0">${game["red"]["score"]}</p>
+        </div>
+    `
+    return element
+}
+
+function TournamentHistoryComponent() {
+    let element = document.createElement("div")
+    element.classList.add("w-100", "mb-3")
+
+    let elementHeader = document.createElement("p")
+    elementHeader.classList.add("mb-3")
+    elementHeader.innerHTML = `
+        <b>Games history</b>
+        </br>
+        <small>History of games result in this tournament.</small>
+    `
+    element.appendChild(elementHeader)
+
+    let historyElement = document.createElement("ul")
+    historyElement.classList.add("list-group")
+
+    fetch('/assets/tournament-history.json')
+    .then(response => response.json())
+    .then(data => {
+        data["games"].forEach(game => {
+            let item = TournamentHistoryItemComponent(game)
+            historyElement.appendChild(item)
+        });
+    })
+    .catch(error => console.error('Error:', error));
+
+    element.appendChild(historyElement)
+    return element
+}
 
 function AddModalComponent(
     modalName, 

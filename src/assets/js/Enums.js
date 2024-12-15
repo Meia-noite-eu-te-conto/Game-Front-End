@@ -31,5 +31,10 @@ const	RouteNames = {
 	"index": "/index.html",
 	"ranking": "/ranking.html",
 	"rooms": "/view-rooms.html",
-	"game": "/game.html" 
+	"game": "/game.html"
+}
+
+const	TournamentConfig = {
+    "amountPlayersByBrackets": 2,
+    "amountPlayersByBracketsRow": 4 
 }
