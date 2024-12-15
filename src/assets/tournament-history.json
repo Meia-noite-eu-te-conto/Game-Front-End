@@ -1,0 +1,69 @@
+{
+	"games": [
+		{
+			"winner": "red",
+			"red": {
+				"name": "Jonas",
+				"score": 22,
+				"profileImage": "./assets/img/1.png"
+			},
+			"blue": {
+				"name": "Bea",
+				"score": 21,
+				"profileImage": "./assets/img/2.png"
+			}
+		},
+		{
+			"winner": "blue",
+			"red": {
+				"name": "Lucas",
+				"score": 18,
+				"profileImage": "./assets/img/1.png"
+			},
+			"blue": {
+				"name": "Ana",
+				"score": 20,
+				"profileImage": "./assets/img/2.png"
+			}
+		},
+		{
+			"winner": "red",
+			"red": {
+				"name": "Carlos",
+				"score": 25,
+				"profileImage": "./assets/img/2.png"
+			},
+			"blue": {
+				"name": "Sofia",
+				"score": 19,
+				"profileImage": "./assets/img/1.png"
+			}
+		},
+		{
+			"winner": "blue",
+			"red": {
+				"name": "Marcos",
+				"score": 17,
+				"profileImage": "./assets/img/1.png"
+			},
+			"blue": {
+				"name": "Juliana",
+				"score": 23,
+				"profileImage": "./assets/img/1.png"
+			}
+		},
+		{
+			"winner": "red",
+			"red": {
+				"name": "Pedro",
+				"score": 30,
+				"profileImage": "./assets/img/2.png"
+			},
+			"blue": {
+				"name": "Clara",
+				"score": 28,
+				"profileImage": "./assets/img/1.png"
+			}
+		}
+	]
+}
