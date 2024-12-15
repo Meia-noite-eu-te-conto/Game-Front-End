@@ -21,17 +21,21 @@ function RemovePlayerComponent (data, player, createdBy) {
     return (player.id == createdBy) ?
     "<small class='text-body-secondary bi bi-person'> Owner</small>" :
     (data["isOwner"] ?
-        `<h1 class='act p-0 btn-remove-player h3 pe-2 bi bi-x-circle' data-player-code="${player.id}"></h1>` :
+        `<h1 class='modal-handler p-0 btn-remove-player h3 pe-2 bi bi-x-circle' data-target="alert-remove-player-modal" data-player-id="${player.id}"></h1>` :
         "");
 }
 
-function PlayerLabelComponent(data, player, createdBy) {
+function PlayerLabelComponent(data, player, createdBy, roomType) {
     let element = document.createElement('div')
     element.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
     
     let [r, g, b, a] = PlayerColor[player.profileColor]
     let rgbaPlayerColor = `style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})'`
-    let owner = RemovePlayerComponent(data, player, createdBy)
+    let owner = ""
+
+    if (roomType != 2) {
+        owner = RemovePlayerComponent(data, player, createdBy)
+    }
 
     element.innerHTML = `
         <div class="d-flex w-100 align-items-center justify-content-between">
@@ -69,13 +73,14 @@ function NonePlayerLabelComponent() {
 function MatchPlayerListComponent(data) {
     players = data["players"]
     createdBy = data["createdBy"]
+    roomType = data["roomType"]
     
     const playerListElement = document.getElementById("list-of-players")
     playerListElement.innerHTML = ""
 
     let i = 0;
     players.forEach(player => {
-        let playerElement = PlayerLabelComponent(data, player, createdBy)                       
+        let playerElement = PlayerLabelComponent(data, player, createdBy, roomType)
         playerListElement.appendChild(playerElement)
         i++;
     });
@@ -100,7 +105,7 @@ function MatchGameInformationComponent(data) {
 
 function CloseRoomButtonComponent(data) {
     return  `<p class="lead px-3">
-                <a data-room-code="${data["roomCode"]}" data-targert="alert-close-room-modal" class="btn modal-handler btn-lg btn-secondary">Close Room</a>
+                <a data-room-code="${data["roomCode"]}" data-target="alert-close-room-modal" class="btn modal-handler btn-lg btn-secondary">Close Room</a>
             </p>`
  }
 
@@ -113,7 +118,7 @@ function CloseRoomButtonComponent(data) {
 function LeaveRoomButtonComponent(userId) {
     return `
         <p class="lead px-3">
-            <button data-player-code="${userId}" class="btn btn-leave-the-room btn-lg btn-secondary">Leave Room</button>
+            <button data-player-code="${userId}" data-target="alert-leave-room-modal" class="btn modal-handler btn-lg btn-secondary">Leave Room</button>
         </p>
         `
 }
@@ -150,10 +155,32 @@ function MatchRoomComponent(data) {
         "close room.",
         "bi bi-exclamation-circle-fill",
         "Close Game",
-        "You are careful to close the starting room.<br>Do you want to continue?",
+        "Be careful. This game will be deleted if you close it.<br>Do you want to continue?",
         "btn-close-room",
-        "yes",
-        "no"
+        "Yes",
+        "No"
+    ))
+
+    document.body.appendChild(AddModalComponent(
+        "alert-leave-room-modal",
+        "leave room.",
+        "bi bi-exclamation-circle-fill",
+        "Leave Game",
+        "Are you sure you want to leave this game?",
+        "btn-leave-the-room",
+        "Yes",
+        "No"
+    ))
+
+    document.body.appendChild(AddModalComponent(
+        "alert-remove-player-modal",
+        "remove player.",
+        "bi bi-exclamation-circle-fill",
+        "Remove Player",
+        "Are you sure you want to remove this player from the game?",
+        "btn-remove-player",
+        "Yes",
+        "No"
     ))
 }
 
@@ -192,8 +219,8 @@ function AddModalComponent(
                 </div>
 
                 <div class="modal-footer mb-3 w-100">
-                    <button type="button" class="btn btn-lg btn-secondary" data-dismiss="modal">${noBtnName}</button>
-                    <button type="button" class="btn btn-lg ${actionClass} btn-dark">${yesBtnName}</button>
+                    <button type="button" class="btn btn-lg btn-secondary" data-bs-dismiss="modal">${noBtnName}</button>
+                    <button type="button" class="btn btn-lg ${actionClass} btn-dark" data-bs-dismiss="modal">${yesBtnName}</button>
                 </div>
             </div>
         </div>

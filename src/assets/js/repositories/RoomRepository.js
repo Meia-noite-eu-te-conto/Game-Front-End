@@ -92,7 +92,9 @@ function CloseRoom(event, roomCode) {
 }
 
 function RemovePlayerFromRoom(event, roomCode) {
-    let playerId = event.target.dataset.playerCode;
+    const modal = event.target.closest(".modal");
+    const playerId = modal.dataset.playerId;
+
     const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/${playerId}/remove-player/`;
     ApiRequestHandler(endpoint, 'DELETE')
         .then(response => {
@@ -168,10 +170,8 @@ const RoomRepository = {
     RemovePlayerFromRoom,
     StartAGame,
 
-    // 
     CreateRoom,
     ShowMatchRoom,
-
 
     GetRoomsAsync,
     PutAddToRoomAsync
