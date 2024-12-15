@@ -11,10 +11,10 @@ const   PlayerColor = {
 };
 
 const PlayerColorLabel = {
-    0: "Blue",
-    1: "Red",
-    2: "Green",
-    3: "Yellow",
+    0: "Green",
+    1: "Blue",
+    2: "Yellow",
+    3: "Red",
 }
 
 const GamesType = {
