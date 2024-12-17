@@ -163,6 +163,19 @@ function ShowMatchRoom(roomCode) {
         .catch(handleApiError)
 }
 
+function ShowTournamentRoom(roomCode) {
+    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/tournament`;
+    ApiRequestHandler(endpoint, 'GET')
+        .then(response => {
+            handleApiSuccess(response, async () => {
+                const data = await response.json();
+                console.log(data)
+                TournamentRoomComponent(data)
+            })
+        })
+        .catch(handleApiError)
+}
+
 const RoomRepository = {
     // Player Actions
     CloseRoom,
@@ -172,6 +185,7 @@ const RoomRepository = {
 
     CreateRoom,
     ShowMatchRoom,
+    ShowTournamentRoom,
 
     GetRoomsAsync,
     PutAddToRoomAsync

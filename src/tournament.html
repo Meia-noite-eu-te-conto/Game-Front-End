@@ -56,18 +56,43 @@
         const urlParams = new URLSearchParams(window.location.search);
         const roomCode = urlParams.get('roomCode');
 
-        function showPlayers() {
-            fetch('/assets/tournament.json')
-            .then(response => response.json())
-            .then(data => {
-                TournamentRoomComponent(data)
-            })
-            .catch(error => console.error('Error:', error));
-        }
+        const host = window.location.host;
+        const endpoint = "/api/v1/user-session/";
+        const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${roomCode}/`);
+        
+        const userId = getCookie(document, "userId")
+
+        document.addEventListener("click", event => {
+            HandleEvents(event, roomCode)
+        });
+
+        socket.onopen = function(event) {
+			WSConnection(document, true)
+		};
+
+		socket.onmessage = function(event) {
+            const data = JSON.parse(event.data);
+            if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
+                resetUserIdIntoCookie(document)  
+                window.location.href = "/index.html"
+            } else if (data.type == "player_list_update")
+                ShowTournamentRoom(roomCode);
+            else if (data.type == "game.started") {
+                window.location.href = `/game.html?gameId=${data.gameId}&roomCode=${roomCode}`
+            }
+		};
+
+        socket.onclose = function(event) {
+			WSConnection(document, false)
+		};
+
+        socket.onerror = function(error) {
+            console.error("WebSocket error:", error);
+        };
 
         window.onload = function() {
             renderHeader(document)
-            showPlayers()
+            ShowTournamentRoom(roomCode)
         };
 
     </script>
