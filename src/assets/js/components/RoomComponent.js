@@ -189,10 +189,11 @@ function PlayerLabelTournamentComponent(player, index)
     element.classList.add("list-group-item", "list-group-item-action", "py-2", "lh-sm", "rounded-4", "mb-1")
     if (player === null)
         element.classList.add("bg-dark", "text-white")
+    let [r, g, b, a] = player ? PlayerColor[player.color] : [0, 0, 0, 0];
     element.innerHTML = `
         <div class="d-flex w-100 align-items-center justify-content-between">
             <div class="d-flex w-100 align-items-center">
-                <img class="rounded-circle img-thumbnail" style="background-color: ${player === null ? "#000" : player["color"]}" src="${ player === null ? "/assets/img/none.png" : player["urlProfileImage"]}" alt="">
+                <img class="rounded-circle img-thumbnail" style="background-color: rgba(${r}, ${g}, ${b}, ${a / 100})" src="${ player === null ? "/assets/img/none.png" : player["urlProfileImage"]}" alt="">
                 <div class="d-flex flex-column ps-2 justify-content-center">
                     <strong class="mb-1">${ player === null ? "None" : player["name"]}</strong>
                     ${player === null ? "<p class='small mb-0'>waiting</p>" : ""}
