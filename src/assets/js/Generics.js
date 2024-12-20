@@ -64,3 +64,11 @@ function handleApiSuccess(response, successCallback) {
         console.error(`API request failed with status ${response.status}`);
     }
 }
+
+async function handleApiSuccessAsync(response, successCallback) {
+    if (response.ok) {
+        if (successCallback) { return await successCallback(response) };
+    } else {
+        console.error(`API request failed with status ${response.status}`);
+    }
+}

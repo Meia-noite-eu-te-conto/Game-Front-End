@@ -187,6 +187,37 @@ function ShowTournamentRoom(roomCode) {
         .catch(handleApiError)
 }
 
+async function getTournamentGamesHistoryPaginated(roomCode) {
+    let endpoint = `${APIEndPoints["game"]}games/tournament-history/?roomCode=0899e48f`;
+    return await ApiRequestHandler(endpoint, 'GET')
+        .then(async response => {
+            let data = await handleApiSuccessAsync(response, async () => {
+                const data = await response.json();
+                return data;
+            });
+            return data;
+        })
+        .catch(handleApiError);
+}
+
+function ShowTournamentGamesHistory(event) {
+    const roomCode = event.target.dataset.roomCode;
+    const page = event.target.dataset.page;
+    getTournamentGamesHistoryPaginated(event, roomCode)
+    .then(paginatedGames => {
+        let historyElement = document.getElementById("tournament-history");
+        historyElement.innerHTML = "";
+        paginatedGames["data"].forEach(game => {
+            let item = TournamentHistoryItemComponent(game)
+            historyElement.appendChild(item)
+        });
+
+        let paginatedHistory = document.getElementById("tournament-history-pagination");
+        paginatedHistory.innerHTML = "";
+        PaginationComponent(paginatedHistory, paginatedGames, "listRooms");
+    });
+}
+
 const RoomRepository = {
     // Player Actions
     CloseRoom,

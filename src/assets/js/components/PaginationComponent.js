@@ -1,10 +1,9 @@
-function PaginationItemLabelComponent(currentPage, label, paginatedInfo, functionName)
+function PaginationItemLabelComponent(currentPage, label, pageInfo, functionName)
 {
-    console.log()
     let page = label == "Previous" ? currentPage - 1 : currentPage + 1;
     let item = document.createElement('li');
     item.classList.add('page-item');
-    paginatedInfo[`has${label}Page`] ? item.classList.remove('disabled') : item.classList.add('disabled');
+    pageInfo[`has${label}Page`] ? item.classList.remove('disabled') : item.classList.add('disabled');
     item.innerHTML = `
         <a class="page-link" onclick="${functionName}(${page})">${label}</a>
     `;
@@ -20,6 +19,26 @@ function PaginationItemComponent(page, currentPage, functionName)
         <a class="page-link" onclick="${functionName}(${page})">${page}</a>
     `;
     return item;
+}
+
+function PaginationComponent(paginatedElement, pageInfo, functionName)
+{
+    paginatedElement.innerHTML = "";
+    const totalPages = pageInfo["totalPages"];
+    const currentPage = pageInfo["currentPage"];
+
+    let element = PaginationItemLabelComponent(currentPage, "Previous", pageInfo, functionName);
+    paginatedElement.appendChild(element);
+
+    const { startPage, endPage } = PaginationConfig(totalPages, currentPage);
+
+    for (let page = startPage; page <= endPage; page++) {
+        element = PaginationItemComponent(page, currentPage, functionName);
+        paginatedElement.appendChild(element);
+    }
+
+    element = PaginationItemLabelComponent(currentPage, "Next", pageInfo, functionName);
+    paginatedElement.appendChild(element);
 }
 
 function RoomPaginationComponent(paginatedGroup, data, functionName)

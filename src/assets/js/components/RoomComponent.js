@@ -250,11 +250,11 @@ function TournamentInformationComponent(data) {
 
 }
 
-function TournamentActionsComponent(data) {
+async function TournamentActionsComponent(data) {
     let elementActions = document.getElementById("tournament-action")
     elementActions.classList.add("h-100", "d-flex", "flex-column", "align-items-end", "justify-content-end")
 
-    let historyList = TournamentHistoryComponent()
+    let historyList = await TournamentHistoryComponent()
     elementActions.appendChild(historyList)
 
     if (data["owner"]) {
@@ -268,8 +268,8 @@ function TournamentActionsComponent(data) {
     }
 }
 
-function TournamentRoomComponent(data) {
-    TournamentActionsComponent(data)
+async function TournamentRoomComponent(data) {
+    await TournamentActionsComponent(data)
     TournamentInformationComponent(data)
     BracketsRowsComponent(data)
 }
@@ -279,21 +279,21 @@ function TournamentHistoryItemComponent(game) {
     element.classList.add("list-group-item", "list-group-item-action", "py-2", "lh-sm", "rounded-2", "mb-1", "d-flex", "justify-content-between", "align-items-center")
     element.innerHTML = `
         <div class="d-flex align-items-center">
-            <img class="border border-primary border-5 me-2 rounded-circle" src="${game["blue"]["profileImage"]}" alt="" style="width: 35px; height: 35px">
-            <p class="me-2 mb-0">${game["blue"]["name"].slice(0, 6)}</p>
-            <p class="mb-0">${game["blue"]["score"]}</p>
+            <img class="border border-primary border-5 me-2 rounded-circle" src="${game["0"]["profileImage"]}" alt="" style="width: 35px; height: 35px">
+            <p class="me-2 mb-0">${game["0"]["name"].slice(0, 6)}</p>
+            <p class="mb-0">${game["0"]["score"]}</p>
         </div>
         <div>X</div>
         <div class="d-flex align-items-center">
-            <img class="border border-danger border-5 me-2 rounded-circle" src="${game["red"]["profileImage"]}" alt="" style="width: 35px; height: 35px">
-            <p class="pe-2 mb-0">${game["red"]["name"].slice(0, 6)}</p>
-            <p class="mb-0">${game["red"]["score"]}</p>
+            <img class="border border-danger border-5 me-2 rounded-circle" src="${game["0"]["profileImage"]}" alt="" style="width: 35px; height: 35px">
+            <p class="pe-2 mb-0">${game["1"]["name"].slice(0, 6)}</p>
+            <p class="mb-0">${game["1"]["score"]}</p>
         </div>
     `
     return element
 }
 
-function TournamentHistoryComponent() {
+async function TournamentHistoryComponent() {
     let element = document.createElement("div")
     element.classList.add("w-100", "mb-3")
 
@@ -306,20 +306,27 @@ function TournamentHistoryComponent() {
     `
     element.appendChild(elementHeader)
 
+    
+    let paginatedGames = await getTournamentGamesHistoryPaginated(null, 1);
+    console.log(paginatedGames)
     let historyElement = document.createElement("ul")
     historyElement.classList.add("list-group")
+    historyElement.id = "tournament-history"
 
-    fetch('/assets/tournament-history.json')
-    .then(response => response.json())
-    .then(data => {
-        data["games"].forEach(game => {
-            let item = TournamentHistoryItemComponent(game)
-            historyElement.appendChild(item)
-        });
-    })
-    .catch(error => console.error('Error:', error));
+    paginatedGames["games"].forEach(game => {
+        let item = TournamentHistoryItemComponent(game)
+        historyElement.appendChild(item)
+    });
 
     element.appendChild(historyElement)
+
+    let paginatedHistory = document.createElement("div")
+    paginatedHistory.classList.add("pagination", "mt-1", "justify-content-center")
+    paginatedHistory.id = "tournament-history-pagination"
+    PaginationComponent(paginatedHistory, paginatedGames, "getTournamentGamesHistoryPaginated");
+    
+    element.appendChild(paginatedHistory)
+
     return element
 }
 
