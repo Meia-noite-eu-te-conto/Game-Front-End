@@ -108,11 +108,11 @@ function CloseRoomButtonComponent(data) {
             </p>`
  }
 
- function StartGameButttonComponent() {
+function StartGameButttonComponent() {
     return `<p class="lead px-3">
                 <button type="button" class="btn btn-start-game btn-lg btn-dark">Start Game</button>
             </p>`
- }
+}
 
 function LeaveRoomButtonComponent(userId) {
     return `
@@ -262,9 +262,7 @@ function TournamentActionsComponent(data) {
         let btnSection = document.createElement("div") 
         btnSection.classList.add("d-flex", "justify-content-end", "w-100")
         btnSection.innerHTML = `
-            <button class="btn btn-dark">
-                Start Game
-            </button>
+            <button type="button" class="btn btn-start-tournament-game btn-lg btn-dark">Start Game</button>
         `
         elementActions.appendChild(btnSection)
     }

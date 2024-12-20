@@ -2,6 +2,7 @@ const btnActions = {
     "btn-close-room": CloseRoom,
     "btn-remove-player": RemovePlayerFromRoom,
     "btn-start-game": StartAGame,
+    "btn-start-tournament-game": StartATournamentGame,
     "btn-leave-the-room": LeaveTheRoom,
 };
 
