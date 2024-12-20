@@ -250,11 +250,11 @@ function TournamentInformationComponent(data) {
 
 }
 
-async function TournamentActionsComponent(data) {
+async function TournamentActionsComponent(data, roomCode) {
     let elementActions = document.getElementById("tournament-action")
     elementActions.classList.add("h-100", "d-flex", "flex-column", "align-items-end", "justify-content-end")
 
-    let historyList = await TournamentHistoryComponent()
+    let historyList = await TournamentHistoryComponent(roomCode)
     elementActions.appendChild(historyList)
 
     if (data["owner"]) {
@@ -268,8 +268,8 @@ async function TournamentActionsComponent(data) {
     }
 }
 
-async function TournamentRoomComponent(data) {
-    await TournamentActionsComponent(data)
+async function TournamentRoomComponent(data, roomCode) {
+    await TournamentActionsComponent(data, roomCode)
     TournamentInformationComponent(data)
     BracketsRowsComponent(data)
 }
@@ -293,7 +293,7 @@ function TournamentHistoryItemComponent(game) {
     return element
 }
 
-async function TournamentHistoryComponent() {
+async function TournamentHistoryComponent(roomCode) {
     let element = document.createElement("div")
     element.classList.add("w-100", "mb-3")
 
@@ -307,7 +307,7 @@ async function TournamentHistoryComponent() {
     element.appendChild(elementHeader)
 
     
-    let paginatedGames = await getTournamentGamesHistoryPaginated(null, 1);
+    let paginatedGames = await getTournamentGamesHistoryPaginated(null, roomCode);
     console.log(paginatedGames)
     let historyElement = document.createElement("ul")
     historyElement.classList.add("list-group")

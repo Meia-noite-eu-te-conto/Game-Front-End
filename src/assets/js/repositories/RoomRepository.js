@@ -181,14 +181,14 @@ function ShowTournamentRoom(roomCode) {
             handleApiSuccess(response, async () => {
                 const data = await response.json();
                 console.log(data)
-                TournamentRoomComponent(data)
+                TournamentRoomComponent(data, roomCode)
             })
         })
         .catch(handleApiError)
 }
 
-async function getTournamentGamesHistoryPaginated(roomCode) {
-    let endpoint = `${APIEndPoints["game"]}games/tournament-history/?roomCode=0899e48f`;
+async function getTournamentGamesHistoryPaginated(event, roomCode) {
+    let endpoint = `${APIEndPoints["game"]}games/tournament-history/?roomCode=${roomCode}`;
     return await ApiRequestHandler(endpoint, 'GET')
         .then(async response => {
             let data = await handleApiSuccessAsync(response, async () => {
