@@ -116,6 +116,17 @@ function StartAGame(event, roomCode) {
         .catch(handleApiError);
 }
 
+function StartATournamentGame(event, roomCode) {
+    const endpoint = `${APIEndPoints["user"]}games/${roomCode}/new-tournament-game/`;
+    ApiRequestHandler(endpoint, 'POST')
+        .then(response => {
+            handleApiSuccess(response, () => {
+                // This action ws do.
+            });
+        })
+        .catch(handleApiError);
+}
+
 function LeaveTheRoom(event, roomCode) {
     let userId = getCookie(document, "userId");
     const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/${userId}/remove-player/`;
@@ -164,7 +175,7 @@ function ShowMatchRoom(roomCode) {
 }
 
 function ShowTournamentRoom(roomCode) {
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/tournament`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/tournament/`;
     ApiRequestHandler(endpoint, 'GET')
         .then(response => {
             handleApiSuccess(response, async () => {
@@ -182,6 +193,7 @@ const RoomRepository = {
     LeaveTheRoom,
     RemovePlayerFromRoom,
     StartAGame,
+    StartATournamentGame,
 
     CreateRoom,
     ShowMatchRoom,
