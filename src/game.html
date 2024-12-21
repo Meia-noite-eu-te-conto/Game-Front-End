@@ -159,8 +159,12 @@
 				}
 
 				if (data.type === "game_finished") {
-					const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
-					gameOverModal.show();
+					if (data.roomType === 1)
+						window.location.href = `/tournament.html?roomCode=${roomCode}`;
+					else {
+						const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
+						gameOverModal.show();
+					}
 				}
 			};
 

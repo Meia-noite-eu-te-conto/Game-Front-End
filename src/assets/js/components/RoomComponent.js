@@ -257,8 +257,17 @@ async function TournamentActionsComponent(data, roomCode) {
     let historyList = await TournamentHistoryComponent(roomCode)
     elementActions.appendChild(historyList)
 
-    if (data["owner"]) {
+    if (data["tournamentOwner"])
+    {
+        let btnSection = document.createElement("div") 
+        btnSection.classList.add("d-flex", "justify-content-end", "w-100")
+        btnSection.innerHTML = `
+            <button type="button" class="btn btn-lock-tournament btn-lg btn-dark">Lock Tournament</button>
+        `
+        elementActions.appendChild(btnSection)
+    }
 
+    if (data["owner"]) {
         let btnSection = document.createElement("div") 
         btnSection.classList.add("d-flex", "justify-content-end", "w-100")
         btnSection.innerHTML = `

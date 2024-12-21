@@ -139,6 +139,18 @@ function LeaveTheRoom(event, roomCode) {
         .catch(handleApiError)
 }
 
+function LockTournament(event, roomCode) 
+{
+    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/lock-tournament/`;
+    ApiRequestHandler(endpoint, 'POST')
+        .then(response => {
+            handleApiSuccess(response, () => {
+                alert("Torneio trancado com sucesso!")
+            })
+        })
+        .catch(handleApiError)
+}
+
 function CreateRoom(event) {
     event.preventDefault()
     const data = {
