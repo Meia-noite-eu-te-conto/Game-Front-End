@@ -4,6 +4,7 @@ const btnActions = {
     "btn-start-game": StartAGame,
     "btn-start-tournament-game": StartATournamentGame,
     "btn-leave-the-room": LeaveTheRoom,
+    "btn-lock-tournament": LockTournament,
 };
 
 function HandleEvents(event, roomCode) {

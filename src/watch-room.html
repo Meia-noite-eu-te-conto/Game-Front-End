@@ -67,11 +67,11 @@
         let urlParams = new URLSearchParams(window.location.search);
         let roomCode = urlParams.get('roomCode');
 
+        const userId = getCookie(document, "userId")
+
         const host = window.location.host;
         const endpoint = "/api/v1/user-session/";
-        const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${roomCode}/`);
-
-        const userId = getCookie(document, "userId")
+        const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${roomCode}/?userId=${userId}`);
 
         document.addEventListener("click", event => {
             HandleEvents(event, roomCode)

@@ -159,8 +159,12 @@
 				}
 
 				if (data.type === "game_finished") {
-					const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
-					gameOverModal.show();
+					if (data.roomType === 1)
+						window.location.href = `/tournament.html?roomCode=${roomCode}`;
+					else {
+						const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
+						gameOverModal.show();
+					}
 				}
 			};
 
@@ -175,7 +179,7 @@
 		
 		function	getPlayer() {
 			console.log("GET PLAYER")
-			fetch(`/api/v1/user-session/players/game/${roomCode}/`, {
+			fetch(`/api/v1/user-session/players/game/${gameId}/`, {
 					method: 'GET',
 				})
 					.then(response => response.json())
