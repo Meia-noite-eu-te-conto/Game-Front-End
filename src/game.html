@@ -99,13 +99,32 @@
 		</div>
 	</div>
 
+	<div class="modal fade" id="gameOverTournamentModal" tabindex="-1" aria-labelledby="gameOverTournamentModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="gameOverTournamentModalLabel">Game Over</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					The game has ended.
+				</div>
+				<div class="modal-footer">
+					<a id="tournamentLink" href="/tournament.html" type="button" class="btn btn-secondary">Go to initial menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
 	<div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
 		<h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>
 	</div>
 
+
+
 	<script>
 		const	urlParams = new URLSearchParams(window.location.search);
-		const	roomCode = urlParams.get('roomCode');
+		// const	roomCode = urlParams.get('roomCode');
 		const	host = window.location.host;
 		const	gameId = urlParams.get('gameId');
 		const	endpoint = `/api/v1/game-core/games/${gameId}/`;
@@ -129,6 +148,8 @@
 		document.addEventListener('keydown', sendKey);
 
 		window.onload = function() {
+			const	roomCode = urlParams.get('roomCode');
+			console.log("roomCode: " + roomCode)
 			renderHeader(document)
 			getPlayer()
 			
@@ -159,8 +180,11 @@
 				}
 
 				if (data.type === "game_finished") {
-					if (data.roomType === 1)
-						window.location.href = `/tournament.html?roomCode=${roomCode}`;
+					if (data.roomType === 1) {
+						console.log("Tournament: " + data.winner + data.players)
+						const gameOverTournamentModal = new bootstrap.Modal(document.getElementById('gameOverTournamentModal'));
+						gameOverTournamentModal.show();
+					}
 					else {
 						const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
 						gameOverModal.show();
@@ -176,6 +200,31 @@
 				console.error("WebSocket error:", error);
 			};
 		}
+
+		// document.addEventListener("DOMContentLoaded", () => {
+		// 	const tournamentLink = document.getElementById("tournamentLink");
+		// 	fetch('/api/v1/user-session/rooms/${roomCode}/set-tournament-round/', {
+		// 		method: 'POST',
+		// 	})
+		// 		.then(response => response.json())
+		// 		.then(data => {
+		// 			ShowTournamentRoom(roomCode)
+		// 		});
+		// });
+		document.getElementById('gameOverTournamentModal').addEventListener('show.bs.modal', function (event) {
+			const roomCode = urlParams.get('roomCode');
+			console.log("roomCode: " + roomCode)
+			const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/set-tournament-round/`;
+			ApiRequestHandler(endpoint, 'POST')
+				.then(response => {
+					handleApiSuccess(response, async () => {
+						const data = await response.json();
+						console.log(data)
+						TournamentRoomComponent(data, roomCode)
+					})
+				})
+				.catch(handleApiError)
+		});
 		
 		function	getPlayer() {
 			console.log("GET PLAYER")
