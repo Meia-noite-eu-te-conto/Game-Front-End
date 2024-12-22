@@ -236,7 +236,7 @@ function BracketsRowsComponent(data) {
 function TournamentInformationComponent(data) {
     let tournamentInfo = document.getElementById("tournament-info")
     tournamentInfo.classList.add("w-100", "d-flex", "pb-5", "flex-row", "justify-content-start")
-
+    tournamentInfo.innerHTML = ""
     tournamentInfo.innerHTML = `
         <div class="pe-4 border-end border-dark border-3">
             <h1 class="mb-0" style="font-size: 65px">${data["numberOfPlayers"]}/${data["maxNumberOfPlayers"]}</h1>
@@ -253,11 +253,12 @@ function TournamentInformationComponent(data) {
 async function TournamentActionsComponent(data, roomCode) {
     let elementActions = document.getElementById("tournament-action")
     elementActions.classList.add("h-100", "d-flex", "flex-column", "align-items-end", "justify-content-end")
-
+    elementActions.innerHTML = ""
     let historyList = await TournamentHistoryComponent(roomCode)
     elementActions.appendChild(historyList)
 
-    if (data["tournamentOwner"])
+    console.log("AQUIIIi\n", data)
+    if (data["tournamentOwner"] && data["round"] == 1)
     {
         let btnSection = document.createElement("div") 
         btnSection.classList.add("d-flex", "justify-content-end", "w-100")

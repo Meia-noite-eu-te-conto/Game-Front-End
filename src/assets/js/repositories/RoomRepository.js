@@ -187,6 +187,7 @@ function ShowMatchRoom(roomCode) {
 }
 
 function ShowTournamentRoom(roomCode) {
+    console.log(`agora a brincadeira começou: '${roomCode}'`)
     const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/tournament/`;
     ApiRequestHandler(endpoint, 'GET')
         .then(response => {
