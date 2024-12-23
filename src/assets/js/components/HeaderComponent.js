@@ -7,8 +7,8 @@ const HeaderInfo = [
     },
     {
         "type": "link",
-        "name": "Community",
-        "url": "/",
+        "name": "List Rooms",
+        "url": "./view-rooms.html",
         "activeWhen": "/Community"
     },
     {
@@ -43,17 +43,17 @@ const HeaderInfo = [
 
 function WSConnection(document, isConnected) {
     let element = document.getElementById("connected-ws")
-    element.innerHTML = isConnected === true ? 
+    element.innerHTML = isConnected === true ?
         `<h5 class="bi bi-c-circle-fill text-success"><span style="font-size: 20px"> connected</span></h2>`
         : `<h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>`
 }
 
 function HeaderComponent(document) {
     let element = document.createElement("header")
-    
+
     element.classList.add(
-        'd-flex', 
-        'flex-wrap', 
+        'd-flex',
+        'flex-wrap',
         'justify-content-center',
         'py-3',
         'border-bottom'
@@ -66,7 +66,7 @@ function HeaderComponent(document) {
 function NavComponent(document) {
     let element = document.createElement("ul")
     element.classList.add(
-        'nav', 
+        'nav',
         'nav-pills'
     )
 
@@ -76,7 +76,7 @@ function NavComponent(document) {
         item.classList.add("nav-item")
         if (btn["type"] == "link")
             item.innerHTML = `<a href="${btn["url"]}" class="nav-link ${status}" aria-current="page">${btn["name"]}</a>`
-        else 
+        else
             item.innerHTML = `<button class="btn ${btn["btn-type"]} mx-2">${btn["name"]}</button>`
         element.appendChild(item)
     });

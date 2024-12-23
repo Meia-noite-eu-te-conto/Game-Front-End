@@ -139,7 +139,7 @@ function LeaveTheRoom(event, roomCode) {
         .catch(handleApiError)
 }
 
-function LockTournament(event, roomCode) 
+function LockTournament(event, roomCode)
 {
     const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/lock-tournament/`;
     ApiRequestHandler(endpoint, 'POST')
@@ -187,13 +187,11 @@ function ShowMatchRoom(roomCode) {
 }
 
 function ShowTournamentRoom(roomCode) {
-    console.log(`agora a brincadeira começou: '${roomCode}'`)
     const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/tournament/`;
     ApiRequestHandler(endpoint, 'GET')
         .then(response => {
             handleApiSuccess(response, async () => {
                 const data = await response.json();
-                console.log(data)
                 TournamentRoomComponent(data, roomCode)
             })
         })

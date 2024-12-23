@@ -28,7 +28,7 @@ function RemovePlayerComponent (data, player, createdBy) {
 function PlayerLabelComponent(data, player, createdBy, roomType) {
     let element = document.createElement('div')
     element.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
-    
+
     let [r, g, b, a] = PlayerColor[player.profileColor]
     let rgbaPlayerColor = `style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})'`
     let owner = ""
@@ -73,7 +73,7 @@ function MatchPlayerListComponent(data) {
     players = data["players"]
     createdBy = data["createdBy"]
     roomType = data["roomType"]
-    
+
     const playerListElement = document.getElementById("list-of-players")
     playerListElement.innerHTML = ""
 
@@ -88,7 +88,7 @@ function MatchPlayerListComponent(data) {
     {
         let nonePlayerElement = NonePlayerLabelComponent()
         playerListElement.appendChild(nonePlayerElement)
-        i++;              
+        i++;
     }
 }
 
@@ -122,12 +122,12 @@ function LeaveRoomButtonComponent(userId) {
         `
 }
 
-function MatchActionsComponent(data) 
+function MatchActionsComponent(data)
 {
     let element = document.getElementById("room-actions")
     let btnSection = LeaveRoomButtonComponent(data)
 
-    if (data["isOwner"]) 
+    if (data["isOwner"])
     {
         btnSection = `
         ${CloseRoomButtonComponent(data)}
@@ -209,9 +209,9 @@ function BracketsRowsComponent(data) {
     let tournamentList = document.getElementById("tournament-brackets");
     let brackets = document.createElement("div")
     let bracketsRow = document.createElement("div")
-    
+
     tournamentList.innerHTML = ""
-    
+
     let step = TournamentConfig["amountPlayersByBracketsRow"]
     let players = data["players"]
     for (i = 1; i <= data["maxNumberOfPlayers"]; i++) {
@@ -257,10 +257,9 @@ async function TournamentActionsComponent(data, roomCode) {
     let historyList = await TournamentHistoryComponent(roomCode)
     elementActions.appendChild(historyList)
 
-    console.log("AQUIIIi\n", data)
     if (data["tournamentOwner"] && data["round"] == 1)
     {
-        let btnSection = document.createElement("div") 
+        let btnSection = document.createElement("div")
         btnSection.classList.add("d-flex", "justify-content-end", "w-100")
         btnSection.innerHTML = `
             <button type="button" class="btn btn-lock-tournament btn-lg btn-dark">Lock Tournament</button>
@@ -268,8 +267,8 @@ async function TournamentActionsComponent(data, roomCode) {
         elementActions.appendChild(btnSection)
     }
 
-    if (data["owner"]) {
-        let btnSection = document.createElement("div") 
+    if (data["round"] == 1 || data["winner"]) {
+        let btnSection = document.createElement("div")
         btnSection.classList.add("d-flex", "justify-content-end", "w-100")
         btnSection.innerHTML = `
             <button type="button" class="btn btn-start-tournament-game btn-lg btn-dark">Start Game</button>
@@ -316,9 +315,8 @@ async function TournamentHistoryComponent(roomCode) {
     `
     element.appendChild(elementHeader)
 
-    
+
     let paginatedGames = await getTournamentGamesHistoryPaginated(null, roomCode);
-    console.log(paginatedGames)
     let historyElement = document.createElement("ul")
     historyElement.classList.add("list-group")
     historyElement.id = "tournament-history"
@@ -334,14 +332,14 @@ async function TournamentHistoryComponent(roomCode) {
     paginatedHistory.classList.add("pagination", "mt-1", "justify-content-center")
     paginatedHistory.id = "tournament-history-pagination"
     PaginationComponent(paginatedHistory, paginatedGames, "getTournamentGamesHistoryPaginated");
-    
+
     element.appendChild(paginatedHistory)
 
     return element
 }
 
 function AddModalComponent(
-    modalName, 
+    modalName,
     description,
     icon,
     title,
@@ -367,7 +365,7 @@ function AddModalComponent(
                     </div>
                     <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
                 </div>
-                
+
                 <div class="modal-body">
                 ${content}
                 </div>
