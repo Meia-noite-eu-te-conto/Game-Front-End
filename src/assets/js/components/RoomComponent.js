@@ -137,7 +137,8 @@ function MatchActionsComponent(data)
 
     element.innerHTML = `
     <a class="w-75 bi bi-copy btn btn-dark copy-btn" data-room-code="${data["roomCode"]}"> Room Code: ${data["roomCode"]}</a>
-    <div class="d-flex align-items-end justify-content-between">
+    <div class="d-flex align-items-end 
+    ">
         ${btnSection}
     </div>
     `
@@ -224,7 +225,7 @@ function BracketsRowsComponent(data) {
             brackets = document.createElement("div")
         }
 
-        if (i === step) {
+        if (i === step || (data["maxNumberOfPlayers"] === 2 && i === 2)) {
             bracketsRow.classList.add("w-100", "d-flex", "flex-row", "justify-content-around")
             tournamentList.appendChild(bracketsRow)
             bracketsRow = document.createElement("div")
@@ -234,7 +235,7 @@ function BracketsRowsComponent(data) {
 }
 
 function TournamentInformationComponent(data) {
-    let tournamentInfo = document.getElementById("tournament-info")
+    const tournamentInfo = document.getElementById("tournament-info")
     tournamentInfo.classList.add("w-100", "d-flex", "pb-5", "flex-row", "justify-content-start")
     tournamentInfo.innerHTML = ""
     tournamentInfo.innerHTML = `
@@ -242,12 +243,13 @@ function TournamentInformationComponent(data) {
             <h1 class="mb-0" style="font-size: 65px">${data["numberOfPlayers"]}/${data["maxNumberOfPlayers"]}</h1>
             <p class="mb-0">players in tournament</p>
         </div>
-        <div class="ps-4">
+        <div class="ps-4 me-5">
             <h1>${GamesType[data["roomType"]]}: ${data["roomName"]}</h1>
             <p>It will be possible to start the match as soon as there is the minimum number of players.</p>
         </div>
+        <a class="bi bi-copy btn btn-dark copy-btn" style="height: 35px; line-height: 35px; padding: 0 10px;" data-room-code="${data["roomCode"]}"> Room Code: ${data["roomCode"]}</a>
     `
-
+    addCopyButtonEvent(tournamentInfo);
 }
 
 async function TournamentActionsComponent(data, roomCode) {
@@ -257,17 +259,27 @@ async function TournamentActionsComponent(data, roomCode) {
     let historyList = await TournamentHistoryComponent(roomCode)
     elementActions.appendChild(historyList)
 
-    if (data["tournamentOwner"] && data["round"] == 1)
+    if (data["tournamentOwner"] && data["round"] == 1 && data["roomStatus"] != 3)
     {
         let btnSection = document.createElement("div")
         btnSection.classList.add("d-flex", "justify-content-end", "w-100")
         btnSection.innerHTML = `
-            <button type="button" class="btn btn-lock-tournament btn-lg btn-dark">Lock Tournament</button>
+            <button type="button" class="btn btn-lock-tournament btn-lg btn-dark me-2">Lock Tournament</button>
+            <a data-room-code="${data["roomCode"]}" data-target="alert-close-room-modal" class="btn modal-handler btn-lg btn-secondary">Close Room</a>
+        `
+        elementActions.appendChild(btnSection)
+    }
+    else if (data["round"] == 1 && data["roomStatus"] != 3)
+    {
+        let btnSection = document.createElement("div")
+        btnSection.classList.add("d-flex", "justify-content-end", "w-100")
+        btnSection.innerHTML = `
+            <button data-player-code="${data}" data-target="alert-leave-room-modal" class="btn modal-handler btn-lg btn-secondary">Leave Room</button>
         `
         elementActions.appendChild(btnSection)
     }
 
-    if (data["round"] == 1 || data["winner"]) {
+    if ((data["owner"]) && data["roomStatus"] >= 3) {
         let btnSection = document.createElement("div")
         btnSection.classList.add("d-flex", "justify-content-end", "w-100")
         btnSection.innerHTML = `
@@ -281,22 +293,48 @@ async function TournamentRoomComponent(data, roomCode) {
     await TournamentActionsComponent(data, roomCode)
     TournamentInformationComponent(data)
     BracketsRowsComponent(data)
+
+    document.body.appendChild(AddModalComponent(
+        "alert-close-room-modal",
+        "close room.",
+        "bi bi-exclamation-circle-fill",
+        "Close Game",
+        "Be careful. This game will be deleted if you close it.<br>Do you want to continue?",
+        "btn-close-room",
+        "Yes",
+        "No"
+    ))
+
+    document.body.appendChild(AddModalComponent(
+        "alert-leave-room-modal",
+        "leave room.",
+        "bi bi-exclamation-circle-fill",
+        "Leave Game",
+        "Are you sure you want to leave this game?",
+        "btn-leave-the-room",
+        "Yes",
+        "No"
+    ))
 }
 
 function TournamentHistoryItemComponent(game) {
     let element = document.createElement("li")
     element.classList.add("list-group-item", "list-group-item-action", "py-2", "lh-sm", "rounded-2", "mb-1", "d-flex", "justify-content-between", "align-items-center")
+    
+    element.innerHTML = ""
+    let [r, g, b, a] = PlayerColor[game["0"].color]
+    let [c, d, e, f] = PlayerColor[game["1"].color]
     element.innerHTML = `
         <div class="d-flex align-items-center">
-            <img class="border border-primary border-5 me-2 rounded-circle" src="${game["0"]["profileImage"]}" alt="" style="width: 35px; height: 35px">
+            <img class="rounded-circle img-thumbnail" style="background-color: rgba(${r}, ${g}, ${b}, ${a / 100})" src="${game["0"]["profileImage"]}" alt="" style="width: 40px; height: 40px">
             <p class="me-2 mb-0">${game["0"]["name"].slice(0, 6)}</p>
-            <p class="mb-0">${game["0"]["score"]}</p>
         </div>
-        <div>X</div>
+        <div>
+        <p class="mb-0">${game["0"]["score"]} X ${game["1"]["score"]}</p>
+        </div>
         <div class="d-flex align-items-center">
-            <img class="border border-danger border-5 me-2 rounded-circle" src="${game["0"]["profileImage"]}" alt="" style="width: 35px; height: 35px">
-            <p class="pe-2 mb-0">${game["1"]["name"].slice(0, 6)}</p>
-            <p class="mb-0">${game["1"]["score"]}</p>
+        <p class="pe-2 mb-0">${game["1"]["name"].slice(0, 6)}</p>
+            <img class="rounded-circle img-thumbnail" style="background-color: rgba(${c}, ${d}, ${e}, ${f / 100})" alt="" style="width: 35px; height: 35px">
         </div>
     `
     return element
@@ -311,7 +349,7 @@ async function TournamentHistoryComponent(roomCode) {
     elementHeader.innerHTML = `
         <b>Games history</b>
         </br>
-        <small>History of games result in this tournament.</small>
+        <small>History of games results in this tournament.</small>
     `
     element.appendChild(elementHeader)
 

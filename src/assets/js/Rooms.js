@@ -83,7 +83,7 @@ function addCopyButtonEvent(listItem) {
             const toast = new bootstrap.Toast(toastElement);
             toast.show();
         }).catch((error) => {
-            console.error('Failed to copy room code:', error);
+            console.error(`Failed to copy room code: `, error);
         });
     });
 }

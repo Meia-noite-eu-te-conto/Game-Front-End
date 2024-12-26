@@ -192,6 +192,7 @@ function ShowTournamentRoom(roomCode) {
         .then(response => {
             handleApiSuccess(response, async () => {
                 const data = await response.json();
+                console.log(data)
                 TournamentRoomComponent(data, roomCode)
             })
         })

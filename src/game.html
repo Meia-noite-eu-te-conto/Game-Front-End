@@ -82,15 +82,34 @@
 		</div>
 	</main>
 
-	<div class="modal fade" id="gameOverModal" tabindex="-1" aria-labelledby="gameOverModalLabel" aria-hidden="true">
+	<div class="modal fade" id="gameOverWinnerModal" tabindex="-1" aria-labelledby="gameOverWinnerModalLabel" aria-hidden="true">
 		<div class="modal-dialog">
 			<div class="modal-content">
 				<div class="modal-header">
-					<h5 class="modal-title" id="gameOverModalLabel">Game Over</h5>
+					<h5 class="modal-title" id="gameOverWinnerModalLabel">Game Over</h5>
 					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
 				</div>
 				<div class="modal-body">
-					The game has ended. Thank you for playing!
+					Congratulations. You won!
+					Thank you for playing!
+				</div>
+				<div class="modal-footer">
+					<a href="/index.html" type="button" class="btn btn-secondary">Go to initial menu</a>
+				</div>
+			</div>
+		</div>
+	</div>
+
+	<div class="modal fade" id="gameOverLoserModal" tabindex="-1" aria-labelledby="gameOverLoserModalLabel" aria-hidden="true">
+		<div class="modal-dialog">
+			<div class="modal-content">
+				<div class="modal-header">
+					<h5 class="modal-title" id="gameOverLoserModalLabel">Game Over</h5>
+					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+				</div>
+				<div class="modal-body">
+					You lost!
+					Thank you for playing!
 				</div>
 				<div class="modal-footer">
 					<a href="/index.html" type="button" class="btn btn-secondary">Go to initial menu</a>
@@ -109,6 +128,7 @@
 		const	host = window.location.host;
 		const	gameId = urlParams.get('gameId');
 		const	endpoint = `/api/v1/game-core/games/${gameId}/`;
+		const	userId = getCookie(document, "userId");
 		let		socket = null
 
 		gCanvas = document.getElementById('myCanvas');
@@ -118,7 +138,6 @@
 		function	sendKey(event)
 		{
 			const	key = event.key;
-			let		userId = getCookie(document, "userId");
 			console.log(`Tecla pressionada: ${userId} ${key}`);
 			socket.send(JSON.stringify({
 				direction: key,
@@ -159,11 +178,17 @@
 				}
 
 				if (data.type === "game_finished") {
-					if (data.roomType === 1)
-						window.location.href = `/tournament.html?roomCode=${roomCode}`;
+					if (data.winner != userId) {
+						const gameOverLoserModal = new bootstrap.Modal(document.getElementById('gameOverLoserModal'));
+						gameOverLoserModal.show();
+					}
 					else {
-						const gameOverModal = new bootstrap.Modal(document.getElementById('gameOverModal'));
-						gameOverModal.show();
+						if (data.roomType === 1)
+							window.location.href = `/tournament.html?roomCode=${roomCode}`;
+						else {
+							const gameOverWinnerModal = new bootstrap.Modal(document.getElementById('gameOverWinnerModal'));
+							gameOverWinnerModal.show();
+						}
 					}
 				}
 			};
