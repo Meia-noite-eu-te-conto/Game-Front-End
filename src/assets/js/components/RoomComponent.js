@@ -361,7 +361,7 @@ async function TournamentHistoryComponent(roomCode) {
     let currentStage = 1;
     let stageElement = document.createElement("div")
     stageElement.classList.add("mb-3")
-    stageElement.innerHTML = `<h5>Round ${currentStage}</h5>`
+    stageElement.innerHTML = `<b>Round ${currentStage}</b>`
     historyElement.appendChild(stageElement)
 
     paginatedGames["games"].forEach((game, index) => {
@@ -369,7 +369,7 @@ async function TournamentHistoryComponent(roomCode) {
             currentStage++;
             stageElement = document.createElement("div")
             stageElement.classList.add("mb-3")
-            stageElement.innerHTML = `<h5>Round ${currentStage}</h5>`
+            stageElement.innerHTML = `<b>Round ${currentStage}</b>`
             historyElement.appendChild(stageElement)
         }
         let item = TournamentHistoryItemComponent(game)
