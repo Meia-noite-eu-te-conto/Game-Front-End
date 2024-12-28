@@ -137,7 +137,7 @@ function MatchActionsComponent(data)
 
     element.innerHTML = `
     <a class="w-75 bi bi-copy btn btn-dark copy-btn" data-room-code="${data["roomCode"]}"> Room Code: ${data["roomCode"]}</a>
-    <div class="d-flex align-items-end 
+    <div class="d-flex align-items-end
     ">
         ${btnSection}
     </div>
@@ -320,7 +320,7 @@ async function TournamentRoomComponent(data, roomCode) {
 function TournamentHistoryItemComponent(game) {
     let element = document.createElement("li")
     element.classList.add("list-group-item", "list-group-item-action", "py-2", "lh-sm", "rounded-2", "mb-1", "d-flex", "justify-content-between", "align-items-center")
-    
+
     element.innerHTML = ""
     let [r, g, b, a] = PlayerColor[game["0"].color]
     let [c, d, e, f] = PlayerColor[game["1"].color]
@@ -353,13 +353,25 @@ async function TournamentHistoryComponent(roomCode) {
     `
     element.appendChild(elementHeader)
 
-
     let paginatedGames = await getTournamentGamesHistoryPaginated(null, roomCode);
-    let historyElement = document.createElement("ul")
+    let historyElement = document.createElement("div")
     historyElement.classList.add("list-group")
     historyElement.id = "tournament-history"
 
-    paginatedGames["games"].forEach(game => {
+    let currentStage = 1;
+    let stageElement = document.createElement("div")
+    stageElement.classList.add("mb-3")
+    stageElement.innerHTML = `<h5>Round ${currentStage}</h5>`
+    historyElement.appendChild(stageElement)
+
+    paginatedGames["games"].forEach((game, index) => {
+        if (index > 0 && index % 2 === 0) {
+            currentStage++;
+            stageElement = document.createElement("div")
+            stageElement.classList.add("mb-3")
+            stageElement.innerHTML = `<h5>Round ${currentStage}</h5>`
+            historyElement.appendChild(stageElement)
+        }
         let item = TournamentHistoryItemComponent(game)
         historyElement.appendChild(item)
     });
