@@ -139,7 +139,7 @@ function LeaveTheRoom(event, roomCode) {
         .catch(handleApiError)
 }
 
-function LockTournament(event, roomCode) 
+function LockTournament(event, roomCode)
 {
     const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/lock-tournament/`;
     ApiRequestHandler(endpoint, 'POST')
