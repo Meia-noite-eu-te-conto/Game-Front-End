@@ -20,6 +20,8 @@ function	setup(data)
 	gPong.lastPlayerHit = lastPlayerHit;
 	if (gPong.lastPlayerHit || gPong.gameStatus == "WAITING")
 		gPong.changeBallColor = TRUE;
+	if (gPong.gameStatus == "PLAYING")
+		gPong.doOnceChangeColor = TRUE;
 	if (gPong.numberOfPlayers == 2)
 		gPong.fieldWidth = fieldAttributes["width"];
 	setObjectsColors();

@@ -135,10 +135,15 @@ function	updateObjectsPosition()
 		{
 			let	colorVec = PlayerColor[gPong.lastPlayerHit["color"]];
 			createTexture(colorVec[0], colorVec[1], colorVec[2]);
+			setUpTexture(gTexture, URLS.length);
 		}
-		else if (gPong.gameStatus == "WAITING")
+		else if (gPong.gameStatus == "WAITING" && gPong.doOnceChangeColor)
+		{
 			createTexture(255, 255, 255);
-		setUpTexture(gTexture, URLS.length);
+			setUpTexture(gTexture, URLS.length);
+			gPong.doOnceChangeColor = FALSE;
+			console.log("OI");
+		}
 		gPong.changeBallCollor = FALSE;
 	}
 	gObjects[GOALKEEPER_0].pos[1] = gPong.players["0"].y;
