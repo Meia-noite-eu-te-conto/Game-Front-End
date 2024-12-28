@@ -138,7 +138,6 @@
 		function	sendKey(event)
 		{
 			const	key = event.key;
-			console.log(`Tecla pressionada: ${userId} ${key}`);
 			socket.send(JSON.stringify({
 				direction: key,
 				headers: { "X-User-Id": userId }
@@ -166,7 +165,6 @@
 
 			socket.onmessage = function(event) {
 				const data = JSON.parse(event.data);
-				console.error("game.html \n WebSocket message:", event.data);
 				if (data.type == 'game.update') {
 					drawOnCanvas(data.game_state);
 				}
@@ -203,7 +201,6 @@
 		}
 
 		function	getPlayer() {
-			console.log("GET PLAYER")
 			fetch(`/api/v1/user-session/players/game/${gameId}/`, {
 					method: 'GET',
 				})
@@ -233,7 +230,6 @@
 							playerListElement.appendChild(playerElement)
 						});
 					})
-			console.log("GET PLAYER END")
 		}
 
 	</script>
