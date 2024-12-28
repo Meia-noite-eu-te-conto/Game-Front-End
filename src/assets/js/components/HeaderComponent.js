@@ -17,28 +17,6 @@ const HeaderInfo = [
         "url": "/ranking.html",
         "activeWhen": "/ranking.html"
     },
-    {
-        "type": "link",
-        "name": "Store",
-        "url": "/",
-        "activeWhen": "/Store"
-    },
-    {
-        "type": "link",
-        "name": "Profile",
-        "url": "/",
-        "activeWhen": "Profile"
-    },
-    {
-        "type": "btn",
-        "name": "Login",
-        "btn-type": "btn-secondary",
-    },
-    {
-        "type": "btn",
-        "name": "Register",
-        "btn-type": "btn-dark",
-    }
 ]
 
 function WSConnection(document, isConnected) {
