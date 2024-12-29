@@ -302,21 +302,15 @@ async function TournamentHistoryComponent(roomCode) {
     let historyElement = document.createElement("div")
     historyElement.classList.add("list-group")
     historyElement.id = "tournament-history"
-
-    let currentStage = 1;
-    let stageElement = document.createElement("div")
-    stageElement.classList.add("mb-3")
-    stageElement.innerHTML = `<b>Round ${currentStage}</b>`
-    historyElement.appendChild(stageElement)
-
-    paginatedGames["games"].forEach((game, index) => {
-        if (index > 0 && index % 2 === 0) {
-            currentStage++;
-            stageElement = document.createElement("div")
-            stageElement.classList.add("mb-3")
-            stageElement.innerHTML = `<b>Round ${currentStage}</b>`
-            historyElement.appendChild(stageElement)
+    let currentStage = 0
+    paginatedGames["games"].forEach((game) => {
+        stageElement = document.createElement("div")
+        //stageElement.classList.add("mb-3")
+        if (currentStage !== game['stage']) {
+            stageElement.innerHTML = `<b>Round ${game['stage']}</b>`
+            currentStage = game['stage']
         }
+        historyElement.appendChild(stageElement)
         let item = TournamentHistoryItemComponent(game)
         historyElement.appendChild(item)
     });
