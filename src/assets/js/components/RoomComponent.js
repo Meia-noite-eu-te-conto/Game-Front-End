@@ -149,39 +149,6 @@ function MatchRoomComponent(data) {
     MatchGameInformationComponent(data)
     MatchPlayerListComponent(data)
     MatchActionsComponent(data)
-
-    document.body.appendChild(AddModalComponent(
-        "alert-close-room-modal",
-        "close room.",
-        "bi bi-exclamation-circle-fill",
-        "Close Game",
-        "Be careful. This game will be deleted if you close it.<br>Do you want to continue?",
-        "btn-close-room",
-        "Yes",
-        "No"
-    ))
-
-    document.body.appendChild(AddModalComponent(
-        "alert-leave-room-modal",
-        "leave room.",
-        "bi bi-exclamation-circle-fill",
-        "Leave Game",
-        "Are you sure you want to leave this game?",
-        "btn-leave-the-room",
-        "Yes",
-        "No"
-    ))
-
-    document.body.appendChild(AddModalComponent(
-        "alert-remove-player-modal",
-        "remove player.",
-        "bi bi-exclamation-circle-fill",
-        "Remove Player",
-        "Are you sure you want to remove this player from the game?",
-        "btn-remove-player",
-        "Yes",
-        "No"
-    ))
 }
 
 function PlayerLabelTournamentComponent(player, index)
@@ -293,28 +260,6 @@ async function TournamentRoomComponent(data, roomCode) {
     await TournamentActionsComponent(data, roomCode)
     TournamentInformationComponent(data)
     BracketsRowsComponent(data)
-
-    document.body.appendChild(AddModalComponent(
-        "alert-close-room-modal",
-        "close room.",
-        "bi bi-exclamation-circle-fill",
-        "Close Game",
-        "Be careful. This game will be deleted if you close it.<br>Do you want to continue?",
-        "btn-close-room",
-        "Yes",
-        "No"
-    ))
-
-    document.body.appendChild(AddModalComponent(
-        "alert-leave-room-modal",
-        "leave room.",
-        "bi bi-exclamation-circle-fill",
-        "Leave Game",
-        "Are you sure you want to leave this game?",
-        "btn-leave-the-room",
-        "Yes",
-        "No"
-    ))
 }
 
 function TournamentHistoryItemComponent(game) {
@@ -353,25 +298,19 @@ async function TournamentHistoryComponent(roomCode) {
     `
     element.appendChild(elementHeader)
 
-    let paginatedGames = await getTournamentGamesHistoryPaginated(null, roomCode);
+    let paginatedGames = await getTournamentGamesHistoryPaginated(null);
     let historyElement = document.createElement("div")
     historyElement.classList.add("list-group")
     historyElement.id = "tournament-history"
-
-    let currentStage = 1;
-    let stageElement = document.createElement("div")
-    stageElement.classList.add("mb-3")
-    stageElement.innerHTML = `<b>Round ${currentStage}</b>`
-    historyElement.appendChild(stageElement)
-
-    paginatedGames["games"].forEach((game, index) => {
-        if (index > 0 && index % 2 === 0) {
-            currentStage++;
-            stageElement = document.createElement("div")
-            stageElement.classList.add("mb-3")
-            stageElement.innerHTML = `<b>Round ${currentStage}</b>`
-            historyElement.appendChild(stageElement)
+    let currentStage = 0
+    paginatedGames["games"].forEach((game) => {
+        stageElement = document.createElement("div")
+        //stageElement.classList.add("mb-3")
+        if (currentStage !== game['stage']) {
+            stageElement.innerHTML = `<b>Round ${game['stage']}</b>`
+            currentStage = game['stage']
         }
+        historyElement.appendChild(stageElement)
         let item = TournamentHistoryItemComponent(game)
         historyElement.appendChild(item)
     });

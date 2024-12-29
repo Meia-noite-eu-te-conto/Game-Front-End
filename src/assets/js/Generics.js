@@ -1,16 +1,16 @@
-function redirectIfuserIsActived(document, window) {
+async function redirectIfuserIsActived(document, window) {
     let userId = getCookie(document, "userId")
     if (userId) {
-        fetch(`/api/v1/user-session/players/${userId}/`)
-        .then(response => {
+        await fetch(`/api/v1/user-session/players/${userId}/`)
+        .then(async response => {
             if (response.status === 204 || response.status === 500) return null
             return response.json()
         })
-        .then(data => {
+        .then(async data => {
             if (data != null)
             {
                 if (data["roomStatus"] <= 3) {
-                    redirectHrefRoom(window, data["roomCode"], data["roomType"])
+                    await redirectHrefRoom(window, data["roomCode"], data["roomType"])
                 }
                 // if (data["roomStatus"] > 3 && data["roomStatus"] <= 7)
                 // {
@@ -23,15 +23,25 @@ function redirectIfuserIsActived(document, window) {
 }
 
 function getCookie(document, cookieName) {
-    return document.cookie
-        .split("; ")
-        .find(row => row.startsWith(`${cookieName}=`))
-        ?.split("=")[1];
+    if (typeof document !== 'undefined' && document.cookie) {
+        const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+        const cookie = cookies.find(row => row.startsWith(`${cookieName}=`));
+        if (cookie) {
+            return cookie.split('=')[1];
+        }
+    }
+    return undefined;
 }
 
 function addUserIdIntoCookie(document, userId) {
     if (userId) {
         document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; SameSite=None; Secure`;
+    }
+}
+
+function addCookie(document,cookieName, value) {
+    if (cookieName && value) {
+        document.cookie = `${cookieName}=${value}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; SameSite=None; Secure`;
     }
 }
 
@@ -72,3 +82,12 @@ async function handleApiSuccessAsync(response, successCallback) {
         console.error(`API request failed with status ${response.status}`);
     }
 }
+
+async function DOMRender(pageName) {
+    const response = await fetch(pageName)
+    .then( response => response.text())
+    const root = document.getElementById("root")
+    root.innerHTML = response
+    await window.routes.navigateTo(pageName)
+}
+

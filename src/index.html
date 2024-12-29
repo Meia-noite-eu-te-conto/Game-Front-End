@@ -20,94 +20,97 @@
     <script src="./assets/js/Enums.js"></script>
     <script src="./assets/js/utils/CustomError.js"></script>
     <script src="./assets/js/repositories/RoutesInfo.js"></script>
+    
+	<script src="/assets/js/game-front-end/WebglUtils.js"></script>
+	<script src="/assets/js/game-front-end/MVnew.js"></script>
+	<script src="/assets/js/game-front-end/Objects.js"></script>
+	<script src="/assets/js/game-front-end/Variables.js"></script>
+	<script src="/assets/js/game-front-end/InitAndUpdateObjects.js"></script>
+	<script src="/assets/js/game-front-end/Textures.js"></script>
+	<script src="/assets/js/game-front-end/Shaders.js"></script>
+	<script src="/assets/js/game-front-end/Render.js"></script>
     <script src="/assets/js/Generics.js"></script>
     
     <script src="./assets/js/components/PaginationComponent.js"></script>
 
     <script src="./assets/js/components/HeaderComponent.js"></script>
-    <script src="./assets/js/Header.js"></script>
 
     <script src="./assets/js/repositories/RoomRepository.js"></script>
     <script src="./assets/js/components/RoomComponent.js"></script>
     <script src="./assets/js/Rooms.js"></script>
     <script src="./assets//js/EventHandlers.js"></script>
-
+    <script src="./assets/js/Ranking.js"></script>
+    <script src="./assets/js/repositories/RankingRepository.js"></script>
 </head>
-<body class="pbg">
+<body>
+    <section id="header-section" class="cover-container bg-light mb-4 d-flex w-100 px-3 mx-auto flex-column">
+        <header class="d-flex flex-wrap justify-content-center py-3 border-bottom">
+            <a class="d-flex align-items-center ms-5 mb-md-0 me-md-auto link-body-emphasis text-decoration-none">
+                <svg data-page-name="/home.html" width="40" height="39" viewBox="0 0 40 39" fill="none" xmlns="http://www.w3.org/2000/svg">
+                    <path d="M17.6548 2H11.8214C10.2743 2 8.7906 2.61458 7.69664 3.70854C6.60268 4.80251 5.9881 6.28624 5.9881 7.83333C5.9881 9.38043 6.60268 10.8642 7.69664 11.9581C8.7906 13.0521 10.2743 13.6667 11.8214 13.6667M17.6548 2V13.6667M17.6548 2H23.4881C38.2635 3 38.5 27.0419 17.6548 19.5M17.6548 13.6667H11.8214M17.6548 13.6667V19.5M11.8214 13.6667C10.2743 13.6667 8.7906 14.2812 7.69664 15.3752M17.6548 25.3333H11.8214C10.2743 25.3333 8.7906 25.9479 7.69664 27.0419C6.60268 28.1358 5.9881 29.6196 5.9881 31.1667C5.9881 32.7138 6.60268 34.1975 7.69664 35.2915C8.7906 36.3854 10.2743 37 11.8214 37C13.3685 37 14.8523 36.3854 15.9462 35.2915C17.0402 34.1975 17.6548 32.7138 17.6548 31.1667V25.3333ZM17.6548 25.3333V19.5" stroke="#1E1E1E" stroke-width="3.5" stroke-linecap="round" stroke-linejoin="round"/>
+                </svg>
+            </a>
+            <ul class="nav nav-pills">
+                <li class="nav-item">
+                    <a data-page-name="/home.html" class="nav-link active" aria-current="page">Game</a>
+                </li>
+                <li class="nav-item">
+                    <a data-page-name="/view-rooms.html" class="nav-link" aria-current="page">List Rooms</a>
+                </li>
+                <li class="nav-item">
+                    <a data-page-name="/ranking.html" class="nav-link" aria-current="page">Ranking</a>
+                </li>
+            </ul>
+        </header>
+    </section>
 
-    <!-- Header Section -->
-    <section id="header-section" class="cover-container bg-light mb-4 d-flex w-100 px-3 mx-auto flex-column"></section>
-    
-    <!-- Body Content -->
-    <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
-        <main  style="height: 85vh;" class="px-3 d-flex align-items-center justify-content-center flex-column">
-            <h1 class="h1 "><b>Trancendence</b></h1>
-            <p class="lead">A Pong Game</p>
-            <div class="d-flex align-items-around">
-                <p class="lead px-3">
-                    <a href="./view-rooms.html" class="btn btn-lg btn-secondary">List Rooms</a>
-                </p>
-                <p class="lead px-3">
-                    <button type="button" href="#" class="btn btn-lg btn-dark" data-bs-toggle="modal" data-bs-target="#create-room" data-bs-whatever="@mdo">Create Room</button>
-                </p>
-            </div>
-        </main>
-    </div>
-
-    <!-- Form For Create A Room -->
-    <div class="modal fade" id="create-room" tabindex="-1" aria-labelledby="createRoomModal" aria-hidden="true">
-        <div class="modal-dialog modal-dialog-centered">
-            <div class="modal-content">
-                <div class="modal-header align-items-start">
-                    <div>
-                        <h1 class="modal-title fs-5" id="exampleModalLabel">Create a room</h1>
-                        <p>Create a room to play with up to 4 people</p>
-                    </div>
-                    <button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-                </div>
-                <div class="modal-body">
-                    <form onsubmit="CreateRoom(event)"> 
-                        <div class="mb-3">
-                            <label for="nickname-input" class="col-form-label">Nickname</label>
-                            <input name="nickname" type="text" class="form-control" id="nickname-input">
-                        </div>
-                        <div class="mb-3">
-                            <label for="game-type-section" class="col-form-label">Game Type</label>
-                            <select name="gameType" id="game-type-section" class="form-select form-select-sm" aria-label="game type selection" onchange="updateNumberOfPlayersOptions()">
-                                <option selected value="0">Match</option>
-                                <option value="1">Tournament</option>
-                                <option value="2">Single Player</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="number-of-players-section" class="col-form-label">Number of Players</label>
-                            <select name="numberOfPlayers" id="number-of-players-section" class="form-select form-select-sm" aria-label="number of players selection">
-                                <option selected value="2">2</option>
-                                <option value="4">4</option>
-                            </select>
-                        </div>
-                        <div class="mb-3">
-                            <label for="room-name-input" class="col-form-label">Room Name</label>
-                            <input name="roomName" class="form-control" id="room-name-input"></input>
-                        </div>
-                        <div class="form-check form-switch">
-                            <input name="isPrivate" class="form-check-input" type="checkbox" role="switch" id="private-room-checkbox">
-                            <label class="form-check-label" for="private-room-checkbox">Private Room<br><p>Private rooms do not appear in global search and can only be accessed by code.</p></label>
-                        </div>
-                        <div class="modal-footer mb-3">
-                            <button type="submit" style="width: 100vw;" class="h-100 btn btn-dark">Create The Room</button>
-                        </div>
-                    </form>
-                </div>
-            </div>
+    <section id="canva-section" class="my-5 container d-none">
+        <div class="d-flex flex-column align-items-center">
+            <canvas width="850px" height="550px" class="bg-light border border-dark" id="myCanvas"></canvas>
         </div>
-    </div>
+    </section>
 
+    <main style="height: 100vh;" class="pbg" id="root"></main>
+
+    <div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
+        <h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>
+    </div>
+    
     <script>
-        window.onload = function() {
-            // redirectIfuserIsActived(document, window)
-            renderHeader(document)
+        gCanvas = document.getElementById('myCanvas');
+		gl = gCanvas.getContext('webgl2');
+        window.routes = new Router();
+        
+        let pageName = "/home.html"
+        let page = localStorage.getItem("currentPage")
+        if (page)
+            pageName = page
+    
+        let lastState = null;
+        
+        window.onpopstate = (event) => {
+            if (lastState === null) {
+                console.log("Primeiro popstate");
+            } else if (event.state.page > lastState.page) {
+                console.log("Botão 'Avançar' foi clicado");
+            } else if (event.state.page < lastState.page) {
+                console.log("Botão 'Voltar' foi clicado");
+            }
+
+            lastState = event.state;
+        };
+
+        window.onload = async function() {
+            await DOMRender(pageName);
         }
+
+
+        history.pushState({ page: 1 }, "title 1", "?page=1");
+        history.pushState({ page: 2 }, "title 2", "?page=2");
+        history.replaceState({ page: 3 }, "title 3", "?page=3");
+        history.back(); // Logs "location: http://example.com/example.html?page=1, state: {"page":1}"
+        history.back(); // Logs "location: http://example.com/example.html, state: null"
+        history.go(2); // Logs "location: http://example.com/example.html?page=3, state: {"page":3}"
     </script>
 </body>
 </html>

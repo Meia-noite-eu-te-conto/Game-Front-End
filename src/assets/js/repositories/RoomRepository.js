@@ -79,13 +79,13 @@ const APIEndPoints = {
     'game': '/api/v1/game-core/',
 }
 
-function CloseRoom(event, roomCode) {
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/delete`;
+async function CloseRoom(event, roomCode) {
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/delete`;
     ApiRequestHandler(endpoint, 'DELETE')
-        .then(response => {
-            handleApiSuccess(response, () => {
+        .then(async response => {
+            await handleApiSuccessAsync(response, async () => {
                 resetUserIdIntoCookie(document);
-                window.location.href = "/index.html";
+                await DOMRender("/home.html")
             });
         })
         .catch(handleApiError);
@@ -95,7 +95,7 @@ function RemovePlayerFromRoom(event, roomCode) {
     const modal = event.target.closest(".modal");
     const playerId = modal.dataset.playerId;
 
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/${playerId}/remove-player/`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/${playerId}/remove-player/`;
     ApiRequestHandler(endpoint, 'DELETE')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -106,7 +106,7 @@ function RemovePlayerFromRoom(event, roomCode) {
 }
 
 function StartAGame(event, roomCode) {
-    const endpoint = `${APIEndPoints["user"]}games/${roomCode}/new-game/`;
+    const endpoint = `${APIEndPoints["user"]}games/${localStorage.getItem("roomCode")}/new-game/`;
     ApiRequestHandler(endpoint, 'POST')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -117,7 +117,7 @@ function StartAGame(event, roomCode) {
 }
 
 function StartATournamentGame(event, roomCode) {
-    const endpoint = `${APIEndPoints["user"]}games/${roomCode}/new-tournament-game/`;
+    const endpoint = `${APIEndPoints["user"]}games/${localStorage.getItem("roomCode")}/new-tournament-game/`;
     ApiRequestHandler(endpoint, 'POST')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -129,7 +129,7 @@ function StartATournamentGame(event, roomCode) {
 
 function LeaveTheRoom(event, roomCode) {
     let userId = getCookie(document, "userId");
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/${userId}/remove-player/`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/${userId}/remove-player/`;
     ApiRequestHandler(endpoint, 'DELETE')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -141,7 +141,7 @@ function LeaveTheRoom(event, roomCode) {
 
 function LockTournament(event, roomCode)
 {
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/lock-tournament/`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/lock-tournament/`;
     ApiRequestHandler(endpoint, 'POST')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -151,7 +151,7 @@ function LockTournament(event, roomCode)
         .catch(handleApiError)
 }
 
-function CreateRoom(event) {
+async function CreateRoom(event) {
     event.preventDefault()
     const data = {
         createdBy: event.target.nickname.value,
@@ -162,23 +162,23 @@ function CreateRoom(event) {
     }
 
     const endpoint = `${APIEndPoints["user"]}rooms/new-room/`;
-    ApiRequestHandler(endpoint, 'POST', body = data)
-        .then(response => {
-            handleApiSuccess(response, async () => {
+    await ApiRequestHandler(endpoint, 'POST', body = data)
+        .then(async response => {
+            handleApiSuccessAsync(response, async () => {
                 const userId = response.headers.get("X-User-Id");
                 const data = await response.json();
                 addUserIdIntoCookie(document, userId);
-                redirectHrefRoom(window, data.roomCode, data.roomType)
+                await redirectHrefRoom(window, data.roomCode, data.roomType)
             })
         })
         .catch(handleApiError)
 }
 
-function ShowMatchRoom(roomCode) {
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/detail`;
-    ApiRequestHandler(endpoint, 'GET')
-        .then(response => {
-            handleApiSuccess(response, async () => {
+async function ShowMatchRoom(roomCode) {
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/detail`;
+    await ApiRequestHandler(endpoint, 'GET')
+        .then(async response => {
+            await handleApiSuccessAsync(response, async () => {
                 const data = await response.json();
                 MatchRoomComponent(data)
             })
@@ -186,21 +186,21 @@ function ShowMatchRoom(roomCode) {
         .catch(handleApiError)
 }
 
-function ShowTournamentRoom(roomCode) {
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/tournament/`;
-    ApiRequestHandler(endpoint, 'GET')
-        .then(response => {
-            handleApiSuccess(response, async () => {
+async function ShowTournamentRoom(roomCode) {
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/tournament/`;
+    await ApiRequestHandler(endpoint, 'GET')
+        .then(async response => {
+            await handleApiSuccessAsync(response, async () => {
                 const data = await response.json();
                 console.log(data)
-                TournamentRoomComponent(data, roomCode)
+                await TournamentRoomComponent(data, localStorage.getItem("roomCode"))
             })
         })
         .catch(handleApiError)
 }
 
-async function getTournamentGamesHistoryPaginated(event, roomCode) {
-    let endpoint = `${APIEndPoints["game"]}games/tournament-history/?roomCode=${roomCode}`;
+async function getTournamentGamesHistoryPaginated(event) {
+    let endpoint = `${APIEndPoints["game"]}games/tournament-history/?roomCode=${localStorage.getItem("roomCode")}`;
     return await ApiRequestHandler(endpoint, 'GET')
         .then(async response => {
             let data = await handleApiSuccessAsync(response, async () => {
@@ -215,7 +215,7 @@ async function getTournamentGamesHistoryPaginated(event, roomCode) {
 function ShowTournamentGamesHistory(event) {
     const roomCode = event.target.dataset.roomCode;
     const page = event.target.dataset.page;
-    getTournamentGamesHistoryPaginated(event, roomCode)
+    getTournamentGamesHistoryPaginated(event)
     .then(paginatedGames => {
         let historyElement = document.getElementById("tournament-history");
         historyElement.innerHTML = "";

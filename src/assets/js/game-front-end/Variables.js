@@ -198,3 +198,5 @@ void main()
 	finalColor = difuse + specular + uAmbColor * vColorAux;
 	finalColor.a = 1.0;
 }`;
+
+var		doOnce = true;

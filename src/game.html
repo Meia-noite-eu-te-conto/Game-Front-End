@@ -1,237 +1,47 @@
-<!DOCTYPE html>
-<html lang="en">
-<head>
-	<meta charset="UTF-8">
-	<meta name="viewport" content="width=device-width, initial-scale=1.0">
-	<title>Room List Page</title>
+<section id="header-section" class="cover-container bg-light mb-4 d-flex w-100 px-3 mx-auto flex-column"></section>
 
-	<link rel="stylesheet" href="./assets/css/background.css" />
-
-	<link rel="icon" type="image/png" href="/assets/icon/favicon-96x96.png" sizes="96x96" />
-	<link rel="icon" type="image/svg+xml" href="/assets/icon/favicon.svg" />
-	<link rel="shortcut icon" href="/assets/icon/favicon.ico" />
-	<link rel="apple-touch-icon" sizes="180x180" href="/assets/icon/apple-touch-icon.png" />
-
-	<link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
-	<link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
-	<script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-
-	<script src="/assets/js/Enums.js"></script>
-	<script src="./assets/js/utils/CustomError.js"></script>
-	<script src="./assets/js/repositories/RoutesInfo.js"></script>
-	<script src="/assets/js/Generics.js"></script>
-
-	<script src="/assets/js/game-front-end/WebglUtils.js"></script>
-	<script src="/assets/js/game-front-end/MVnew.js"></script>
-	<script src="/assets/js/game-front-end/Objects.js"></script>
-	<script src="/assets/js/game-front-end/Variables.js"></script>
-	<script src="/assets/js/game-front-end/InitAndUpdateObjects.js"></script>
-	<script src="/assets/js/game-front-end/Textures.js"></script>
-	<script src="/assets/js/game-front-end/Shaders.js"></script>
-	<script src="/assets/js/game-front-end/Render.js"></script>
-
-	<script src="./assets/js/components/PaginationComponent.js"></script>
-
-	<script src="./assets/js/components/HeaderComponent.js"></script>
-	<script src="./assets/js/Header.js"></script>
-
-	<script src="./assets/js/repositories/RoomRepository.js"></script>
-	<script src="./assets/js/components/RoomComponent.js"></script>
-	<script src="./assets/js/Rooms.js"></script>
-
-</head>
-<body class="pbg">
-
-	<section id="header-section" class="cover-container bg-light mb-4 d-flex w-100 px-3 mx-auto flex-column"></section>
-
-	<main style="height: 85vh;" class="my-5 container">
-		<div class="d-flex flex-column align-items-center">
-			<canvas width="850px" height="550px" class="bg-light border border-dark" id="myCanvas"></canvas>
+<section style="height: 85vh;" class="my-5 container">
+	<div class="d-flex ">
+		<div id="list-of-players" class="w-75 my-2 list-group list-group-flush d-flex flex-row align-items-center">
 		</div>
-		<div class="d-flex ">
-			<div id="list-of-players" class="w-75 my-2 list-group list-group-flush d-flex flex-row align-items-center">
-				<a href="#" class="me-3 list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
-					<div class="d-flex w-100 align-items-center justify-content-between">
-						<div class="d-flex w-75 align-items-center">
-							<img class="rounded-circle img-thumbnail bg-primary" src="./assets/img/1.png" alt="">
-							<div class="d-flex flex-column ps-2 justify-content-center">
-								<strong class="mb-1">Carlinhos</strong>
-								<p class="small mb-0">Blue</p>
-							</div>
-						</div>
-						<h3 class="text-body-secondary">4</h3>
-					</div>
-				</a>
-				<h1 class="me-3">X</h1>
-				<a href="#" class="list-group-item list-group-item-action py-3 lh-sm rounded-4 mb-2">
-					<div class="d-flex w-100 align-items-center justify-content-between">
-						<div class="d-flex w-75 align-items-center">
-							<img class="rounded-circle img-thumbnail bg-danger" src="./assets/img/2.png" alt="">
-							<div class="d-flex flex-column ps-2 justify-content-center">
-								<strong class="mb-1">Ranna</strong>
-								<p class="small mb-0">Red</p>
-							</div>
-						</div>
-						<h3 class="text-body-secondary">7</h3>
-					</div>
-				</a>
-			</div>
-			<div class="w-25 d-flex align-items-center justify-content-end">
-				<button class="btn btn-dark">Sair da Partida</button>
-			</div>
+		<div class="w-25 d-flex align-items-center justify-content-end">
+			<button class="btn btn-dark">Sair da Partida</button>
 		</div>
-	</main>
+	</div>
+</section>
 
-	<div class="modal fade" id="gameOverWinnerModal" tabindex="-1" aria-labelledby="gameOverWinnerModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="gameOverWinnerModalLabel">Game Over</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					Congratulations. You won!
-					Thank you for playing!
-				</div>
-				<div class="modal-footer">
-					<a href="/index.html" type="button" class="btn btn-secondary">Go to initial menu</a>
-				</div>
+<div class="modal fade" id="gameOverWinnerModal" tabindex="-1" aria-labelledby="gameOverWinnerModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="gameOverWinnerModalLabel">Game Over</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				Congratulations. You won!
+				Thank you for playing!
+			</div>
+			<div class="modal-footer">
+				<a data-page-name="/home.html" type="button" data-bs-dismiss="modal" class="btn btn-secondary">Go to initial menu</a>
 			</div>
 		</div>
 	</div>
+</div>
 
-	<div class="modal fade" id="gameOverLoserModal" tabindex="-1" aria-labelledby="gameOverLoserModalLabel" aria-hidden="true">
-		<div class="modal-dialog">
-			<div class="modal-content">
-				<div class="modal-header">
-					<h5 class="modal-title" id="gameOverLoserModalLabel">Game Over</h5>
-					<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
-				</div>
-				<div class="modal-body">
-					You lost!
-					Thank you for playing!
-				</div>
-				<div class="modal-footer">
-					<a href="/index.html" type="button" class="btn btn-secondary">Go to initial menu</a>
-				</div>
+<div class="modal fade" id="gameOverLoserModal" tabindex="-1" aria-labelledby="gameOverLoserModalLabel" aria-hidden="true">
+	<div class="modal-dialog">
+		<div class="modal-content">
+			<div class="modal-header">
+				<h5 class="modal-title" id="gameOverLoserModalLabel">Game Over</h5>
+				<button type="button" class="btn-close" data-bs-dismiss="modal" aria-label="Close"></button>
+			</div>
+			<div class="modal-body">
+				You lost!
+				Thank you for playing!
+			</div>
+			<div class="modal-footer">
+				<a data-page-name="/home.html" type="button" data-bs-dismiss="modal" class="btn btn-secondary">Go to initial menu</a>
 			</div>
 		</div>
 	</div>
-
-	<div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
-		<h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>
-	</div>
-
-	<script>
-		const	urlParams = new URLSearchParams(window.location.search);
-		const	roomCode = urlParams.get('roomCode');
-		const	host = window.location.host;
-		const	gameId = urlParams.get('gameId');
-		const	endpoint = `/api/v1/game-core/games/${gameId}/`;
-		const	userId = getCookie(document, "userId");
-		let		socket = null
-
-		gCanvas = document.getElementById('myCanvas');
-		gl = gCanvas.getContext('webgl2');
-		var		doOnce = true;
-
-		function	sendKey(event)
-		{
-			const	key = event.key;
-			socket.send(JSON.stringify({
-				direction: key,
-				headers: { "X-User-Id": userId }
-			}));
-		}
-
-		document.addEventListener('keydown', sendKey);
-
-		window.onload = function() {
-			renderHeader(document)
-			getPlayer()
-
-			socket = new WebSocket(`wss://${host}${endpoint}`);
-
-			socket.onopen = function(event) {
-				const headers = { "X-User-Id": getCookie(document, "userId")};
-
-				socket.send(JSON.stringify({
-					type: 'connect',
-					headers: headers
-				}));
-
-				WSConnection(document, true)
-			};
-
-			socket.onmessage = function(event) {
-				const data = JSON.parse(event.data);
-				if (data.type == 'game.update') {
-					drawOnCanvas(data.game_state);
-				}
-
-				if (data.type === "update_score") {
-					let playerColor = data.playerColor
-					let element = document.getElementById(`player-${playerColor}`)
-					element.innerHTML = data.playerScore
-				}
-
-				if (data.type === "game_finished") {
-					if (data.winner != userId) {
-						const gameOverLoserModal = new bootstrap.Modal(document.getElementById('gameOverLoserModal'));
-						gameOverLoserModal.show();
-					}
-					else {
-						if (data.roomType === 1)
-							window.location.href = `/tournament.html?roomCode=${roomCode}`;
-						else {
-							const gameOverWinnerModal = new bootstrap.Modal(document.getElementById('gameOverWinnerModal'));
-							gameOverWinnerModal.show();
-						}
-					}
-				}
-			};
-
-			socket.onclose = function(event) {
-				WSConnection(document, false)
-			};
-
-			socket.onerror = function(error) {
-				console.error("WebSocket error:", error);
-			};
-		}
-
-		function	getPlayer() {
-			fetch(`/api/v1/user-session/players/game/${gameId}/`, {
-					method: 'GET',
-				})
-					.then(response => response.json())
-					.then(data => {
-						const playerListElement = document.getElementById("list-of-players")
-
-						playerListElement.innerHTML = ""
-						players = data["players"]
-						players.sort((a, b) => a.profileColor - b.profileColor);
-						players.forEach(player => {
-							const playerElement = document.createElement('div');
-							playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
-							let [r, g, b, a] = PlayerColor[player.profileColor]
-							playerElement.innerHTML = `
-								<div class="d-flex w-100 align-items-center justify-content-between">
-									<div class=" d-flex w-75 align-items-center">
-										<img style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
-										<div class="d-flex flex-column  ps-2 justify-content-center">
-											<strong class="mb-1">${player.name}</strong>
-											<p class="small mb-0">Blue</p>
-										</div>
-									</div>
-									<h3 id="player-${player.profileColor}" class="text-body-secondary">${player.score}</h3>
-								</div>
-								`;
-							playerListElement.appendChild(playerElement)
-						});
-					})
-		}
-
-	</script>
-</body>
-</html>
+</div>
