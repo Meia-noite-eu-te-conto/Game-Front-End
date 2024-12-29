@@ -80,7 +80,7 @@ const APIEndPoints = {
 }
 
 function CloseRoom(event, roomCode) {
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/delete`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/delete`;
     ApiRequestHandler(endpoint, 'DELETE')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -95,7 +95,7 @@ function RemovePlayerFromRoom(event, roomCode) {
     const modal = event.target.closest(".modal");
     const playerId = modal.dataset.playerId;
 
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/${playerId}/remove-player/`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/${playerId}/remove-player/`;
     ApiRequestHandler(endpoint, 'DELETE')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -106,7 +106,7 @@ function RemovePlayerFromRoom(event, roomCode) {
 }
 
 function StartAGame(event, roomCode) {
-    const endpoint = `${APIEndPoints["user"]}games/${roomCode}/new-game/`;
+    const endpoint = `${APIEndPoints["user"]}games/${localStorage.getItem("roomCode")}/new-game/`;
     ApiRequestHandler(endpoint, 'POST')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -117,7 +117,7 @@ function StartAGame(event, roomCode) {
 }
 
 function StartATournamentGame(event, roomCode) {
-    const endpoint = `${APIEndPoints["user"]}games/${roomCode}/new-tournament-game/`;
+    const endpoint = `${APIEndPoints["user"]}games/${localStorage.getItem("roomCode")}/new-tournament-game/`;
     ApiRequestHandler(endpoint, 'POST')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -129,7 +129,7 @@ function StartATournamentGame(event, roomCode) {
 
 function LeaveTheRoom(event, roomCode) {
     let userId = getCookie(document, "userId");
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/${userId}/remove-player/`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/${userId}/remove-player/`;
     ApiRequestHandler(endpoint, 'DELETE')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -141,7 +141,7 @@ function LeaveTheRoom(event, roomCode) {
 
 function LockTournament(event, roomCode)
 {
-    const endpoint = `${APIEndPoints["user"]}rooms/${roomCode}/lock-tournament/`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/lock-tournament/`;
     ApiRequestHandler(endpoint, 'POST')
         .then(response => {
             handleApiSuccess(response, () => {

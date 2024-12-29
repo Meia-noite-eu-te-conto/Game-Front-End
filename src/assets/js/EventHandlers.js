@@ -8,7 +8,45 @@ const btnActions = {
 };
 
 const btnPageActions = {
-    "btn-open-list-rooms" : DOMRender
+    "btn-open-list-rooms" : DOMRender,
+    "btn-brand-icon": DOMRender,
+}
+
+async function HandleEvents(event, roomCode) {
+    if (event.target.matches(".modal-handler")) {
+        event.preventDefault()
+        const targetModalId = event.target.dataset.target;
+        const modalElement = document.getElementById(targetModalId);
+        const playerId = event.target.dataset.playerId;
+
+        modalElement.dataset.playerId = playerId;
+
+        var modal = new bootstrap.Modal(modalElement);
+        modal.show();
+        return
+    }
+    console.log(event.target.dataset.pageName)
+    if (event.target.dataset.pageName) {
+        event.preventDefault()
+        await DOMRender(event.target.dataset.pageName);
+        return;
+    }
+    if (event.target.matches(".btn") || event.target.matches(".act")) {
+        for (const [className, action] of Object.entries(btnActions)) {
+            if (event.target.classList.contains(className)) {
+                event.preventDefault()
+                action(event, roomCode);
+                return;
+            }
+        }
+        for (const [className, action] of Object.entries(btnPageActions)) {
+            if (event.target.classList.contains(className)) {
+                event.preventDefault()
+                await action(event.target.dataset.pageName);
+                return;
+            }
+        }
+    }
 }
 
 class PageHome {
@@ -24,10 +62,7 @@ class PageHome {
 
 class PageViewRooms {
     async init() {
-        renderHeader(document);
         listRooms();
-        
-
     }
     
     async destroy() {
@@ -37,10 +72,7 @@ class PageViewRooms {
 
 class Ranking {
     async init () {
-        renderHeader(document);
         listRanking();
-
-
     }
 
     async destroy() {
@@ -57,16 +89,14 @@ class PageGame {
         gCanvas = document.getElementById('myCanvas');
 		gl = gCanvas.getContext('webgl2');
 		
-
-        renderHeader(document)
         getPlayer(localStorage.getItem("gameId"))
 
-        const socket = new WebSocket(`wss://${host}${endpoint}`);
+        this.socket = new WebSocket(`wss://${host}${endpoint}`);
 
-        socket.onopen = function(event) {
+        this.socket.onopen = function(event) {
             const headers = { "X-User-Id": getCookie(document, "userId")};
 
-            socket.send(JSON.stringify({
+            this.socket.send(JSON.stringify({
                 type: 'connect',
                 headers: headers
             }));
@@ -79,14 +109,13 @@ class PageGame {
         function	sendKey(event)
 		{
 			const	key = event.key;
-			socket.send(JSON.stringify({
+			this.socket.send(JSON.stringify({
 				direction: key,
 				headers: { "X-User-Id": userId }
 			}));
 		}
 
-
-        socket.onmessage = function(event) {
+        this.socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
             if (data.type == 'game.update') {
                 drawOnCanvas(data.game_state);
@@ -102,37 +131,45 @@ class PageGame {
                 if (data.winner != userId) {
                     const gameOverLoserModal = new bootstrap.Modal(document.getElementById('gameOverLoserModal'));
                     gameOverLoserModal.show();
+                    localStorage.setItem("currentPage", "/home.html")
                 }
                 else {
                     if (data.roomType === 1)
-                        window.location.href = `/tournament.html?roomCode=${this.roomCode}`;
+                        redirectHrefRoom(window, localStorage.getItem("roomCode"), data.roomType)
                     else {
                         const gameOverWinnerModal = new bootstrap.Modal(document.getElementById('gameOverWinnerModal'));
                         gameOverWinnerModal.show();
+                        localStorage.setItem("currentPage", "/home.html")
                     }
                 }
             }
         };
 
-        socket.onclose = function(event) {
+        this.socket.onclose = function(event) {
             WSConnection(document, false)
         };
 
-        socket.onerror = function(error) {
+        this.socket.onerror = function(error) {
             console.error("WebSocket error:", error);
         };
     }
 
     async destroy() {
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.socket.close();
+        }
 
+        document.removeEventListener('keydown', this.sendKey);
+
+        gCanvas = null;
+        gl = null;
+        this.socket = null;
     }
 }
 
 class PageMatchRoom {
 
     async init() {
-        renderHeader(document)
-
         await ShowMatchRoom(localStorage.getItem("roomCode"))
 
         const userId = getCookie(document, "userId")
@@ -179,7 +216,6 @@ class PageTournament {
         const endpoint = "/api/v1/user-session/";
         const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${localStorage.getItem("roomCode")}/?userId=${userId}`);
 
-        renderHeader(document)
         ShowTournamentRoom(localStorage.getItem("roomCode"))
 
         socket.onopen = function(event) {
@@ -196,7 +232,7 @@ class PageTournament {
             } else if (data.type == "player_list_update")
                 ShowTournamentRoom(localStorage.getItem("roomCode"));
             else if (data.type == "game.started") {
-                window.location.href = `/game.html?gameId=${data.gameId}&roomCode=${this.roomCode}`
+                redirectGame(data.gameId)
             }
 		};
 
@@ -204,7 +240,6 @@ class PageTournament {
             console.log("WebSocket connection closed:", event);
 			WSConnection(document, false)
 		};
-
         socket.onerror = function(error) {
             console.error("WebSocket error:", error);
         };
@@ -279,34 +314,3 @@ class Router {
 }
 
 
-async function HandleEvents(event, roomCode) {
-    if (event.target.matches(".modal-handler")) {
-        event.preventDefault()
-        const targetModalId = event.target.dataset.target;
-        const modalElement = document.getElementById(targetModalId);
-        const playerId = event.target.dataset.playerId;
-
-        modalElement.dataset.playerId = playerId;
-
-        var modal = new bootstrap.Modal(modalElement);
-        modal.show();
-        return
-    }
-
-    if (event.target.matches(".btn") || event.target.matches(".act")) {
-        for (const [className, action] of Object.entries(btnActions)) {
-            if (event.target.classList.contains(className)) {
-                event.preventDefault()
-                action(event, roomCode);
-                return;
-            }
-        }
-        for (const [className, action] of Object.entries(btnPageActions)) {
-            if (event.target.classList.contains(className)) {
-                event.preventDefault()
-                await action(event.target.dataset.pageName);
-                return;
-            }
-        }
-    }
-}
