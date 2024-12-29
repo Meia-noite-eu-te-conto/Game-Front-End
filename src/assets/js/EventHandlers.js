@@ -25,7 +25,6 @@ async function HandleEvents(event, roomCode) {
         modal.show();
         return
     }
-    console.log(event.target.dataset.pageName)
     if (event.target.dataset.pageName) {
         event.preventDefault()
         await DOMRender(event.target.dataset.pageName);
@@ -36,13 +35,6 @@ async function HandleEvents(event, roomCode) {
             if (event.target.classList.contains(className)) {
                 event.preventDefault()
                 action(event, roomCode);
-                return;
-            }
-        }
-        for (const [className, action] of Object.entries(btnPageActions)) {
-            if (event.target.classList.contains(className)) {
-                event.preventDefault()
-                await action(event.target.dataset.pageName);
                 return;
             }
         }
@@ -87,6 +79,27 @@ class PageGame {
     }
 
     async init() {
+        gPong = {
+            time: Date.now(),
+            delta: 0,
+        };
+        gInterface = {};
+        gCanvas = document.getElementById('myCanvas');
+		gl = gCanvas.getContext('webgl2');
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gObjects = [];
+        gCamera = new Camera();
+        gShader = {};
+        gCtx = {
+            view: mat4(),
+            perspective: mat4(),
+        };
+        gPositions = [];
+        gColors = [];
+        gNormals = [];
+        gTextures = [];
+        doOnce = true;
+
         const	host = window.location.host;
         const	endpoint = `/api/v1/game-core/games/${localStorage.getItem("gameId")}/`;
 		const	userId = getCookie(document, "userId");
@@ -159,7 +172,6 @@ class PageGame {
     }
 
     async destroy() {
-
         document.getElementById("canva-section").classList.add("d-none")
 
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {

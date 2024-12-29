@@ -98,35 +98,26 @@ const	vTextura = [
 ];
 const	NO_TEXTURE = vec2(-1, -1);
 
-var		gTexture = new Uint8Array(TEX_COLOR_SIZE * TEX_SIDE * TEX_SIDE);
 const	URL_FIELD = "./assets/img/milkyWayField.png"
 const	URLS = [URL_FIELD];
 
-var		gPong = {
-	time: Date.now(),
-	delta: 0,
-};
+const	gTexture = new Uint8Array(TEX_COLOR_SIZE * TEX_SIDE * TEX_SIDE);
+
+var		gPong = {};
 var		gInterface = {};
-var		gl;
 var		gCanvas;
-
+var		gl;
 var		gObjects = [];
-
-var		gCamera = new Camera();
-
+var		gCamera;
 var		gShader = {};
-
-var		gCtx = {
-	view: mat4(),
-	perspective: mat4(),
-};
-
+var		gCtx = {};
 var		gPositions = [];
 var		gColors = [];
 var		gNormals = [];
 var		gTextures = [];
+var		doOnce;
 
-var	gVertexShaderSrc = `#version 300 es
+var		gVertexShaderSrc = `#version 300 es
 
 in vec4			aPosition;
 in vec4			aColor;
@@ -159,7 +150,7 @@ void	main()
 	vTextCoord = aTextCoord;
 }`;
 
-var	gFragmentShaderSrc = `#version 300 es
+var		gFragmentShaderSrc = `#version 300 es
 
 precision highp float;
 
@@ -198,5 +189,3 @@ void main()
 	finalColor = difuse + specular + uAmbColor * vColorAux;
 	finalColor.a = 1.0;
 }`;
-
-var		doOnce = true;
