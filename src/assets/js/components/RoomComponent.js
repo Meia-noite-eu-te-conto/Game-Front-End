@@ -353,7 +353,7 @@ async function TournamentHistoryComponent(roomCode) {
     `
     element.appendChild(elementHeader)
 
-    let paginatedGames = await getTournamentGamesHistoryPaginated(null, roomCode);
+    let paginatedGames = await getTournamentGamesHistoryPaginated(null);
     let historyElement = document.createElement("div")
     historyElement.classList.add("list-group")
     historyElement.id = "tournament-history"

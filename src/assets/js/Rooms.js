@@ -58,10 +58,14 @@ function redirectHrefRoom(window, roomCode, roomType) {
     let pathName = roomType === 1 ?
         `${RouteNames["tournament"]}` :
         `${RouteNames["match"]}` ;
+    window.routes.updateRoomCode(roomCode)
+    DOMRender(pathName)
+}
 
-    if (window.location.pathname !== pathName) {
-        window.location.href = `${pathName}?roomCode=${roomCode}`
-    }
+function redirectGame(gameId) {
+    let pathName = `${RouteNames["game"]}`
+    window.routes.updateGameId(gameId)
+    DOMRender(pathName)
 }
 
 // Ajustar para o novo modelo de retorno
@@ -115,4 +119,54 @@ function updateNumberOfPlayersOptions() {
         playersSelect.appendChild(optionElement);
         i++
     });
+}
+
+async function listRooms(currentPage = 1, pageSize = 5) {
+    console.log("Listing rooms...");
+    filterLabel = document.getElementById("search-input-filter-room").value;
+    await ShowRooms({ currentPage, pageSize, filterLabel }, document);
+}
+
+async function addToRoom(event) {
+    event.preventDefault();
+    await AddToRoomAsync(event, window);
+}
+
+filterLabel = ""
+async function listRanking(currentPage = 1, pageSize = 10) {
+    console.log("Listing rooms...");
+    filterLabel = document.getElementById("search-input-filter-room").value;
+    await ShowRanking({ currentPage, pageSize, filterLabel }, document);
+}
+
+function	getPlayer(gameId) {
+    fetch(`/api/v1/user-session/players/game/${gameId}/`, {
+            method: 'GET',
+        })
+            .then(response => response.json())
+            .then(data => {
+                const playerListElement = document.getElementById("list-of-players")
+
+                playerListElement.innerHTML = ""
+                players = data["players"]
+                players.sort((a, b) => a.profileColor - b.profileColor);
+                players.forEach(player => {
+                    const playerElement = document.createElement('div');
+                    playerElement.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
+                    let [r, g, b, a] = PlayerColor[player.profileColor]
+                    playerElement.innerHTML = `
+                        <div class="d-flex w-100 align-items-center justify-content-between">
+                            <div class=" d-flex w-75 align-items-center">
+                                <img style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
+                                <div class="d-flex flex-column  ps-2 justify-content-center">
+                                    <strong class="mb-1">${player.name}</strong>
+                                    <p class="small mb-0">Blue</p>
+                                </div>
+                            </div>
+                            <h3 id="player-${player.profileColor}" class="text-body-secondary">${player.score}</h3>
+                        </div>
+                        `;
+                    playerListElement.appendChild(playerElement)
+                });
+            })
 }

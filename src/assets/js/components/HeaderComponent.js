@@ -9,7 +9,7 @@ const HeaderInfo = [
         "type": "link",
         "name": "List Rooms",
         "url": "./view-rooms.html",
-        "activeWhen": "/Community"
+        "activeWhen": "/view-rooms.html"
     },
     {
         "type": "link",

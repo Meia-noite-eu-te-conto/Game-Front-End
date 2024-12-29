@@ -23,15 +23,25 @@ function redirectIfuserIsActived(document, window) {
 }
 
 function getCookie(document, cookieName) {
-    return document.cookie
-        .split("; ")
-        .find(row => row.startsWith(`${cookieName}=`))
-        ?.split("=")[1];
+    if (typeof document !== 'undefined' && document.cookie) {
+        const cookies = document.cookie.split(';').map(cookie => cookie.trim());
+        const cookie = cookies.find(row => row.startsWith(`${cookieName}=`));
+        if (cookie) {
+            return cookie.split('=')[1];
+        }
+    }
+    return undefined;
 }
 
 function addUserIdIntoCookie(document, userId) {
     if (userId) {
         document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; SameSite=None; Secure`;
+    }
+}
+
+function addCookie(document,cookieName, value) {
+    if (cookieName && value) {
+        document.cookie = `${cookieName}=${value}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; SameSite=None; Secure`;
     }
 }
 
@@ -72,3 +82,12 @@ async function handleApiSuccessAsync(response, successCallback) {
         console.error(`API request failed with status ${response.status}`);
     }
 }
+
+async function DOMRender(pageName) {
+    const response = await fetch(pageName)
+    .then( response => response.text())
+    const root = document.getElementById("root")
+    root.innerHTML = response
+    await window.routes.navigateTo(pageName)
+}
+
