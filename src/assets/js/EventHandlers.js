@@ -81,40 +81,46 @@ class Ranking {
 }
 
 class PageGame {
+    constructor() {
+        this.socket = null
+        this.keydownHandler = null;
+    }
+
     async init() {
         const	host = window.location.host;
         const	endpoint = `/api/v1/game-core/games/${localStorage.getItem("gameId")}/`;
 		const	userId = getCookie(document, "userId");
-
+        
         gCanvas = document.getElementById('myCanvas');
 		gl = gCanvas.getContext('webgl2');
 		
         getPlayer(localStorage.getItem("gameId"))
-
+        
         this.socket = new WebSocket(`wss://${host}${endpoint}`);
+        this.keydownHandler =(event) => sendKey(event, this.socket);
 
-        this.socket.onopen = function(event) {
+        this.socket.onopen = (event) =>  {
             const headers = { "X-User-Id": getCookie(document, "userId")};
-
-            this.socket.send(JSON.stringify({
-                type: 'connect',
-                headers: headers
-            }));
+            if (this.socket !== null) {
+                this.socket.send(JSON.stringify({
+                    type: 'connect',
+                    headers: headers
+                }));
+            }
 
             WSConnection(document, true)
         };
 
-        document.addEventListener('keydown', sendKey);
+        document.addEventListener('keydown', (event) => {
+            if (this.socket !== null) {
+                const	key = event.key;
+                this.socket.send(JSON.stringify({
+                    direction: key,
+                    headers: { "X-User-Id": userId }
+                }));
+            }
+        });
 		
-        function	sendKey(event)
-		{
-			const	key = event.key;
-			this.socket.send(JSON.stringify({
-				direction: key,
-				headers: { "X-User-Id": userId }
-			}));
-		}
-
         this.socket.onmessage = function(event) {
             const data = JSON.parse(event.data);
             if (data.type == 'game.update') {
@@ -159,7 +165,7 @@ class PageGame {
             this.socket.close();
         }
 
-        document.removeEventListener('keydown', this.sendKey);
+        document.removeEventListener('keydown', this.keydownHandler);
 
         gCanvas = null;
         gl = null;
@@ -167,24 +173,38 @@ class PageGame {
     }
 }
 
+function sendKey(event, socket)
+{
+    const	key = event.key;
+    const	userId = getCookie(document, "userId");
+    socket.send(JSON.stringify({
+        direction: key,
+        headers: { "X-User-Id": userId }
+    }));
+}
+
 class PageMatchRoom {
 
+    constructor() {
+        this.socket = null
+    }
+    
     async init() {
+        this.userId = getCookie(document, "userId")
+        this.host = window.location.host;
+        this.endpoint = "/api/v1/user-session/";
+
         await ShowMatchRoom(localStorage.getItem("roomCode"))
+        this.socket = new WebSocket(`wss://${this.host}${this.endpoint}ws/rooms/${localStorage.getItem("roomCode")}/?userId=${this.userId}`);
 
-        const userId = getCookie(document, "userId")
-        const host = window.location.host;
-        const endpoint = "/api/v1/user-session/";
-        const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${localStorage.getItem("roomCode")}/?userId=${userId}`);
-
-        socket.onopen = function(event) {
+        this.socket.onopen = function(event) {
             WSConnection(document, true)
         };
     
-        socket.onmessage = async function(event) {
+        this.socket.onmessage = async function(event) {
             console.log("watch-room.html \n WebSocket message:", event.data);
             const data = JSON.parse(event.data);
-            if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
+            if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == this.userId)) {
                 resetUserIdIntoCookie(document)
                 DOMRender("/home.html")
             } else if (data.type == "player_list_update")
@@ -194,21 +214,59 @@ class PageMatchRoom {
             }
         };
     
-        socket.onclose = function(event) {
+        this.socket.onclose = function(event) {
             WSConnection(document, false)
         };
     
-        socket.onerror = function(error) {
+        this.socket.onerror = function(error) {
             console.error("WebSocket error:", error);
         };
+
+        document.getElementById("root").appendChild(AddModalComponent(
+            "alert-close-room-modal",
+            "close room.",
+            "bi bi-exclamation-circle-fill",
+            "Close Game",
+            "Be careful. This game will be deleted if you close it.<br>Do you want to continue?",
+            "btn-close-room",
+            "Yes",
+            "No"
+        ))
+    
+        document.getElementById("root").appendChild(AddModalComponent(
+            "alert-leave-room-modal",
+            "leave room.",
+            "bi bi-exclamation-circle-fill",
+            "Leave Game",
+            "Are you sure you want to leave this game?",
+            "btn-leave-the-room",
+            "Yes",
+            "No"
+        ))
+    
+        document.getElementById("root").appendChild(AddModalComponent(
+            "alert-remove-player-modal",
+            "remove player.",
+            "bi bi-exclamation-circle-fill",
+            "Remove Player",
+            "Are you sure you want to remove this player from the game?",
+            "btn-remove-player",
+            "Yes",
+            "No"
+        ))
     }
 
     async destroy() {
-
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.socket.close();
+        }
     }
 }
 
 class PageTournament {
+    constructor() {
+        this.socket = null
+    }
     async init () {
         const userId = getCookie(document, "userId")
 
@@ -218,12 +276,12 @@ class PageTournament {
 
         ShowTournamentRoom(localStorage.getItem("roomCode"))
 
-        socket.onopen = function(event) {
+        this.socket.onopen = function(event) {
             console.log("WebSocket connection established:", event);
 			WSConnection(document, true)
 		};
 
-		socket.onmessage = function(event) {
+		this.socket.onmessage = function(event) {
             console.log("tournament.html \n WebSocket message:", event.data);
             const data = JSON.parse(event.data);
             if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
@@ -236,11 +294,11 @@ class PageTournament {
             }
 		};
 
-        socket.onclose = function(event) {
+        this.socket.onclose = function(event) {
             console.log("WebSocket connection closed:", event);
 			WSConnection(document, false)
 		};
-        socket.onerror = function(error) {
+        this.socket.onerror = function(error) {
             console.error("WebSocket error:", error);
         };
 
@@ -248,8 +306,9 @@ class PageTournament {
     }
     
     async destroy() {
-        console.log("tournament Page")
-
+        if (this.socket && this.socket.readyState === WebSocket.OPEN) {
+            this.socket.close();
+        }
     }
 }
 
