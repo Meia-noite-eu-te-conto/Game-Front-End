@@ -12,11 +12,6 @@ async function redirectIfuserIsActived(document, window) {
                 if (data["roomStatus"] <= 3) {
                     await redirectHrefRoom(window, data["roomCode"], data["roomType"])
                 }
-                // if (data["roomStatus"] > 3 && data["roomStatus"] <= 7)
-                // {
-                //     console.log(data)
-                //     window.location.href = `/game.html?gameCode=${data["roomCode"]}`;
-                // }
             }
         })
     }
@@ -83,11 +78,12 @@ async function handleApiSuccessAsync(response, successCallback) {
     }
 }
 
-async function DOMRender(pageName) {
+async function DOMRender(pageName, addToHistory = true) {
     const response = await fetch(pageName)
     .then( response => response.text())
     const root = document.getElementById("root")
     root.innerHTML = response
-    await window.routes.navigateTo(pageName)
+
+    await window.routes.navigateTo(pageName, addToHistory)
 }
 

@@ -16,11 +16,11 @@
     <link rel="stylesheet" href="https://cdn.jsdelivr.net/npm/bootstrap-icons@1.11.3/font/bootstrap-icons.min.css">
     <link href="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/css/bootstrap.min.css" rel="stylesheet" integrity="sha384-QWTKZyjpPEjISv5WaRU9OFeRpok6YctnYmDr5pNlyT2bRjXh0JMhjY6hW+ALEwIH" crossorigin="anonymous">
     <script src="https://cdn.jsdelivr.net/npm/bootstrap@5.3.3/dist/js/bootstrap.bundle.min.js" integrity="sha384-YvpcrYf0tY3lHB60NNkmXc5s9fDVZLESaAA55NDzOxhy9GkcIdslK1eN7N6jIeHz" crossorigin="anonymous"></script>
-    
+
     <script src="./assets/js/Enums.js"></script>
     <script src="./assets/js/utils/CustomError.js"></script>
     <script src="./assets/js/repositories/RoutesInfo.js"></script>
-    
+
 	<script src="/assets/js/game-front-end/WebglUtils.js"></script>
 	<script src="/assets/js/game-front-end/MVnew.js"></script>
 	<script src="/assets/js/game-front-end/Objects.js"></script>
@@ -30,7 +30,7 @@
 	<script src="/assets/js/game-front-end/Shaders.js"></script>
 	<script src="/assets/js/game-front-end/Render.js"></script>
     <script src="/assets/js/Generics.js"></script>
-    
+
     <script src="./assets/js/components/PaginationComponent.js"></script>
 
     <script src="./assets/js/components/HeaderComponent.js"></script>
@@ -75,42 +75,22 @@
     <div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
         <h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>
     </div>
-    
+
     <script>
         gCanvas = document.getElementById('myCanvas');
-		gl = gCanvas.getContext('webgl2');
+        gl = gCanvas.getContext('webgl2');
         window.routes = new Router();
-        
-        let pageName = "/home.html"
-        let page = localStorage.getItem("currentPage")
-        if (page)
-            pageName = page
-    
-        let lastState = null;
-        
-        window.onpopstate = (event) => {
-            if (lastState === null) {
-                console.log("Primeiro popstate");
-            } else if (event.state.page > lastState.page) {
-                console.log("Botão 'Avançar' foi clicado");
-            } else if (event.state.page < lastState.page) {
-                console.log("Botão 'Voltar' foi clicado");
-            }
 
-            lastState = event.state;
-        };
+        let pageName = "/home.html";
+        let page = localStorage.getItem("currentPage");
+        if (page)
+            pageName = page;
 
         window.onload = async function() {
             await DOMRender(pageName);
-        }
+        };
 
 
-        history.pushState({ page: 1 }, "title 1", "?page=1");
-        history.pushState({ page: 2 }, "title 2", "?page=2");
-        history.replaceState({ page: 3 }, "title 3", "?page=3");
-        history.back(); // Logs "location: http://example.com/example.html?page=1, state: {"page":1}"
-        history.back(); // Logs "location: http://example.com/example.html, state: null"
-        history.go(2); // Logs "location: http://example.com/example.html?page=3, state: {"page":3}"
     </script>
 </body>
 </html>

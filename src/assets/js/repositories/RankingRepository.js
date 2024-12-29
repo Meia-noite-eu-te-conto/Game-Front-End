@@ -17,7 +17,6 @@ async function GetRankingAsync(filters, document) {
         return (ProcessErrors(response, {"title": "Error on Get Rooms", "message": "Not Found"} ))
     })
     .then(({ status, data }) => {
-        console.log('Rooms fetched successfully:', status, data);
         return { "status": true, "data": data }
     })
     .catch(error => {
