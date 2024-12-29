@@ -19,7 +19,7 @@ async function CreateRoomAsync(event, document, window) {
     };
     const response = await RoomRepository.PostCreateRoomAsync(formRoomData)
     if (response.status === true) {
-        redirectHrefRoom(window, response.data.roomCode, response.data.roomType)
+        await redirectHrefRoom(window, response.data.roomCode, response.data.roomType)
     }
 }
 
@@ -50,22 +50,22 @@ async function AddToRoomAsync(event, window) {
     const response = await RoomRepository.PutAddToRoomAsync(formData);
     console.log(response)
     if (response.status === true) {
-        redirectHrefRoom(window, response.data.roomCode, response.data.roomType)
+        await redirectHrefRoom(window, response.data.roomCode, response.data.roomType)
     }
 }
 
-function redirectHrefRoom(window, roomCode, roomType) {
+async function redirectHrefRoom(window, roomCode, roomType) {
     let pathName = roomType === 1 ?
         `${RouteNames["tournament"]}` :
         `${RouteNames["match"]}` ;
     window.routes.updateRoomCode(roomCode)
-    DOMRender(pathName)
+    await DOMRender(pathName)
 }
 
-function redirectGame(gameId) {
+async function redirectGame(gameId) {
     let pathName = `${RouteNames["game"]}`
     window.routes.updateGameId(gameId)
-    DOMRender(pathName)
+    await DOMRender(pathName)
 }
 
 // Ajustar para o novo modelo de retorno

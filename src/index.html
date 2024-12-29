@@ -20,8 +20,7 @@
     <script src="./assets/js/Enums.js"></script>
     <script src="./assets/js/utils/CustomError.js"></script>
     <script src="./assets/js/repositories/RoutesInfo.js"></script>
-    <script src="/assets/js/Generics.js"></script>
-
+    
 	<script src="/assets/js/game-front-end/WebglUtils.js"></script>
 	<script src="/assets/js/game-front-end/MVnew.js"></script>
 	<script src="/assets/js/game-front-end/Objects.js"></script>
@@ -30,6 +29,7 @@
 	<script src="/assets/js/game-front-end/Textures.js"></script>
 	<script src="/assets/js/game-front-end/Shaders.js"></script>
 	<script src="/assets/js/game-front-end/Render.js"></script>
+    <script src="/assets/js/Generics.js"></script>
     
     <script src="./assets/js/components/PaginationComponent.js"></script>
 
@@ -64,21 +64,27 @@
         </header>
     </section>
 
-    <main style="height: 100vh;" class="pbg" id="root">
+    <section id="canva-section" class="my-5 container d-none">
+        <div class="d-flex flex-column align-items-center">
+            <canvas width="850px" height="550px" class="bg-light border border-dark" id="myCanvas"></canvas>
+        </div>
+    </section>
 
-    </main>
+    <main style="height: 100vh;" class="pbg" id="root"></main>
 
     <div id="connected-ws" style="position: fixed; bottom: 20px; left: 20px; z-index: 9999">
         <h5 class="bi bi-c-circle-fill text-danger"><span style="font-size: 20px"> disconnected</span></h2>
     </div>
     
     <script>
+        gCanvas = document.getElementById('myCanvas');
+		gl = gCanvas.getContext('webgl2');
         window.routes = new Router();
         
         let pageName = "/home.html"
         let page = localStorage.getItem("currentPage")
         if (page)
-        pageName = page
+            pageName = page
     
         window.onload = async function() {
             await DOMRender(pageName);

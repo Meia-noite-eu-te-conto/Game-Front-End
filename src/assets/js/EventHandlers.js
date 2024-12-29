@@ -90,11 +90,9 @@ class PageGame {
         const	host = window.location.host;
         const	endpoint = `/api/v1/game-core/games/${localStorage.getItem("gameId")}/`;
 		const	userId = getCookie(document, "userId");
-        
-        gCanvas = document.getElementById('myCanvas');
-		gl = gCanvas.getContext('webgl2');
 		
         getPlayer(localStorage.getItem("gameId"))
+        document.getElementById("canva-section").classList.remove("d-none")
         
         this.socket = new WebSocket(`wss://${host}${endpoint}`);
         this.keydownHandler =(event) => sendKey(event, this.socket);
@@ -121,7 +119,7 @@ class PageGame {
             }
         });
 		
-        this.socket.onmessage = function(event) {
+        this.socket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
             if (data.type == 'game.update') {
                 drawOnCanvas(data.game_state);
@@ -141,7 +139,7 @@ class PageGame {
                 }
                 else {
                     if (data.roomType === 1)
-                        redirectHrefRoom(window, localStorage.getItem("roomCode"), data.roomType)
+                        await redirectHrefRoom(window, localStorage.getItem("roomCode"), data.roomType)
                     else {
                         const gameOverWinnerModal = new bootstrap.Modal(document.getElementById('gameOverWinnerModal'));
                         gameOverWinnerModal.show();
@@ -161,14 +159,15 @@ class PageGame {
     }
 
     async destroy() {
+
+        document.getElementById("canva-section").classList.add("d-none")
+
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.close();
         }
 
         document.removeEventListener('keydown', this.keydownHandler);
 
-        gCanvas = null;
-        gl = null;
         this.socket = null;
     }
 }
@@ -206,11 +205,11 @@ class PageMatchRoom {
             const data = JSON.parse(event.data);
             if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == this.userId)) {
                 resetUserIdIntoCookie(document)
-                DOMRender("/home.html")
+                await DOMRender("/home.html")
             } else if (data.type == "player_list_update")
                 await ShowMatchRoom(localStorage.getItem("roomCode"));
             else if (data.type == "game.started") {
-                redirectGame(data.gameId)
+                await redirectGame(data.gameId)
             }
         };
     
@@ -264,33 +263,33 @@ class PageMatchRoom {
 }
 
 class PageTournament {
+
     constructor() {
         this.socket = null
     }
+
     async init () {
         const userId = getCookie(document, "userId")
-
         const host = window.location.host;
         const endpoint = "/api/v1/user-session/";
-        const socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${localStorage.getItem("roomCode")}/?userId=${userId}`);
-
-        ShowTournamentRoom(localStorage.getItem("roomCode"))
+        await ShowTournamentRoom(localStorage.getItem("roomCode"))
+        this.socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${localStorage.getItem("roomCode")}/?userId=${userId}`);
 
         this.socket.onopen = function(event) {
             console.log("WebSocket connection established:", event);
 			WSConnection(document, true)
 		};
 
-		this.socket.onmessage = function(event) {
+		this.socket.onmessage = async (event) => {
             console.log("tournament.html \n WebSocket message:", event.data);
             const data = JSON.parse(event.data);
             if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
                 resetUserIdIntoCookie(document)
-                DOMRender("/home.html")
+                await DOMRender("/home.html")
             } else if (data.type == "player_list_update")
-                ShowTournamentRoom(localStorage.getItem("roomCode"));
+                await ShowTournamentRoom(localStorage.getItem("roomCode"));
             else if (data.type == "game.started") {
-                redirectGame(data.gameId)
+                await redirectGame(data.gameId)
             }
 		};
 
@@ -301,6 +300,28 @@ class PageTournament {
         this.socket.onerror = function(error) {
             console.error("WebSocket error:", error);
         };
+
+        document.getElementById("root").appendChild(AddModalComponent(
+            "alert-close-room-modal",
+            "close room.",
+            "bi bi-exclamation-circle-fill",
+            "Close Game",
+            "Be careful. This game will be deleted if you close it.<br>Do you want to continue?",
+            "btn-close-room",
+            "Yes",
+            "No"
+        ))
+    
+        document.getElementById("root").appendChild(AddModalComponent(
+            "alert-leave-room-modal",
+            "leave room.",
+            "bi bi-exclamation-circle-fill",
+            "Leave Game",
+            "Are you sure you want to leave this game?",
+            "btn-leave-the-room",
+            "Yes",
+            "No"
+        ))
 
         console.log("tournament Page")
     }

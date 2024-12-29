@@ -260,28 +260,6 @@ async function TournamentRoomComponent(data, roomCode) {
     await TournamentActionsComponent(data, roomCode)
     TournamentInformationComponent(data)
     BracketsRowsComponent(data)
-
-    document.body.appendChild(AddModalComponent(
-        "alert-close-room-modal",
-        "close room.",
-        "bi bi-exclamation-circle-fill",
-        "Close Game",
-        "Be careful. This game will be deleted if you close it.<br>Do you want to continue?",
-        "btn-close-room",
-        "Yes",
-        "No"
-    ))
-
-    document.body.appendChild(AddModalComponent(
-        "alert-leave-room-modal",
-        "leave room.",
-        "bi bi-exclamation-circle-fill",
-        "Leave Game",
-        "Are you sure you want to leave this game?",
-        "btn-leave-the-room",
-        "Yes",
-        "No"
-    ))
 }
 
 function TournamentHistoryItemComponent(game) {

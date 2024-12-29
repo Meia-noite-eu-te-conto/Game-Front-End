@@ -79,13 +79,13 @@ const APIEndPoints = {
     'game': '/api/v1/game-core/',
 }
 
-function CloseRoom(event, roomCode) {
+async function CloseRoom(event, roomCode) {
     const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/delete`;
     ApiRequestHandler(endpoint, 'DELETE')
-        .then(response => {
-            handleApiSuccess(response, () => {
+        .then(async response => {
+            await handleApiSuccessAsync(response, async () => {
                 resetUserIdIntoCookie(document);
-                DOMRender("/home.html")
+                await DOMRender("/home.html")
             });
         })
         .catch(handleApiError);
@@ -151,7 +151,7 @@ function LockTournament(event, roomCode)
         .catch(handleApiError)
 }
 
-function CreateRoom(event) {
+async function CreateRoom(event) {
     event.preventDefault()
     const data = {
         createdBy: event.target.nickname.value,
@@ -162,13 +162,13 @@ function CreateRoom(event) {
     }
 
     const endpoint = `${APIEndPoints["user"]}rooms/new-room/`;
-    ApiRequestHandler(endpoint, 'POST', body = data)
-        .then(response => {
-            handleApiSuccess(response, async () => {
+    await ApiRequestHandler(endpoint, 'POST', body = data)
+        .then(async response => {
+            handleApiSuccessAsync(response, async () => {
                 const userId = response.headers.get("X-User-Id");
                 const data = await response.json();
                 addUserIdIntoCookie(document, userId);
-                redirectHrefRoom(window, data.roomCode, data.roomType)
+                await redirectHrefRoom(window, data.roomCode, data.roomType)
             })
         })
         .catch(handleApiError)
@@ -186,14 +186,14 @@ async function ShowMatchRoom(roomCode) {
         .catch(handleApiError)
 }
 
-function ShowTournamentRoom(roomCode) {
+async function ShowTournamentRoom(roomCode) {
     const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/tournament/`;
-    ApiRequestHandler(endpoint, 'GET')
-        .then(response => {
-            handleApiSuccess(response, async () => {
+    await ApiRequestHandler(endpoint, 'GET')
+        .then(async response => {
+            await handleApiSuccessAsync(response, async () => {
                 const data = await response.json();
                 console.log(data)
-                TournamentRoomComponent(data, localStorage.getItem("roomCode"))
+                await TournamentRoomComponent(data, localStorage.getItem("roomCode"))
             })
         })
         .catch(handleApiError)
