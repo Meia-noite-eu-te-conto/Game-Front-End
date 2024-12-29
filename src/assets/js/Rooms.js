@@ -102,7 +102,7 @@ function updateNumberOfPlayersOptions() {
     if (selectedGameType === "0") {
         options = [2, 4];
     } else if (selectedGameType === "1") {
-        options = [4, 8];
+        options = [4];
     } else if (selectedGameType === "2") {
         options = [1];
         playersSelect.disabled = true;
