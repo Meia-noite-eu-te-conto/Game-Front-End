@@ -39,19 +39,13 @@ async function HandleEvents(event, roomCode) {
                 return;
             }
         }
-        for (const [className, action] of Object.entries(btnPageActions)) {
-            if (event.target.classList.contains(className)) {
-                event.preventDefault()
-                await action(event.target.dataset.pageName);
-                return;
-            }
-        }
     }
 }
 
 class PageHome {
     async init() {
     }
+
 
     async destroy() {
     }
@@ -61,6 +55,7 @@ class PageViewRooms {
     async init() {
         listRooms();
     }
+
 
     async destroy() {
     }
@@ -82,12 +77,35 @@ class PageGame {
     }
 
     async init() {
+        gPong = {
+            time: Date.now(),
+            delta: 0,
+        };
+        gInterface = {};
+        gCanvas = document.getElementById('myCanvas');
+		gl = gCanvas.getContext('webgl2');
+        gl.clear(gl.COLOR_BUFFER_BIT | gl.DEPTH_BUFFER_BIT);
+        gObjects = [];
+        gCamera = new Camera();
+        gShader = {};
+        gCtx = {
+            view: mat4(),
+            perspective: mat4(),
+        };
+        gPositions = [];
+        gColors = [];
+        gNormals = [];
+        gTextures = [];
+        doOnce = true;
+
         const	host = window.location.host;
         const	endpoint = `/api/v1/game-core/games/${localStorage.getItem("gameId")}/`;
 		const	userId = getCookie(document, "userId");
 
+
         getPlayer(localStorage.getItem("gameId"))
         document.getElementById("canva-section").classList.remove("d-none")
+
 
         this.socket = new WebSocket(`wss://${host}${endpoint}`);
         this.keydownHandler =(event) => sendKey(event, this.socket);
@@ -113,6 +131,7 @@ class PageGame {
                 }));
             }
         });
+
 
         this.socket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
@@ -154,7 +173,6 @@ class PageGame {
     }
 
     async destroy() {
-
         document.getElementById("canva-section").classList.add("d-none")
 
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -183,6 +201,7 @@ class PageMatchRoom {
         this.socket = null
     }
 
+
     async init() {
         const userId = getCookie(document, "userId")
         const host = window.location.host;
@@ -193,6 +212,7 @@ class PageMatchRoom {
         this.socket.onopen = function(event) {
             WSConnection(document, true)
         };
+
 
         this.socket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
@@ -206,9 +226,11 @@ class PageMatchRoom {
             }
         };
 
+
         this.socket.onclose = function(event) {
             WSConnection(document, false)
         };
+
 
         this.socket.onerror = function(error) {
             console.error("WebSocket error:", error);
@@ -225,6 +247,7 @@ class PageMatchRoom {
             "No"
         ))
 
+
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-leave-room-modal",
             "leave room.",
@@ -235,6 +258,7 @@ class PageMatchRoom {
             "Yes",
             "No"
         ))
+
 
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-remove-player-modal",
@@ -302,6 +326,7 @@ class PageTournament {
             "No"
         ))
 
+
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-leave-room-modal",
             "leave room.",
@@ -313,6 +338,7 @@ class PageTournament {
             "No"
         ))
     }
+
 
     async destroy() {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
@@ -349,8 +375,16 @@ class Router {
             }
         };
         this.restoreHistory();
+
+        window.onpopstate = async (event) => {
+            if (event.state && event.state.page) {
+                await DOMRender(event.state.page, false);
+            }
+        };
+        this.restoreHistory();
     }
 
+    async navigateTo(newPage, addToHistory = true) {
     async navigateTo(newPage, addToHistory = true) {
         if (this.actions[newPage]) {
             if (this.page !== newPage || this.isF5) {
@@ -374,6 +408,12 @@ class Router {
                 window.history.pushState(state, newPage, window.location.href);
                 this.saveHistory(state, newPage, window.location.href);
             }
+
+            if (addToHistory) {
+                const state = { page: newPage };
+                window.history.pushState(state, newPage, window.location.href);
+                this.saveHistory(state, newPage, window.location.href);
+            }
         }
     }
 
@@ -391,6 +431,23 @@ class Router {
         Object.values(this.actions).forEach(page => {
             page.gameId = this.gameId
         });
+    }
+
+    saveHistory(state, title, url) {
+        const savedHistory = JSON.parse(sessionStorage.getItem("history")) || [];
+        savedHistory.push({ state, title: title, url: url });
+        sessionStorage.setItem("history", JSON.stringify(savedHistory));
+    }
+
+    restoreHistory() {
+        const savedHistory = JSON.parse(sessionStorage.getItem("history")) || [];
+        if (savedHistory.length > 0) {
+            const first = savedHistory.shift();
+            window.history.replaceState(first.state, first.title, first.url);
+            savedHistory.forEach(state => {
+                window.history.pushState(state.state, state.title, state.url);
+            });
+        }
     }
 
     saveHistory(state, title, url) {

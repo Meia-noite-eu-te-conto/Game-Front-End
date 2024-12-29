@@ -5,7 +5,7 @@
 <!-- Body Content -->
 <div class="cover-container d-flex w-100 h-100 p-3 mx-auto flex-column">
 	<main  style="height: 85vh;" class="px-3 d-flex align-items-center justify-content-center flex-column">
-		<h1 class="h1 "><b>Trancendence</b></h1>
+		<h1 class="h1 "><b>Transcendence</b></h1>
 		<p class="lead">A Pong Game</p>
 		<div class="d-flex align-items-around">
 			<p class="lead px-3">
@@ -38,16 +38,15 @@
 					<div class="mb-3">
 						<label for="game-type-section" class="col-form-label">Game Type</label>
 						<select name="gameType" id="game-type-section" class="form-select form-select-sm" aria-label="game type selection" onchange="updateNumberOfPlayersOptions()">
-							<option selected value="0">Match</option>
+							<option selected value="2">Single Player</option>
+							<option value="0">Match</option>
 							<option value="1">Tournament</option>
-							<option value="2">Single Player</option>
 						</select>
 					</div>
 					<div class="mb-3">
 						<label for="number-of-players-section" class="col-form-label">Number of Players</label>
-						<select name="numberOfPlayers" id="number-of-players-section" class="form-select form-select-sm" aria-label="number of players selection">
-							<option selected value="2">2</option>
-							<option value="4">4</option>
+						<select name="numberOfPlayers" id="number-of-players-section" class="form-select form-select-sm" aria-label="number of players selection" disabled="">
+							<option selected value="1">1</option>
 						</select>
 					</div>
 					<div class="mb-3">

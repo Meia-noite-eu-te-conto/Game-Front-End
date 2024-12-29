@@ -102,7 +102,7 @@ function updateNumberOfPlayersOptions() {
     if (selectedGameType === "0") {
         options = [2, 4];
     } else if (selectedGameType === "1") {
-        options = [4, 8, 16];
+        options = [4, 8];
     } else if (selectedGameType === "2") {
         options = [1];
         playersSelect.disabled = true;
@@ -157,7 +157,7 @@ function	getPlayer(gameId) {
                                 <img style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})' class="rounded-circle img-thumbnail" src="${player.urlProfileImage}" alt="">
                                 <div class="d-flex flex-column  ps-2 justify-content-center">
                                     <strong class="mb-1">${player.name}</strong>
-                                    <p class="small mb-0">Blue</p>
+                                    <p class="small mb-0">${PlayerColorLabel[player.profileColor]}</p>
                                 </div>
                             </div>
                             <h3 id="player-${player.profileColor}" class="text-body-secondary">${player.score}</h3>
