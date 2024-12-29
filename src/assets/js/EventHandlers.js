@@ -43,12 +43,9 @@ async function HandleEvents(event, roomCode) {
 
 class PageHome {
     async init() {
-        console.log("Init Page Home")
-
     }
-    
+
     async destroy() {
-        console.log("Destroy Page Home")
     }
 }
 
@@ -56,9 +53,8 @@ class PageViewRooms {
     async init() {
         listRooms();
     }
-    
+
     async destroy() {
-        console.log("Destroy Page View Rooms")
     }
 }
 
@@ -68,7 +64,6 @@ class Ranking {
     }
 
     async destroy() {
-        console.log("Destroy Page View Rooms")
     }
 }
 
@@ -103,10 +98,10 @@ class PageGame {
         const	host = window.location.host;
         const	endpoint = `/api/v1/game-core/games/${localStorage.getItem("gameId")}/`;
 		const	userId = getCookie(document, "userId");
-		
+
         getPlayer(localStorage.getItem("gameId"))
         document.getElementById("canva-section").classList.remove("d-none")
-        
+
         this.socket = new WebSocket(`wss://${host}${endpoint}`);
         this.keydownHandler =(event) => sendKey(event, this.socket);
 
@@ -131,7 +126,7 @@ class PageGame {
                 }));
             }
         });
-		
+
         this.socket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
             if (data.type == 'game.update') {
@@ -199,7 +194,7 @@ class PageMatchRoom {
     constructor() {
         this.socket = null
     }
-    
+
     async init() {
         const userId = getCookie(document, "userId")
         const host = window.location.host;
@@ -210,9 +205,8 @@ class PageMatchRoom {
         this.socket.onopen = function(event) {
             WSConnection(document, true)
         };
-    
+
         this.socket.onmessage = async (event) => {
-            console.log("watch-room.html \n WebSocket message:", event.data);
             const data = JSON.parse(event.data);
             if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
                 resetUserIdIntoCookie(document)
@@ -223,11 +217,11 @@ class PageMatchRoom {
                 await redirectGame(data.gameId)
             }
         };
-    
+
         this.socket.onclose = function(event) {
             WSConnection(document, false)
         };
-    
+
         this.socket.onerror = function(error) {
             console.error("WebSocket error:", error);
         };
@@ -242,7 +236,7 @@ class PageMatchRoom {
             "Yes",
             "No"
         ))
-    
+
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-leave-room-modal",
             "leave room.",
@@ -253,7 +247,7 @@ class PageMatchRoom {
             "Yes",
             "No"
         ))
-    
+
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-remove-player-modal",
             "remove player.",
@@ -287,12 +281,10 @@ class PageTournament {
         this.socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${localStorage.getItem("roomCode")}/?userId=${userId}`);
 
         this.socket.onopen = function(event) {
-            console.log("WebSocket connection established:", event);
 			WSConnection(document, true)
 		};
 
 		this.socket.onmessage = async (event) => {
-            console.log("tournament.html \n WebSocket message:", event.data);
             const data = JSON.parse(event.data);
             if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
                 resetUserIdIntoCookie(document)
@@ -305,7 +297,6 @@ class PageTournament {
 		};
 
         this.socket.onclose = function(event) {
-            console.log("WebSocket connection closed:", event);
 			WSConnection(document, false)
 		};
         this.socket.onerror = function(error) {
@@ -322,7 +313,7 @@ class PageTournament {
             "Yes",
             "No"
         ))
-    
+
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-leave-room-modal",
             "leave room.",
@@ -333,10 +324,8 @@ class PageTournament {
             "Yes",
             "No"
         ))
-
-        console.log("tournament Page")
     }
-    
+
     async destroy() {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
             this.socket.close();
@@ -365,9 +354,16 @@ class Router {
         document.addEventListener("click", async event => {
             await HandleEvents(event, this.roomCode)
         });
+
+        window.onpopstate = async (event) => {
+            if (event.state && event.state.page) {
+                await DOMRender(event.state.page, false);
+            }
+        };
+        this.restoreHistory();
     }
 
-    async navigateTo(newPage) {
+    async navigateTo(newPage, addToHistory = true) {
         if (this.actions[newPage]) {
             if (this.page !== newPage || this.isF5) {
                 const currentActions = this.actions[this.page];
@@ -384,6 +380,12 @@ class Router {
             this.prevPage = this.page
             this.page = newPage
             localStorage.setItem("currentPage", this.page)
+
+            if (addToHistory) {
+                const state = { page: newPage };
+                window.history.pushState(state, newPage, window.location.href);
+                this.saveHistory(state, newPage, window.location.href);
+            }
         }
     }
 
@@ -401,6 +403,23 @@ class Router {
         Object.values(this.actions).forEach(page => {
             page.gameId = this.gameId
         });
+    }
+
+    saveHistory(state, title, url) {
+        const savedHistory = JSON.parse(sessionStorage.getItem("history")) || [];
+        savedHistory.push({ state, title: title, url: url });
+        sessionStorage.setItem("history", JSON.stringify(savedHistory));
+    }
+
+    restoreHistory() {
+        const savedHistory = JSON.parse(sessionStorage.getItem("history")) || [];
+        if (savedHistory.length > 0) {
+            const first = savedHistory.shift();
+            window.history.replaceState(first.state, first.title, first.url);
+            savedHistory.forEach(state => {
+                window.history.pushState(state.state, state.title, state.url);
+            });
+        }
     }
 }
 

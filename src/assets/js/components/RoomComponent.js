@@ -307,7 +307,6 @@ async function TournamentHistoryComponent(roomCode) {
     let currentStage = 0
     paginatedGames["games"].forEach((game) => {
         stageElement = document.createElement("div")
-        //stageElement.classList.add("mb-3")
         if (currentStage !== game['stage']) {
             stageElement.innerHTML = `<b>Round ${game['stage']}</b>`
             currentStage = game['stage']

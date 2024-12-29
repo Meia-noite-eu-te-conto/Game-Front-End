@@ -29,7 +29,7 @@ async function ShowRooms(filters, document) {
         const data = response.data;
         let paginatedGroup = document.getElementById("paginated-list-rooms");
         RoomPaginationComponent(paginatedGroup, data, "listRooms");
-        
+
         let rooms = data["paginatedItems"]["Data"];
         const listGroup = document.getElementById('rooms-list');
         listGroup.innerHTML = ""
@@ -48,7 +48,6 @@ async function AddToRoomAsync(event, window) {
         roomCode: event.target.elements['room-name-input'].value
     };
     const response = await RoomRepository.PutAddToRoomAsync(formData);
-    console.log(response)
     if (response.status === true) {
         await redirectHrefRoom(window, response.data.roomCode, response.data.roomType)
     }
@@ -122,7 +121,6 @@ function updateNumberOfPlayersOptions() {
 }
 
 async function listRooms(currentPage = 1, pageSize = 5) {
-    console.log("Listing rooms...");
     filterLabel = document.getElementById("search-input-filter-room").value;
     await ShowRooms({ currentPage, pageSize, filterLabel }, document);
 }
@@ -134,7 +132,6 @@ async function addToRoom(event) {
 
 filterLabel = ""
 async function listRanking(currentPage = 1, pageSize = 10) {
-    console.log("Listing rooms...");
     filterLabel = document.getElementById("search-input-filter-room").value;
     await ShowRanking({ currentPage, pageSize, filterLabel }, document);
 }

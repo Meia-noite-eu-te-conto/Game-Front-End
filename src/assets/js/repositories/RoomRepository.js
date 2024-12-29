@@ -19,7 +19,6 @@ async function GetRoomsAsync(filters, document) {
         return (ProcessErrors(response, {"title": "Error on Get Rooms", "message": "Not Found"} ))
     })
     .then(({ status, data }) => {
-        console.log('Rooms fetched successfully:', status, data);
         return { "status": true, "data": data }
     })
     .catch(error => {
@@ -40,7 +39,6 @@ async function PutAddToRoomAsync(FormData) {
         body: JSON.stringify(FormData)
     })
     .then(async response => {
-        console.log("Status: " + response.status)
         if (response.status === 201) {
             const userId = response.headers.get("X-User-Id");
             let data = await response.json();
@@ -53,7 +51,6 @@ async function PutAddToRoomAsync(FormData) {
         return (ProcessErrors(response, {"title": "Error on Add To Room", "message": "Not Found"} ))
     })
     .then(({ status, data }) => {
-        console.log('User added to room successfully:', status);
         return { "status": true, "data": data }
     })
     .catch(error => {
@@ -192,7 +189,6 @@ async function ShowTournamentRoom(roomCode) {
         .then(async response => {
             await handleApiSuccessAsync(response, async () => {
                 const data = await response.json();
-                console.log(data)
                 await TournamentRoomComponent(data, localStorage.getItem("roomCode"))
             })
         })

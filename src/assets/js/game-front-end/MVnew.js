@@ -323,7 +323,7 @@ function	add(u, v)
 	if (isVector(u))
 	{
 		var	result = new Array(u.length);
-	
+
 		result.type = u.type;
 		for (var i = 0; i < u.length; i++)
 			result[i] = u[i] + v[i];
@@ -925,23 +925,13 @@ function	printm(m)
 	switch(m.type)
 	{
 		case 'mat2':
-		console.log(cut(m[0][0]), cut(m[0][1]));
-		console.log(cut(m[1][0]), cut(m[1][1]));
 		 break;
 		case 'mat3':
-		 console.log(cut(m[0][0]), cut(m[0][1]), cut(m[0][2]));
-		 console.log(cut(m[1][0]), cut(m[1][1]), cut(m[1][2]));
-		 console.log(cut(m[2][0]), cut(m[2][1]), cut(m[2][2]));
 		 break;
 		case 'mat4':
-		console.log(cut(m[0][0]), cut(m[0][1]), cut(m[0][2]), cut(m[0][3]));
-		console.log(cut(m[1][0]), cut(m[1][1]), cut(m[1][2]), cut(m[1][3]));
-		console.log(cut(m[2][0]), cut(m[2][1]), cut(m[2][2]), cut(m[2][3]));
-		console.log(cut(m[3][0]), cut(m[3][1]), cut(m[3][2]), cut(m[3][3]));
 		break;
 		case 'patch':
 		for (var i=0;i<4;i++)
-			console.log(m[i][0], m[i][1], m[i][2], m[i][3]);
 			break;
 		default: throw "printm: not a matrix";
 	}

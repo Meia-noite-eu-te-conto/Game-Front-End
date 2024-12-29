@@ -117,7 +117,7 @@ function	setObjectsColors()
 
 	gPong.goalkeeper1Color = vec4(colorVec[0] / 255, colorVec[1] / 255, colorVec[2] / 255, 1);
 	colorVec = PlayerColor[gPong.players["1"]["color"]];
-	gPong.goalkeeper2Color = vec4(colorVec[0] / 255, colorVec[1] / 255, colorVec[2] / 255, 1); 
+	gPong.goalkeeper2Color = vec4(colorVec[0] / 255, colorVec[1] / 255, colorVec[2] / 255, 1);
 	if (gPong.numberOfPlayers == 4)
 	{
 		colorVec = PlayerColor[gPong.players["2"]["color"]];
@@ -142,7 +142,6 @@ function	updateObjectsPosition()
 			createTexture(255, 255, 255);
 			setUpTexture(gTexture, URLS.length);
 			gPong.doOnceChangeColor = FALSE;
-			console.log("OI");
 		}
 		gPong.changeBallCollor = FALSE;
 	}
