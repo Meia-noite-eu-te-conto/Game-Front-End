@@ -189,21 +189,20 @@ class PageMatchRoom {
     }
     
     async init() {
-        this.userId = getCookie(document, "userId")
-        this.host = window.location.host;
-        this.endpoint = "/api/v1/user-session/";
-
+        const userId = getCookie(document, "userId")
+        const host = window.location.host;
+        const endpoint = "/api/v1/user-session/";
         await ShowMatchRoom(localStorage.getItem("roomCode"))
-        this.socket = new WebSocket(`wss://${this.host}${this.endpoint}ws/rooms/${localStorage.getItem("roomCode")}/?userId=${this.userId}`);
+        this.socket = new WebSocket(`wss://${host}${endpoint}ws/rooms/${localStorage.getItem("roomCode")}/?userId=${userId}`);
 
         this.socket.onopen = function(event) {
             WSConnection(document, true)
         };
     
-        this.socket.onmessage = async function(event) {
+        this.socket.onmessage = async (event) => {
             console.log("watch-room.html \n WebSocket message:", event.data);
             const data = JSON.parse(event.data);
-            if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == this.userId)) {
+            if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
                 resetUserIdIntoCookie(document)
                 await DOMRender("/home.html")
             } else if (data.type == "player_list_update")

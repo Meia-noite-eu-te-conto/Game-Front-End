@@ -178,7 +178,7 @@ async function ShowMatchRoom(roomCode) {
     const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/detail`;
     await ApiRequestHandler(endpoint, 'GET')
         .then(async response => {
-            handleApiSuccessAsync(response, async () => {
+            await handleApiSuccessAsync(response, async () => {
                 const data = await response.json();
                 MatchRoomComponent(data)
             })
