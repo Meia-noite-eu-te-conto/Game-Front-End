@@ -375,16 +375,8 @@ class Router {
             }
         };
         this.restoreHistory();
-
-        window.onpopstate = async (event) => {
-            if (event.state && event.state.page) {
-                await DOMRender(event.state.page, false);
-            }
-        };
-        this.restoreHistory();
     }
 
-    async navigateTo(newPage, addToHistory = true) {
     async navigateTo(newPage, addToHistory = true) {
         if (this.actions[newPage]) {
             if (this.page !== newPage || this.isF5) {
@@ -408,12 +400,6 @@ class Router {
                 window.history.pushState(state, newPage, window.location.href);
                 this.saveHistory(state, newPage, window.location.href);
             }
-
-            if (addToHistory) {
-                const state = { page: newPage };
-                window.history.pushState(state, newPage, window.location.href);
-                this.saveHistory(state, newPage, window.location.href);
-            }
         }
     }
 
@@ -431,23 +417,6 @@ class Router {
         Object.values(this.actions).forEach(page => {
             page.gameId = this.gameId
         });
-    }
-
-    saveHistory(state, title, url) {
-        const savedHistory = JSON.parse(sessionStorage.getItem("history")) || [];
-        savedHistory.push({ state, title: title, url: url });
-        sessionStorage.setItem("history", JSON.stringify(savedHistory));
-    }
-
-    restoreHistory() {
-        const savedHistory = JSON.parse(sessionStorage.getItem("history")) || [];
-        if (savedHistory.length > 0) {
-            const first = savedHistory.shift();
-            window.history.replaceState(first.state, first.title, first.url);
-            savedHistory.forEach(state => {
-                window.history.pushState(state.state, state.title, state.url);
-            });
-        }
     }
 
     saveHistory(state, title, url) {
