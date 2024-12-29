@@ -32,6 +32,7 @@ function PlayerLabelComponent(data, player, createdBy, roomType) {
     let [r, g, b, a] = PlayerColor[player.profileColor]
     let rgbaPlayerColor = `style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})'`
     let owner = ""
+    let you = player.you ? " | You" : ""
 
     if (roomType != 2) {
         owner = RemovePlayerComponent(data, player, createdBy)
@@ -43,7 +44,7 @@ function PlayerLabelComponent(data, player, createdBy, roomType) {
                 <img ${rgbaPlayerColor} src="${player.urlProfileImage}" class="rounded-circle img-thumbnail" alt="">
                 <div class="d-flex flex-column  ps-2 justify-content-center">
                     <strong class="mb-1">${player.name}</strong>
-                    <p class="small mb-0">${PlayerColorLabel[player.profileColor]}</p>
+                    <p class="small mb-0">${PlayerColorLabel[player.profileColor]}${you}</p>
                 </div>
             </div>
             ${ owner }
@@ -157,6 +158,7 @@ function PlayerLabelTournamentComponent(player, index)
     element.classList.add("list-group-item", "list-group-item-action", "py-2", "lh-sm", "rounded-4", "mb-1")
     if (player === null)
         element.classList.add("bg-dark", "text-white")
+    let you = player ? player.you ? "<p class='small mb-0'>You</p>" : "" : ""
     let [r, g, b, a] = player ? PlayerColor[player.color] : [0, 0, 0, 0];
     element.innerHTML = `
         <div class="d-flex w-100 align-items-center justify-content-between">
@@ -164,7 +166,7 @@ function PlayerLabelTournamentComponent(player, index)
                 <img class="rounded-circle img-thumbnail" style="background-color: rgba(${r}, ${g}, ${b}, ${a / 100})" src="${ player === null ? "/assets/img/none.png" : player["urlProfileImage"]}" alt="">
                 <div class="d-flex flex-column ps-2 justify-content-center">
                     <strong class="mb-1">${ player === null ? "None" : player["name"]}</strong>
-                    ${player === null ? "<p class='small mb-0'>waiting</p>" : ""}
+                    ${player === null ? "<p class='small mb-0'>waiting</p>" : you}
                 </div>
             </div>
             <h3 class="ps-3 text-body-secondary">${index}</h3>
