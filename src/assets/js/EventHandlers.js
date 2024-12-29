@@ -45,6 +45,7 @@ class PageHome {
     async init() {
     }
 
+
     async destroy() {
     }
 }
@@ -53,6 +54,7 @@ class PageViewRooms {
     async init() {
         listRooms();
     }
+
 
     async destroy() {
     }
@@ -99,8 +101,10 @@ class PageGame {
         const	endpoint = `/api/v1/game-core/games/${localStorage.getItem("gameId")}/`;
 		const	userId = getCookie(document, "userId");
 
+
         getPlayer(localStorage.getItem("gameId"))
         document.getElementById("canva-section").classList.remove("d-none")
+
 
         this.socket = new WebSocket(`wss://${host}${endpoint}`);
         this.keydownHandler =(event) => sendKey(event, this.socket);
@@ -126,6 +130,7 @@ class PageGame {
                 }));
             }
         });
+
 
         this.socket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
@@ -195,6 +200,7 @@ class PageMatchRoom {
         this.socket = null
     }
 
+
     async init() {
         const userId = getCookie(document, "userId")
         const host = window.location.host;
@@ -205,6 +211,7 @@ class PageMatchRoom {
         this.socket.onopen = function(event) {
             WSConnection(document, true)
         };
+
 
         this.socket.onmessage = async (event) => {
             const data = JSON.parse(event.data);
@@ -218,9 +225,11 @@ class PageMatchRoom {
             }
         };
 
+
         this.socket.onclose = function(event) {
             WSConnection(document, false)
         };
+
 
         this.socket.onerror = function(error) {
             console.error("WebSocket error:", error);
@@ -237,6 +246,7 @@ class PageMatchRoom {
             "No"
         ))
 
+
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-leave-room-modal",
             "leave room.",
@@ -247,6 +257,7 @@ class PageMatchRoom {
             "Yes",
             "No"
         ))
+
 
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-remove-player-modal",
@@ -314,6 +325,7 @@ class PageTournament {
             "No"
         ))
 
+
         document.getElementById("root").appendChild(AddModalComponent(
             "alert-leave-room-modal",
             "leave room.",
@@ -325,6 +337,7 @@ class PageTournament {
             "No"
         ))
     }
+
 
     async destroy() {
         if (this.socket && this.socket.readyState === WebSocket.OPEN) {
