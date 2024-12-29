@@ -25,6 +25,7 @@ async function HandleEvents(event, roomCode) {
         modal.show();
         return
     }
+
     if (event.target.dataset.pageName) {
         event.preventDefault()
         await DOMRender(event.target.dataset.pageName);
