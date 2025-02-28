@@ -18,30 +18,23 @@ async function redirectIfuserIsActived(document, window) {
 }
 
 function getCookie(document, cookieName) {
-    if (typeof document !== 'undefined' && document.cookie) {
-        const cookies = document.cookie.split(';').map(cookie => cookie.trim());
-        const cookie = cookies.find(row => row.startsWith(`${cookieName}=`));
-        if (cookie) {
-            return cookie.split('=')[1];
-        }
-    }
-    return undefined;
+    return localStorage.getItem('userId');
 }
 
 function addUserIdIntoCookie(document, userId) {
     if (userId) {
-        document.cookie = `userId=${userId}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; SameSite=None; Secure`;
+        localStorage.setItem('userId', userId);
     }
 }
 
 function addCookie(document,cookieName, value) {
     if (cookieName && value) {
-        document.cookie = `${cookieName}=${value}; expires=Fri, 31 Dec 2024 23:59:59 GMT; path=/; SameSite=None; Secure`;
+        localStorage.setItem(itemName, value);
     }
 }
 
 function resetUserIdIntoCookie(document) {
-    document.cookie = `userId=; expires=Thu, 01 Jan 1970 00:00:00 GMT; path=/;`;
+    localStorage.removeItem('userId');
 }
 
 function ApiRequestHandler(endpoint, method = 'GET', body = null, additionalHeaders = {}) {

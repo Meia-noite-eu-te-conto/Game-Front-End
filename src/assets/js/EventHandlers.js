@@ -98,13 +98,12 @@ class PageGame {
         doOnce = true;
 
         const	host = window.location.host;
-        const	endpoint = `/api/v1/game-core/games/${localStorage.getItem("gameId")}/`;
 		const	userId = getCookie(document, "userId");
+        const	endpoint = `/api/v1/game-core/games/${localStorage.getItem("gameId")}/${userId}/`;
 
 
         getPlayer(localStorage.getItem("gameId"))
         document.getElementById("canva-section").classList.remove("d-none")
-
 
         this.socket = new WebSocket(`wss://${host}${endpoint}`);
         this.keydownHandler =(event) => sendKey(event, this.socket);

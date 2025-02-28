@@ -163,6 +163,7 @@ async function CreateRoom(event) {
         .then(async response => {
             handleApiSuccessAsync(response, async () => {
                 const userId = response.headers.get("X-User-Id");
+                console.log("AQUI ->>> ", userId)
                 const data = await response.json();
                 addUserIdIntoCookie(document, userId);
                 await redirectHrefRoom(window, data.roomCode, data.roomType)
