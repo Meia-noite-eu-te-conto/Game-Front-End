@@ -1,5 +1,6 @@
-FROM nginx:latest
+FROM nginx:1.27.4-alpine-slim
 
+RUN apk add --no-cache openssl
 RUN if [ ! -f /etc/ssl/certs/certificate.pem ]; then \
     openssl req \
     -x509 \
@@ -11,5 +12,7 @@ RUN if [ ! -f /etc/ssl/certs/certificate.pem ]; then \
     -out /etc/ssl/certs/certificate.pem \
     -subj "/C=BR/ST=SP/L=Itaquera/O=42/OU=42/CN=dapaulin@42.fr"; \
     fi
+
+RUN mkdir -p /usr/share/nginx/html/old/
 
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf

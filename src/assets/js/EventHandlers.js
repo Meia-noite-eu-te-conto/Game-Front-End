@@ -147,7 +147,7 @@ class PageGame {
                 if (data.winner != userId) {
                     const gameOverLoserModal = new bootstrap.Modal(document.getElementById('gameOverLoserModal'));
                     gameOverLoserModal.show();
-                    localStorage.setItem("currentPage", "/home.html")
+                    localStorage.setItem("currentPage", "./home.html")
                 }
                 else {
                     if (data.roomType === 1)
@@ -155,7 +155,7 @@ class PageGame {
                     else {
                         const gameOverWinnerModal = new bootstrap.Modal(document.getElementById('gameOverWinnerModal'));
                         gameOverWinnerModal.show();
-                        localStorage.setItem("currentPage", "/home.html")
+                        localStorage.setItem("currentPage", "./home.html")
                     }
                 }
             }
@@ -216,7 +216,7 @@ class PageMatchRoom {
             const data = JSON.parse(event.data);
             if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
                 resetUserIdIntoCookie(document)
-                await DOMRender("/home.html")
+                await DOMRender("./home.html")
             } else if (data.type == "player_list_update")
                 await ShowMatchRoom(localStorage.getItem("roomCode"));
             else if (data.type == "game.started") {
@@ -298,7 +298,7 @@ class PageTournament {
             const data = JSON.parse(event.data);
             if (data.type == "delete_room" || (data.type == "player_list_update" && data.userRemoved == userId)) {
                 resetUserIdIntoCookie(document)
-                await DOMRender("/home.html")
+                await DOMRender("./home.html")
             } else if (data.type == "player_list_update")
                 await ShowTournamentRoom(localStorage.getItem("roomCode"));
             else if (data.type == "game.started") {
@@ -348,15 +348,15 @@ class PageTournament {
 class Router {
 
     constructor() {
-        this.page = localStorage.getItem("currentPage") ? localStorage.getItem("currentPage") : "/home.html"
-        this.prevPage = "/home.html"
+        this.page = localStorage.getItem("currentPage") ? localStorage.getItem("currentPage") : "./home.html"
+        this.prevPage = "./home.html"
         this.actions = {
-            "/home.html": new PageHome(),
-            "/view-rooms.html": new PageViewRooms(),
-            "/ranking.html": new Ranking(),
-            "/watch-room.html": new PageMatchRoom(),
-            "/tournament.html": new PageTournament(),
-            "/game.html": new PageGame()
+            "./home.html": new PageHome(),
+            "./view-rooms.html": new PageViewRooms(),
+            "./ranking.html": new Ranking(),
+            "./watch-room.html": new PageMatchRoom(),
+            "./tournament.html": new PageTournament(),
+            "./game.html": new PageGame()
         }
         localStorage.setItem("currentPage", this.page)
         this.roomCode = localStorage.getItem("roomCode") ? localStorage.getItem("roomCode") : null

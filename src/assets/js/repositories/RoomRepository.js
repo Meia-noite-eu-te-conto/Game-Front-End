@@ -82,7 +82,7 @@ async function CloseRoom(event, roomCode) {
         .then(async response => {
             await handleApiSuccessAsync(response, async () => {
                 resetUserIdIntoCookie(document);
-                await DOMRender("/home.html")
+                await DOMRender("./home.html")
             });
         })
         .catch(handleApiError);
