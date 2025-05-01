@@ -13,6 +13,4 @@ RUN if [ ! -f /etc/ssl/certs/certificate.pem ]; then \
     -subj "/C=BR/ST=SP/L=Itaquera/O=42/OU=42/CN=dapaulin@42.fr"; \
     fi
 
-RUN mkdir -p /usr/share/nginx/html/old/
-
 COPY ./nginx/default.conf /etc/nginx/conf.d/default.conf
