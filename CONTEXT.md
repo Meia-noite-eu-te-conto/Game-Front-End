@@ -125,7 +125,19 @@ arquivo e recarregar a página basta, não há build.
 - **`RoomRepository.js` define os endpoints duas vezes**, em `RoutesInfo` e em
   `APIEndPoints`, com formatos diferentes.
 - **`alert("Colocar um aviso de que o player saiu...")`** em produção, em dois lugares.
-- **Zero testes.**
+- **Migração incompleta de caminho absoluto para relativo.** O `Router.actions`
+  usa chaves `./home.html`, `./view-rooms.html` etc., mas `RouteNames` em `Enums.js`
+  e um botão de `home.html` continuavam com `/home.html` absoluto. Como
+  `navigateTo()` faz `if (this.actions[newPage])` por igualdade estrita de string,
+  qualquer chamador que use o caminho absoluto — inclusive `redirectHrefRoom` (rodado
+  **logo após criar uma sala**) e `redirectGame` (rodado ao iniciar a partida) — troca
+  o HTML da tela mas nunca executa `init()` da página nova. Efeito: WebSocket de sala
+  nunca abre, "List Rooms" e "Ranking" ficam sempre vazios, sem erro visível.
+  Corrigido em 2026-09-12 completando a migração para `./` em todo lugar. Confirmado
+  em produção real (cluster k3s): usuário via o indicador de WS preso em
+  "disconnected" após criar sala.
+- **Zero testes.** Esse bug de roteamento não teria passado despercebido com um
+  teste de integração simples ("criar sala → WS conecta").
 
 ## Para onde vai
 
