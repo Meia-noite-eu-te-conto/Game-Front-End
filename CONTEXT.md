@@ -184,6 +184,18 @@ arquivo e recarregar a página basta, não há build.
 - **Zero testes.** Nenhum desses dois bugs de contrato teria passado despercebido
   com um teste de integração simples ("criar sala → ver os jogadores na tela").
 
+## Pendências abertas, não investigadas
+
+- **`400` intermitente em `POST /rooms/new-room/`**, visto no navegador em
+  2026-09-12 durante a validação TK.12. Pode ser validação legítima do
+  backend (`CreateRoomView.post()` valida `createdBy` não-vazio, `roomName`
+  entre 3 e 100 caracteres, `maxAmountOfPlayers` dentro do range do tipo de
+  sala) reagindo a um formulário preenchido incorretamente ou incompleto —
+  **ou** um bug real. Não investigado por falta do corpo da resposta
+  (`{"errorCode":..., "message":...}`), que revelaria qual validação falhou.
+  Antes de investigar mais, capturar o corpo da resposta 400 na aba Network
+  do DevTools.
+
 ## Para onde vai
 
 `web` em Angular 20+ (standalone, signals, zoneless):
