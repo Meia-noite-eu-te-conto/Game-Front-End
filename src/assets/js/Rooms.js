@@ -30,7 +30,9 @@ async function ShowRooms(filters, document) {
         let paginatedGroup = document.getElementById("paginated-list-rooms");
         RoomPaginationComponent(paginatedGroup, data, "listRooms");
 
-        let rooms = data["paginatedItems"]["Data"];
+        // A API de rooms devolve o resultado no nível raiz ("content"), não
+        // envelopado em "paginatedItems.Data" como a de ranking (Game-Core).
+        let rooms = data["content"];
         const listGroup = document.getElementById('rooms-list');
         listGroup.innerHTML = ""
         rooms.forEach(room => {

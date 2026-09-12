@@ -136,8 +136,28 @@ arquivo e recarregar a página basta, não há build.
   Corrigido em 2026-09-12 completando a migração para `./` em todo lugar. Confirmado
   em produção real (cluster k3s): usuário via o indicador de WS preso em
   "disconnected" após criar sala.
-- **Zero testes.** Esse bug de roteamento não teria passado despercebido com um
-  teste de integração simples ("criar sala → WS conecta").
+- **Contrato de sala desatualizado contra o `User-Session` real.** O rebase trouxe
+  um `rooms/views.py` reescrito (parte do trabalho de `roomsv2`/autenticação), com
+  três mudanças de formato que o front-end não acompanhou:
+  - lista de salas devolve os campos no nível raiz (`content`, `currentPage`, ...),
+    não envelopados em `paginatedItems.Data` como a resposta de ranking do Game-Core;
+  - detalhe da sala devolve `players` como **objeto indexado por cor**
+    (`{"1": {...}}`), não array — `PlayerLabelTournamentComponent` já sabia disso,
+    `PlayerLabelComponent` não;
+  - o campo é `color`, não `profileColor`; e o dono da sala é sinalizado por
+    `owner` (por jogador) e por `data.owner` (para o viewer), não por comparar
+    `player.id` contra um `createdBy` que a resposta não manda mais.
+  Sem esses ajustes: `TypeError: Cannot read properties of undefined (reading
+  'currentPage')` ao listar salas, `TypeError: players.forEach is not a function`
+  ao abrir uma sala, e — silenciosamente, sem exceção — **o dono nunca via os
+  botões "Close Room" e "Start Game"**, porque `MatchActionsComponent` checava
+  `data["isOwner"]`, campo que não existe. Corrigido em 2026-09-12
+  (`v2.0.2`), alinhando com o padrão que `PlayerLabelTournamentComponent` já usava.
+  Achado jogando de verdade contra o cluster, depois do fix de roteamento — prova
+  de que a jornada completa (criar → ver sala → ver jogadores → iniciar) precisa
+  ser testada de ponta a ponta, não só por partes.
+- **Zero testes.** Nenhum desses dois bugs de contrato teria passado despercebido
+  com um teste de integração simples ("criar sala → ver os jogadores na tela").
 
 ## Para onde vai
 
