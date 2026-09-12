@@ -17,9 +17,9 @@ async function HandleEvents(event, roomCode) {
         event.preventDefault()
         const targetModalId = event.target.dataset.target;
         const modalElement = document.getElementById(targetModalId);
-        const playerId = event.target.dataset.playerId;
+        const playerColor = event.target.dataset.playerColor;
 
-        modalElement.dataset.playerId = playerId;
+        modalElement.dataset.playerColor = playerColor;
 
         var modal = new bootstrap.Modal(modalElement);
         modal.show();
@@ -138,9 +138,16 @@ class PageGame {
             }
 
             if (data.type === "update_score") {
+                // getPlayer() (chamado em init(), sem await) pode ainda não ter
+                // criado os elementos #player-N quando este primeiro
+                // update_score chega — o Game-Core manda um assim que aceita
+                // a conexão, antes até do jogo começar. Guarda contra null em
+                // vez de travar: getPlayer() já busca o placar atual da API, e
+                // preenche a tela certa assim que resolver.
                 let playerColor = data.playerColor
                 let element = document.getElementById(`player-${playerColor}`)
-                element.innerHTML = data.playerScore
+                if (element)
+                    element.innerHTML = data.playerScore
             }
 
             if (data.type === "game_finished") {

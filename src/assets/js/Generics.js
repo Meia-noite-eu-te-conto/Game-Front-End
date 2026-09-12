@@ -27,6 +27,20 @@ function addUserIdIntoCookie(document, userId) {
     }
 }
 
+// `RemovePlayerView` (User-Session) identifica QUEM remover pela cor/slot do
+// jogador na sala, não pelo id — só o header X-User-Id segue identificando
+// QUEM está pedindo. Guarda a cor devolvida no create/join para poder montar
+// a chamada de "sair da sala" (remover a si mesmo) depois.
+function getUserColor(document) {
+    return localStorage.getItem('userColor');
+}
+
+function addUserColorIntoCookie(document, userColor) {
+    if (userColor !== null && userColor !== undefined) {
+        localStorage.setItem('userColor', userColor);
+    }
+}
+
 function addCookie(document,cookieName, value) {
     if (cookieName && value) {
         localStorage.setItem(itemName, value);
