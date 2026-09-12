@@ -136,6 +136,31 @@ arquivo e recarregar a página basta, não há build.
   Corrigido em 2026-09-12 completando a migração para `./` em todo lugar. Confirmado
   em produção real (cluster k3s): usuário via o indicador de WS preso em
   "disconnected" após criar sala.
+- **Renderer WebGL indexava jogador pela cor, não pelo slot.** O snapshot do
+  Game-Core indexa `players` pelo valor de `color` do jogador (`{"1": {...},
+  "2": {...}}`, porque `User-Session` mudou o enum de cor de 0-indexado para
+  1-indexado — `RED=1, BLUE=2, GREEN=3, YELLOW=4`). Mas `InitAndUpdateObjects.js`
+  tem `gPong.players["0"]`, `["1"]`, `["2"]`, `["3"]` **hardcoded**, assumindo
+  slot 0-indexado. Resultado: `TypeError: Cannot read properties of undefined
+  (reading 'color')` em toda mensagem `game.update`, o jogo nunca chegava a
+  desenhar. É a materialização prática do §4.8 da análise original ("três mapas
+  de cor divergentes") — a mesma raiz, agora travando o jogo de verdade em vez
+  de só divergir silenciosamente. Corrigido em 2026-09-12 normalizando as
+  chaves em `Render.js:setup()` (ordena as chaves recebidas e reindexa 0..N-1),
+  num único ponto, em vez de tocar em cada função que consome `gPong.players`.
+  **Risco conhecido e não corrigido:** o valor de `color` em si (1-4) ainda é
+  usado direto em `PlayerColor[player.color]`, que só tem entradas 0-3 — cor 4
+  (YELLOW, 4º jogador) vai quebrar essa busca. Não corrigido agora porque não
+  foi o que travou (só 2 jogadores testados) e porque a unificação de verdade
+  ("slot define cor") é trabalho da migração para Go (ADR-0004, AGENTS.md
+  invariante 8), não um patch pontual no legado.
+- **Corrida entre `getPlayer()` e o primeiro `update_score`.** `PageGame.init()`
+  chama `getPlayer(gameId)` sem `await` e abre o WebSocket na sequência; o
+  `GameSessionConsumer.connect()` do Game-Core manda um `update_score` por
+  jogador assim que aceita a conexão — antes até de `getPlayer()` terminar de
+  popular `#player-N`. Resultado: `TypeError: Cannot set properties of null
+  (setting 'innerHTML')`. Corrigido guardando contra `null`; o placar se
+  autocorrige quando `getPlayer()` resolve, porque ele já busca o valor atual.
 - **Contrato de sala desatualizado contra o `User-Session` real.** O rebase trouxe
   um `rooms/views.py` reescrito (parte do trabalho de `roomsv2`/autenticação), com
   três mudanças de formato que o front-end não acompanhou:
