@@ -181,8 +181,13 @@ arquivo e recarregar a página basta, não há build.
   Achado jogando de verdade contra o cluster, depois do fix de roteamento — prova
   de que a jornada completa (criar → ver sala → ver jogadores → iniciar) precisa
   ser testada de ponta a ponta, não só por partes.
-- **Zero testes.** Nenhum desses dois bugs de contrato teria passado despercebido
-  com um teste de integração simples ("criar sala → ver os jogadores na tela").
+- **Sem teste de unidade nem de integração da SPA.** Desde 2026-09-12 existe um
+  teste de carga k6 (`k6/smoke.js`) no CI, que cobre entrega de estáticos e trava
+  a regressão do fallback de SPA (404 tem que ser 404). Mas nenhum dos bugs de
+  contrato desta lista seria pego por ele — eles vivem na camada de consumo do
+  JavaScript, e só apareceriam com um teste de integração de verdade
+  ("criar sala → ver os jogadores na tela"), que ainda não existe. Foi
+  exatamente jogando à mão que os quatro foram achados.
 
 - **`remove-player/` mudou de identificar por id para identificar por
   cor/slot**, e o front-end continuou mandando um UUID na URL. A rota virou
