@@ -17,25 +17,35 @@ function ShowRoomItemComponent(room) {
     return listItem;
 }
 
-function RemovePlayerComponent (data, player, createdBy) {
-    return (player.id == createdBy) ?
+function RemovePlayerComponent (data, player) {
+    // O backend não manda mais createdBy nem o id real de todo jogador (só do
+    // dono da sala consegue ver ids, por privacidade). Usa os booleanos que o
+    // backend já calcula por jogador (`owner`) e para o viewer (`data.owner`),
+    // em vez de comparar id contra um campo que não existe na resposta.
+    return player.owner ?
     "<small class='text-body-secondary bi bi-person'> Owner</small>" :
-    (data["isOwner"] ?
-        `<h1 class='modal-handler p-0 btn-remove-player h3 pe-2 bi bi-x-circle' data-target="alert-remove-player-modal" data-player-id="${player.id}"></h1>` :
+    (data["owner"] ?
+        // RemovePlayerView identifica o alvo pela cor/slot na sala, não pelo
+        // id (que aliás vem null para a maioria dos jogadores, por
+        // privacidade — só o dono vê ids reais).
+        `<h1 class='modal-handler p-0 btn-remove-player h3 pe-2 bi bi-x-circle' data-target="alert-remove-player-modal" data-player-color="${player.color}"></h1>` :
         "");
 }
 
-function PlayerLabelComponent(data, player, createdBy, roomType) {
+function PlayerLabelComponent(data, player, roomType) {
     let element = document.createElement('div')
     element.classList.add("list-group-item", "list-group-item-action", "py-3", "lh-sm", "rounded-4", "mb-2")
 
-    let [r, g, b, a] = PlayerColor[player.profileColor]
+    // `color`, não `profileColor` — o backend de rooms manda o jogador indexado
+    // e descrito por `color` (ver PlayerLabelTournamentComponent, que já usa
+    // esse nome corretamente).
+    let [r, g, b, a] = PlayerColor[player.color]
     let rgbaPlayerColor = `style='background-color: rgba(${r}, ${g}, ${b}, ${a / 100})'`
     let owner = ""
     let you = player.you ? " | You" : ""
 
     if (roomType != 2) {
-        owner = RemovePlayerComponent(data, player, createdBy)
+        owner = RemovePlayerComponent(data, player)
     }
 
     element.innerHTML = `
@@ -44,7 +54,7 @@ function PlayerLabelComponent(data, player, createdBy, roomType) {
                 <img ${rgbaPlayerColor} src="${player.urlProfileImage}" class="rounded-circle img-thumbnail" alt="">
                 <div class="d-flex flex-column  ps-2 justify-content-center">
                     <strong class="mb-1">${player.name}</strong>
-                    <p class="small mb-0">${PlayerColorLabel[player.profileColor]}${you}</p>
+                    <p class="small mb-0">${PlayerColorLabel[player.color]}${you}</p>
                 </div>
             </div>
             ${ owner }
@@ -71,16 +81,17 @@ function NonePlayerLabelComponent() {
 }
 
 function MatchPlayerListComponent(data) {
+    // `players` vem como objeto indexado por cor (`{"1": {...}, "2": {...}}`),
+    // não como array — o backend agrupa por slot de cor, não por posição de lista.
     players = data["players"]
-    createdBy = data["createdBy"]
     roomType = data["roomType"]
 
     const playerListElement = document.getElementById("list-of-players")
     playerListElement.innerHTML = ""
 
     let i = 0;
-    players.forEach(player => {
-        let playerElement = PlayerLabelComponent(data, player, createdBy, roomType)
+    Object.values(players).forEach(player => {
+        let playerElement = PlayerLabelComponent(data, player, roomType)
         playerListElement.appendChild(playerElement)
         i++;
     });
@@ -128,7 +139,7 @@ function MatchActionsComponent(data)
     let element = document.getElementById("room-actions")
     let btnSection = LeaveRoomButtonComponent(data)
 
-    if (data["isOwner"])
+    if (data["owner"])
     {
         btnSection = `
         ${CloseRoomButtonComponent(data)}

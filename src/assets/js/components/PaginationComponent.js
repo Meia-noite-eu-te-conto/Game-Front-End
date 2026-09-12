@@ -44,7 +44,9 @@ function PaginationComponent(paginatedElement, pageInfo, functionName)
 function RoomPaginationComponent(paginatedGroup, data, functionName)
 {
     paginatedGroup.innerHTML = "";
-    const paginatedInfo = data["paginatedItems"]
+    // A API de rooms já devolve os campos de paginação no nível raiz, sem o
+    // envelope "paginatedItems" que a de ranking usa (ver PaginationComponent).
+    const paginatedInfo = data
     let item = PaginationItemLabelComponent(paginatedInfo["currentPage"], "Previous", paginatedInfo, functionName);
     paginatedGroup.appendChild(item);
 

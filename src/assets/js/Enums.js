@@ -26,12 +26,12 @@ const	GamesType = {
 const	BallColor = [255, 255, 255, 100];
 
 const	RouteNames = {
-	"tournament": "/tournament.html",
-	"match": "/watch-room.html",
-	"index": "/index.html",
-	"ranking": "/ranking.html",
-	"rooms": "/view-rooms.html",
-	"game": "/game.html"
+	"tournament": "./tournament.html",
+	"match": "./watch-room.html",
+	"index": "./index.html",
+	"ranking": "./ranking.html",
+	"rooms": "./view-rooms.html",
+	"game": "./game.html"
 }
 
 const	TournamentConfig = {

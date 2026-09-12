@@ -125,7 +125,99 @@ arquivo e recarregar a página basta, não há build.
 - **`RoomRepository.js` define os endpoints duas vezes**, em `RoutesInfo` e em
   `APIEndPoints`, com formatos diferentes.
 - **`alert("Colocar um aviso de que o player saiu...")`** em produção, em dois lugares.
-- **Zero testes.**
+- **Migração incompleta de caminho absoluto para relativo.** O `Router.actions`
+  usa chaves `./home.html`, `./view-rooms.html` etc., mas `RouteNames` em `Enums.js`
+  e um botão de `home.html` continuavam com `/home.html` absoluto. Como
+  `navigateTo()` faz `if (this.actions[newPage])` por igualdade estrita de string,
+  qualquer chamador que use o caminho absoluto — inclusive `redirectHrefRoom` (rodado
+  **logo após criar uma sala**) e `redirectGame` (rodado ao iniciar a partida) — troca
+  o HTML da tela mas nunca executa `init()` da página nova. Efeito: WebSocket de sala
+  nunca abre, "List Rooms" e "Ranking" ficam sempre vazios, sem erro visível.
+  Corrigido em 2026-09-12 completando a migração para `./` em todo lugar. Confirmado
+  em produção real (cluster k3s): usuário via o indicador de WS preso em
+  "disconnected" após criar sala.
+- **Renderer WebGL indexava jogador pela cor, não pelo slot.** O snapshot do
+  Game-Core indexa `players` pelo valor de `color` do jogador (`{"1": {...},
+  "2": {...}}`, porque `User-Session` mudou o enum de cor de 0-indexado para
+  1-indexado — `RED=1, BLUE=2, GREEN=3, YELLOW=4`). Mas `InitAndUpdateObjects.js`
+  tem `gPong.players["0"]`, `["1"]`, `["2"]`, `["3"]` **hardcoded**, assumindo
+  slot 0-indexado. Resultado: `TypeError: Cannot read properties of undefined
+  (reading 'color')` em toda mensagem `game.update`, o jogo nunca chegava a
+  desenhar. É a materialização prática do §4.8 da análise original ("três mapas
+  de cor divergentes") — a mesma raiz, agora travando o jogo de verdade em vez
+  de só divergir silenciosamente. Corrigido em 2026-09-12 normalizando as
+  chaves em `Render.js:setup()` (ordena as chaves recebidas e reindexa 0..N-1),
+  num único ponto, em vez de tocar em cada função que consome `gPong.players`.
+  **Risco conhecido e não corrigido:** o valor de `color` em si (1-4) ainda é
+  usado direto em `PlayerColor[player.color]`, que só tem entradas 0-3 — cor 4
+  (YELLOW, 4º jogador) vai quebrar essa busca. Não corrigido agora porque não
+  foi o que travou (só 2 jogadores testados) e porque a unificação de verdade
+  ("slot define cor") é trabalho da migração para Go (ADR-0004, AGENTS.md
+  invariante 8), não um patch pontual no legado.
+- **Corrida entre `getPlayer()` e o primeiro `update_score`.** `PageGame.init()`
+  chama `getPlayer(gameId)` sem `await` e abre o WebSocket na sequência; o
+  `GameSessionConsumer.connect()` do Game-Core manda um `update_score` por
+  jogador assim que aceita a conexão — antes até de `getPlayer()` terminar de
+  popular `#player-N`. Resultado: `TypeError: Cannot set properties of null
+  (setting 'innerHTML')`. Corrigido guardando contra `null`; o placar se
+  autocorrige quando `getPlayer()` resolve, porque ele já busca o valor atual.
+- **Contrato de sala desatualizado contra o `User-Session` real.** O rebase trouxe
+  um `rooms/views.py` reescrito (parte do trabalho de `roomsv2`/autenticação), com
+  três mudanças de formato que o front-end não acompanhou:
+  - lista de salas devolve os campos no nível raiz (`content`, `currentPage`, ...),
+    não envelopados em `paginatedItems.Data` como a resposta de ranking do Game-Core;
+  - detalhe da sala devolve `players` como **objeto indexado por cor**
+    (`{"1": {...}}`), não array — `PlayerLabelTournamentComponent` já sabia disso,
+    `PlayerLabelComponent` não;
+  - o campo é `color`, não `profileColor`; e o dono da sala é sinalizado por
+    `owner` (por jogador) e por `data.owner` (para o viewer), não por comparar
+    `player.id` contra um `createdBy` que a resposta não manda mais.
+  Sem esses ajustes: `TypeError: Cannot read properties of undefined (reading
+  'currentPage')` ao listar salas, `TypeError: players.forEach is not a function`
+  ao abrir uma sala, e — silenciosamente, sem exceção — **o dono nunca via os
+  botões "Close Room" e "Start Game"**, porque `MatchActionsComponent` checava
+  `data["isOwner"]`, campo que não existe. Corrigido em 2026-09-12
+  (`v2.0.2`), alinhando com o padrão que `PlayerLabelTournamentComponent` já usava.
+  Achado jogando de verdade contra o cluster, depois do fix de roteamento — prova
+  de que a jornada completa (criar → ver sala → ver jogadores → iniciar) precisa
+  ser testada de ponta a ponta, não só por partes.
+- **Sem teste de unidade nem de integração da SPA.** Desde 2026-09-12 existe um
+  teste de carga k6 (`k6/smoke.js`) no CI, que cobre entrega de estáticos e trava
+  a regressão do fallback de SPA (404 tem que ser 404). Mas nenhum dos bugs de
+  contrato desta lista seria pego por ele — eles vivem na camada de consumo do
+  JavaScript, e só apareceriam com um teste de integração de verdade
+  ("criar sala → ver os jogadores na tela"), que ainda não existe. Foi
+  exatamente jogando à mão que os quatro foram achados.
+
+- **`remove-player/` mudou de identificar por id para identificar por
+  cor/slot**, e o front-end continuou mandando um UUID na URL. A rota virou
+  `<int:color>` (aceita só dígitos); uma UUID nunca bate com esse padrão, e o
+  resultado é 404 do **roteamento do Django** (template padrão, não
+  `JsonResponse`) — sintoma distinto de um 404 de view, útil para
+  diferenciar as duas causas no futuro. Afeta tanto "sair da sala"
+  (`LeaveTheRoom`) quanto "remover jogador" (`RemovePlayerFromRoom`, o dono
+  removendo outro). Corrigido capturando o header `X-User-Color` — que
+  `CreateRoomView`/`AddPlayerToRoomView` já devolvem — no create/join, e
+  usando essa cor (a própria, para sair; a do alvo, lida de
+  `player.color` no modal, para remover outro) na URL. Renomeado também
+  `data-player-id`/`dataset.playerId` para `data-player-color` nos três
+  arquivos que participam do fluxo, para o nome não mentir sobre o que
+  carrega. Achado com uma chamada `curl` colada pelo usuário (a interface
+  não expõe esse fluxo com facilidade em teste manual rápido); confirmado
+  ponta a ponta contra o backend real antes do build (204 no lugar do 404
+  de roteamento).
+
+## Pendências abertas, não investigadas
+
+- **`400` intermitente em `POST /rooms/new-room/`**, visto no navegador em
+  2026-09-12 durante a validação TK.12. Pode ser validação legítima do
+  backend (`CreateRoomView.post()` valida `createdBy` não-vazio, `roomName`
+  entre 3 e 100 caracteres, `maxAmountOfPlayers` dentro do range do tipo de
+  sala) reagindo a um formulário preenchido incorretamente ou incompleto —
+  **ou** um bug real. Não investigado por falta do corpo da resposta
+  (`{"errorCode":..., "message":...}`), que revelaria qual validação falhou.
+  Antes de investigar mais, capturar o corpo da resposta 400 na aba Network
+  do DevTools.
 
 ## Para onde vai
 

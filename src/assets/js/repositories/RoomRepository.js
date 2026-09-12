@@ -41,8 +41,10 @@ async function PutAddToRoomAsync(FormData) {
     .then(async response => {
         if (response.status === 201) {
             const userId = response.headers.get("X-User-Id");
+            const userColor = response.headers.get("X-User-Color");
             let data = await response.json();
             addUserIdIntoCookie(document, userId)
+            addUserColorIntoCookie(document, userColor)
             return ({
                 status: response.status,
                 data
@@ -90,9 +92,12 @@ async function CloseRoom(event, roomCode) {
 
 function RemovePlayerFromRoom(event, roomCode) {
     const modal = event.target.closest(".modal");
-    const playerId = modal.dataset.playerId;
+    // RemovePlayerView identifica o alvo pela cor/slot na sala, não pelo id
+    // (ver RemovePlayerComponent, que já popula data-player-color com
+    // player.color).
+    const playerColor = modal.dataset.playerColor;
 
-    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/${playerId}/remove-player/`;
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/${playerColor}/remove-player/`;
     ApiRequestHandler(endpoint, 'DELETE')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -125,8 +130,11 @@ function StartATournamentGame(event, roomCode) {
 }
 
 function LeaveTheRoom(event, roomCode) {
-    let userId = getCookie(document, "userId");
-    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/${userId}/remove-player/`;
+    // Sair da sala é remover a si mesmo: RemovePlayerView espera a COR do
+    // alvo na URL, não o id — guardada no localStorage desde o create/join
+    // (header X-User-Color).
+    let userColor = getUserColor(document);
+    const endpoint = `${APIEndPoints["user"]}rooms/${localStorage.getItem("roomCode")}/${userColor}/remove-player/`;
     ApiRequestHandler(endpoint, 'DELETE')
         .then(response => {
             handleApiSuccess(response, () => {
@@ -163,9 +171,10 @@ async function CreateRoom(event) {
         .then(async response => {
             handleApiSuccessAsync(response, async () => {
                 const userId = response.headers.get("X-User-Id");
-                console.log("AQUI ->>> ", userId)
+                const userColor = response.headers.get("X-User-Color");
                 const data = await response.json();
                 addUserIdIntoCookie(document, userId);
+                addUserColorIntoCookie(document, userColor);
                 await redirectHrefRoom(window, data.roomCode, data.roomType)
             })
         })

@@ -4,13 +4,31 @@ function	drawOnCanvas(data)
 	render();
 };
 
+// O snapshot do Game-Core indexa `players` pelo valor de `color` do jogador
+// (ex.: {"1": {...}, "2": {...}}), não por slot 0-indexado. Todo o renderer
+// (InitAndUpdateObjects.js) assume chaves "0".."3" por posição — sem essa
+// normalização, gPong.players["0"] é undefined e o primeiro acesso
+// (.x, .y, ["color"], ...) quebra com "Cannot read properties of undefined".
+// Reindexa por ordem crescente da chave original, uma vez, no único ponto
+// onde o snapshot chega, em vez de mexer em cada função que consome
+// gPong.players.
+function normalizePlayerSlots(players)
+{
+	const orderedKeys = Object.keys(players).sort((a, b) => Number(a) - Number(b));
+	const slots = {};
+	orderedKeys.forEach((key, index) => {
+		slots[index] = players[key];
+	});
+	return slots;
+}
+
 function	setup(data)
 {
 	const	parsedData = JSON.parse(data);
 	const	{ players, ball, numberOfPlayers, fieldAttributes, gameStatus, lastPlayerHit } = parsedData;
 
 	gPong.gameStatus = gameStatus;
-	gPong.players = players;
+	gPong.players = normalizePlayerSlots(players);
 	gPong.ball = ball;
 	gPong.numberOfPlayers = numberOfPlayers;
 	gPong.numberOfObjects = gPong.numberOfPlayers + 2;

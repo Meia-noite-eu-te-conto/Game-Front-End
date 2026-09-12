@@ -102,6 +102,17 @@ jobs:
           # ausente, e o erro apareceria como falha de parse de JavaScript.
           check /nao-existe 404
 
+          # Reaproveita o mesmo container `fe`, já de pé com a config do
+          # cluster, para o teste de carga do k6 — sem subir outro.
+          # docker run direto com a imagem oficial, não a Action
+          # grafana/k6-action: ela foi ARQUIVADA (movida para
+          # grafana-cold-storage/k6-action) e não recebe mais atualização.
+          fe_ip=$(docker inspect -f '{{range .NetworkSettings.Networks}}{{.IPAddress}}{{end}}' fe)
+          docker run --rm --network host \
+            -v "$PWD/k6:/scripts:ro" \
+            -e BASE_URL="http://${fe_ip}:80" \
+            docker.io/grafana/k6:2.2.0 run /scripts/smoke.js
+
       - name: login no ghcr.io
         if: github.event_name != 'pull_request'
         uses: docker/login-action@v3
