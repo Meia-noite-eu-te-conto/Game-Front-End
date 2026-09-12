@@ -184,6 +184,24 @@ arquivo e recarregar a página basta, não há build.
 - **Zero testes.** Nenhum desses dois bugs de contrato teria passado despercebido
   com um teste de integração simples ("criar sala → ver os jogadores na tela").
 
+- **`remove-player/` mudou de identificar por id para identificar por
+  cor/slot**, e o front-end continuou mandando um UUID na URL. A rota virou
+  `<int:color>` (aceita só dígitos); uma UUID nunca bate com esse padrão, e o
+  resultado é 404 do **roteamento do Django** (template padrão, não
+  `JsonResponse`) — sintoma distinto de um 404 de view, útil para
+  diferenciar as duas causas no futuro. Afeta tanto "sair da sala"
+  (`LeaveTheRoom`) quanto "remover jogador" (`RemovePlayerFromRoom`, o dono
+  removendo outro). Corrigido capturando o header `X-User-Color` — que
+  `CreateRoomView`/`AddPlayerToRoomView` já devolvem — no create/join, e
+  usando essa cor (a própria, para sair; a do alvo, lida de
+  `player.color` no modal, para remover outro) na URL. Renomeado também
+  `data-player-id`/`dataset.playerId` para `data-player-color` nos três
+  arquivos que participam do fluxo, para o nome não mentir sobre o que
+  carrega. Achado com uma chamada `curl` colada pelo usuário (a interface
+  não expõe esse fluxo com facilidade em teste manual rápido); confirmado
+  ponta a ponta contra o backend real antes do build (204 no lugar do 404
+  de roteamento).
+
 ## Pendências abertas, não investigadas
 
 - **`400` intermitente em `POST /rooms/new-room/`**, visto no navegador em

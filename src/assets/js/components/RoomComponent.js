@@ -25,7 +25,10 @@ function RemovePlayerComponent (data, player) {
     return player.owner ?
     "<small class='text-body-secondary bi bi-person'> Owner</small>" :
     (data["owner"] ?
-        `<h1 class='modal-handler p-0 btn-remove-player h3 pe-2 bi bi-x-circle' data-target="alert-remove-player-modal" data-player-id="${player.id}"></h1>` :
+        // RemovePlayerView identifica o alvo pela cor/slot na sala, não pelo
+        // id (que aliás vem null para a maioria dos jogadores, por
+        // privacidade — só o dono vê ids reais).
+        `<h1 class='modal-handler p-0 btn-remove-player h3 pe-2 bi bi-x-circle' data-target="alert-remove-player-modal" data-player-color="${player.color}"></h1>` :
         "");
 }
 

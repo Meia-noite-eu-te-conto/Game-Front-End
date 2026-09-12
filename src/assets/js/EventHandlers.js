@@ -17,9 +17,9 @@ async function HandleEvents(event, roomCode) {
         event.preventDefault()
         const targetModalId = event.target.dataset.target;
         const modalElement = document.getElementById(targetModalId);
-        const playerId = event.target.dataset.playerId;
+        const playerColor = event.target.dataset.playerColor;
 
-        modalElement.dataset.playerId = playerId;
+        modalElement.dataset.playerColor = playerColor;
 
         var modal = new bootstrap.Modal(modalElement);
         modal.show();
